@@ -1,0 +1,64 @@
+{% extends 'account/account_base.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+    #action-box
+    {
+        background:var( --white-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1em;
+        height: 30vh;
+    }
+    #action-box .card
+    {
+        height: 130px;
+        width: 270px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        border: none;
+        margin: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    #action-box .card:hover{
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        transition: 0.5s;
+    }
+    #action-box .card h5{
+        margin-top: 0.40em;
+        margin-bottom: 0.80em;
+        color:rgb(21, 74, 139);
+        font-weight: 600;
+        font-size: 1.2em;
+    }
+</style>
+<main>
+<!--Container Main start-->
+<div class="height-100 container-fluid" id="action-box">
+<a href="{% url 'Register_form' %}">
+    <div class="card">
+        <i class='bi bi-people-fill nav_icon'></i><h5>Register</h5>
+    </div>
+</a>
+<a href="{% url 'department_form' %}">
+    <div class="card">
+        <i class="bi bi-box-fill"></i><h5>Department</h5>
+    </div>
+</a>
+</div>
+<!--Container Main end-->
+
+<!--Container List Show-->
+<!-- <div class="container-fluid">
+    <h5>List Of students</h5>
+</div> -->
+
+</main>
+
+{% endblock %}

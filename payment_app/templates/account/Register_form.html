@@ -1,0 +1,329 @@
+{% extends 'account/account_base.html' %}
+{% load static %}
+{% block body %}
+
+
+
+<style>
+
+/*Register Box Register-details  Style */
+
+    #register-box .contaier-fluid
+    {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        padding: 1em;
+        gap: 1em;
+        background-color:#fafafa;
+       
+       
+    }
+    .register-details
+    {
+        height: 80vh;
+        background: #ffff;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+       
+    }
+
+    .register-details h4, .register-details-table h4{
+      
+        margin-top: 1.1em;
+        font-size: 1.35em;
+        margin-left: 0.40em;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        color:rgb(38, 17, 63);
+       
+        
+    }
+    .register-details .line,  .register-details-table .line
+    {
+        width: 60px;
+        height: 3px;
+        border-bottom: 3px solid #000;
+        margin-left: 0.60em;
+
+    }
+
+    /* Alert box */
+
+    .register-details .message-bx,  .register-details .message-bx-confirm
+    {
+        background: #6fc146;
+        color: #fafafa;
+        font-size: 0.98em;
+        font-weight: 600;
+        font-family: 'Times New Roman', Times, serif;
+        padding: 0.50em ;
+        height: 5vh;
+        margin-top: 1.2em; 
+    }
+    .register-details .message-bx-delete
+    {
+        background: #f7684c;
+        color: #fafafa;
+        font-size: 0.98em;
+        font-weight: 600;
+        font-family: 'Times New Roman', Times, serif;
+        padding: 0.50em ;
+        height: 5vh;
+        margin-top: 1.2em;
+       
+    }
+    .register-details form{
+        padding:0.50em 1em;
+        background: #fafafa;
+    }
+    .register-details form .input-group-box
+    {
+        margin-top: 1.5em;
+    }
+    .input-group-box label
+    {
+        width: 35%;
+        font-size: 0.90em;
+        font-weight: 600;
+        padding: 0.40em;
+    }
+    .input-group-box input, select{
+      width: 55%;
+      padding: 0.20em;
+      border: 1px solid #828181;
+      font-size: 0.90em;
+     
+    }
+    .input-group-box input:focus, select:focus
+    {
+        border:0.01rem solid #111158;
+        outline: none;
+        border-radius: 3px;
+    }
+    .input-group-box select option{
+        font-size: 0.90em;
+        padding: 1em 0em;
+    }
+    .submit_button
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 15vh;
+        background: #fafafa;
+        margin-top: 1em;
+    }
+    .submit_button button
+    {
+        padding: 0.40em 1.4em;
+        font-weight: 600;
+        background: #261b52;
+        color: #ffff;
+        margin:none ;
+        border: none;
+        letter-spacing: 0.04em;
+    }
+    #register-details a
+    {
+        padding: 0em 0.40em;
+        font-size: 1.1em;
+    
+    }
+    #register-details .edit
+    {
+        font-size: 0.95em;
+    }
+    #register-details .edit:nth-child(1)
+    {
+      
+        color: #1b126f; 
+    }
+    #register-details a:nth-child(1)
+    {
+      
+        color: #3da309; 
+    }
+    #register-details a:nth-child(2)
+    {
+        color: #ec0909;
+    }
+    /* Media Query*/
+    @media(max-width:964px)
+    {
+        #register-box .contaier-fluid
+        {
+        grid-template-columns:repeat(1,1fr) ;
+        }
+        .register-details
+        {
+            height: auto;
+        }
+        
+    }
+    /*Register Box Register-details End Style */
+
+     /*Register Box Register-details Table Style */
+     .register-details-table .container
+     {
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        height: 70vh;
+        margin-top: 1.4em;
+        padding-top:2em ;
+     }
+     #register-details
+     {
+        font-size: 0.90em;
+     }
+      /* Media Query*/
+    @media(max-width:964px)
+    {
+    
+        .register-details-table .container
+        {
+            height: auto;
+            overflow-x: scroll;
+          
+           
+        }
+        #register-details
+        {
+          width: 100%; 
+        }
+        .register-details-table 
+        {
+            overflow-x: scroll;
+        }
+    }
+</style>
+
+
+<main>
+    <section id="register-box">
+        <div class="contaier-fluid">
+            <div class="register-details">
+                <h4>Register Form</h4>
+                <div class="line"></div>
+                {% if msg == 1 %}
+                <div class="message-bx" id="msgbox">
+                    <p><i class="bi bi-check"></i>Registeration Successfull </p>
+                </div>
+                {% elif  msg == 2 %}
+                <div class="message-bx-confirm" id="msgbox">
+                    <p><i class="bi bi-check-all"></i>Registeration Completed </p>
+                </div>
+                {% elif  msg == 3 %}
+                <div class="message-bx-delete" id="msgbox">
+                    <p><i class="bi bi-x"></i></i>Oops Deleted the User </p>
+                </div>
+                {% endif %}
+                <form action="{% url 'register_Details'  %}" method="post">
+                    {% csrf_token %}
+                    <div class="input-group-box" >
+                        <label>Full Name</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="input-group-box">
+                        <label>Date Of Joing</label>
+                        <input type="date" name="dfj" required>
+                    </div>
+                    <div class="input-group-box">
+                        <label>Phone Number</label>
+                        <input type="tel" name="phno"  pattern="[789][0-9]{9}">
+                    </div>
+                    <div class="input-group-box">
+                        <label>Referenced By</label>
+                        <input type="text" name="refby" required>
+                    </div>
+                    <div class="input-group-box">
+                        <label>Department</label>
+                        <select name="dept" required >
+                            <option >-- Select Department -- </option>
+                            {% for j in dept %}
+                            <option value="{{j.id}}" >{{j.department}} </option>
+                            {% endfor %}
+                        </select>
+                        
+                    </div>
+                    <div class="input-group-box">
+                        <label>Initial Amount</label>
+                        <input type="text" name="init_amunt" required>
+                    </div>
+                    <div class="input-group-box">
+                        <label>Total Amount</label>
+                        <input type="text" name="tot_amount" required>
+                    </div>
+                    <div class="submit_button">
+                        <button type="submit">Register</button>
+                    </div>
+                </form>
+            </div>
+            <div class="register-details-table">
+                <h4>Registeration Details</h4>
+                <div class="line"></div>
+                <div class="container">
+
+                    <table id="register-details" class="display" >
+                        <thead>
+                            <tr>
+                                <th>Edit</th>
+                                <th>Full Name</th>
+                                <th>Date Of Joing</th>
+                                <th>Phone Number</th>
+                                <th>Department</th>
+                                <th>Referenced By</th>
+                                <th>Initial Amount</th>
+                                <th>Balance Amount</th>
+                                <th>Total Amount</th>
+                                <th>Register Staus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in reg %}
+                            <tr>
+                                <td><a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a></td>
+                                <td>{{i.fullName}}</td>
+                                <td>{{i.dofj}}</td>
+                                <td>{{i.Phone}}</td>
+                                <td>{{i.dept_id.department}}</td>
+                                <td>{{i.refrence}}</td>
+                                {% for j in payhis %}
+                                    {% if j.id == i.firstpay_id %}
+                                    <td>
+                                        {{j.payintial_amt}}
+                                    </td>
+                                    {% endif %}
+                                    {% if j.id == i.firstpay_id %}
+                                    <td>
+                                    {{i.regbalance_amt}}
+                                    
+                                    </td> 
+                                    {% endif %}
+                                    {% if j.id == i.firstpay_id %} 
+                                    <td> 
+                                        {{j.paytotal_amt}}
+                                    </td>
+                                    {% endif %}
+                                {% endfor %}
+                                <td>
+                                    <a href="{% url 'confirm' i.id %}"><i class="bi bi-check-circle-fill"></i></a>
+                                    <a href="{% url 'remove' i.id %}"><i class="bi bi-x-circle-fill"></i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                          
+                        </tbody>
+                       
+                    </table>
+
+                </div>
+            </div>
+           
+        </div>
+    </section>
+
+    <!-- Meaage Box fead Out -->
+
+
+</main>
+
+{% endblock %}
