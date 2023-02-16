@@ -1,4 +1,4 @@
-{% extends 'account/account_base.html' %}
+{% extends 'Admin/adminbase.html' %}
 {% load static %}
 {% block body %}
 
@@ -11,7 +11,7 @@
     #register-box .contaier-fluid
     {
         display: grid;
-        grid-template-columns: 0.90fr 2.2fr;
+        grid-template-columns: 0.950fr 2.1fr;
         padding: 1em;
         gap: 1em;
         background-color:#fafafa;
@@ -123,11 +123,22 @@
         border: none;
         letter-spacing: 0.04em;
     }
+    #register-details .danger
+    {
+        background: #f45353;
+        color: #ffff;
+        font-weight: 600;
+    }
+    #register-details .succes
+    {
+        background: #4fc728;
+        color: #ffff;
+        font-weight: 600;
+    }
     #register-details a
     {
         padding: 0em 0.40em;
         font-size: 1.1em;
-    
     }
     #register-details .edit
     {
@@ -156,15 +167,6 @@
     #register-details .notcheck
     {
         color: #ec0909;
-    }
-    #register-details .confirmbtn
-    {
-        font-size: 0.89em;
-        font-weight: 600;
-        border: none;
-        padding: 0.40em 0.80em;
-        background: #111158;
-        color: #ffff;
     }
     /* Media Query*/
     @media(max-width:964px)
@@ -220,64 +222,48 @@
     <section id="register-box">
         <div class="contaier-fluid">
             <div class="register-details">
-                <h4>Register Form</h4>
+                <h4>Registeration Details</h4>
                 <div class="line"></div>
-                {% if msg == 1 %}
-                <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-check"></i>Registeration Successfull </p>
-                </div>
-                {% elif  msg == 2 %}
-                <div class="message-bx-confirm" id="msgbox">
-                    <p><i class="bi bi-check-all"></i>Registeration Completed </p>
-                </div>
-                {% elif  msg == 3 %}
-                <div class="message-bx-delete" id="msgbox">
-                    <p><i class="bi bi-x"></i></i>Oops Deleted the User </p>
-                </div>
-                {% endif %}
-                <form action="{% url 'register_Details'  %}" method="post">
-                    {% csrf_token %}
+               
+                <form>
+                  
                     <div class="input-group-box" >
                         <label>Full Name</label>
-                        <input type="text" name="name" required>
+                        <input type="text" name="name" value="{{firstpayhis.reg_id.fullName}}" readonly>
                     </div>
                     <div class="input-group-box">
                         <label>Date Of Joing</label>
-                        <input type="date" name="dfj" required>
+                        <input type="text" name="dfj"  value="{{firstpayhis.reg_id.dofj}}" readonly>
                     </div>
                     <div class="input-group-box">
                         <label>Phone Number</label>
-                        <input type="tel" name="phno"  pattern="[789][0-9]{9}">
+                        <input type="text" name="phno"  value="{{firstpayhis.reg_id.Phone}}" readonly>
                     </div>
                     <div class="input-group-box">
                         <label>Referenced By</label>
-                        <input type="text" name="refby" required>
+                        <input type="text" name="refby"  value="{{firstpayhis.reg_id.refrence}}"readonly >
                     </div>
                     <div class="input-group-box">
                         <label>Department</label>
-                        <select name="dept" required >
-                            <option >-- Select Department -- </option>
-                            {% for j in dept %}
-                            <option value="{{j.id}}" >{{j.department}} </option>
-                            {% endfor %}
-                        </select>
+                        <input type="text" name="refby"  value="{{firstpayhis.reg_id.dept_id.department}}"readonly>
                         
                     </div>
                     <div class="input-group-box">
-                        <label>Initial Amount</label>
-                        <input type="text" name="init_amunt" required>
+                        <label>Payed Amount</label>
+                        <input type="text" name="init_amunt"  value="{{firstpayhis.payintial_amt}}" readonly>
+                    </div>
+                    <div class="input-group-box">
+                        <label>Balance Amount</label>
+                        <input type="text" name="init_amunt"  value="{{firstpayhis.reg_id.regbalance_amt}}" readonly>
                     </div>
                     <div class="input-group-box">
                         <label>Total Amount</label>
-                        <input type="text" name="tot_amount" required>
-                    </div>
-                    <div class="submit_button">
-                        <button type="submit">Register</button>
+                        <input type="text" name="tot_amount"  value="{{firstpayhis.paytotal_amt}}" readonly>
                     </div>
                 </form>
             </div>
             <div class="register-details-table">
-                <h4>Registeration Details</h4>
+                <h4>Registeration And Payments Details</h4>
                 <div class="line"></div>
                 <div class="container">
 
@@ -286,58 +272,43 @@
                             <tr>
                                 <th></th>
                                 <th>Full Name</th>
-                                <th>Date Of Joing</th>
-                                <th>Phone Number</th>
+                                <th>Date Of Payed</th>
+                                <!-- <th>Phone Number</th>
                                 <th>Department</th>
-                                <th>Referenced By</th>
-                                <th>Initial Amount</th>
+                                <th>Referenced By</th> -->
+                                <th>Payed Amount</th>
                                 <th>Balance Amount</th>
                                 <th>Total Amount</th>
-                                <th>Pay Staus</th>
+                                <th> Staus</th>
                                 <th>Action</th>
 
                             </tr>
                         </thead>
                         <tbody>
-                            {% for i in reg %}
+                            {% for i in payhis %}
                             <tr>
                                 <td>
-                                    <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                    <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a>
+                                    <a href="{% url 'admin_remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a>
                                 </td>
-                                <td>{{i.fullName}}</td>
-                                <td>{{i.dofj}}</td>
-                                <td>{{i.Phone}}</td>
+                                <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.reg_id.fullName}}</a></td>
+                                <td>{{i.paydofj}}</td>
+                                <!-- <td>{{i.Phone}}</td>
                                 <td>{{i.dept_id.department}}</td>
-                                <td>{{i.refrence}}</td>
-                                {% for j in payhis %}
-                                    {% if j.id == i.firstpay_id %}
-                                        <td>{{j.payintial_amt}}</td>
-                                        
-                                        <td>{{i.regbalance_amt}} </td> 
-                            
-                                        <td> {{j.paytotal_amt}}</td>
-                                   
-                              
-                                        <td>
-                                            {% if j.admin_payconfirm == 1 %}
-                                                <a class="check">
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                </a>
-                                            {% else %}
-                                                <a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a>
-                                            {% endif %}  
-                                        </td>
-                                        <td>
-                                            {% if j.admin_payconfirm == 1 %}
-                                                <a href="{% url 'confirm' i.id %}" class="confirmbtn">
-                                                    Confirm
-                                                </a>
-            
-                                            {% endif %}  
-                                        </td>
-                                    {% endif %}
-                                {% endfor %}
+                                <td>{{i.refrence}}</td> -->
+                                <td>{{i.payintial_amt}}</td>
+                                {% if i.paybalance_amt > 0 %}
+                                <td class="danger">{{i.paybalance_amt}}</td> 
+                                {% else %}
+                                <td class="succes">{{i.paybalance_amt}}</td> 
+                                {% endif %}
+                                <td>{{i.paytotal_amt}}</td> 
+                                <td><a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a></td>
+                                <td>
+                                    <a href="{% url 'admin_approve' i.id %}" class="check">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span style="font-size:0.85em ;">Approve</span>
+                                    </a>
+                                </td>
                             </tr>
                             {% endfor %}
                           

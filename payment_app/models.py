@@ -19,7 +19,10 @@ class Register(models.Model):
     refrence=  models.CharField(max_length=255)
     firstpay_id = models.IntegerField(default=0)
     regbalance_amt =  models.IntegerField(default=0)
+    regtotal_amt =  models.IntegerField(default=0)
     reg_status = models.IntegerField(default=0)
+    payprogress = models.IntegerField(default=10)
+    payment_status = models.IntegerField(default=0)
 
 class PaymentHistory(models.Model):
     reg_id=models.ForeignKey(Register, on_delete=models.CASCADE, null=True,default='')
@@ -29,4 +32,5 @@ class PaymentHistory(models.Model):
     paybalance_amt =  models.IntegerField(default=0)
     paytotal_amt =  models.IntegerField(default=0)
     pay_status = models.IntegerField(default=0)
+    admin_payconfirm = models.IntegerField(default=0)
 

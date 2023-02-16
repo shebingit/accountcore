@@ -3,7 +3,6 @@
 {% block body %}
 
 
-
 <style>
 
 /*Register Box Register-details  Style */
@@ -11,7 +10,7 @@
     #register-box .contaier-fluid
     {
         display: grid;
-        grid-template-columns: 0.90fr 2.2fr;
+        grid-template-columns: 0.80fr 1.4fr 1.3fr;
         padding: 1em;
         gap: 1em;
         background-color:#fafafa;
@@ -116,18 +115,30 @@
     .submit_button button
     {
         padding: 0.40em 1.4em;
-        font-weight: 600;
+        font-weight: 500;
         background: #261b52;
         color: #ffff;
         margin:none ;
         border: none;
         letter-spacing: 0.04em;
+        font-size: 0.92em;
+    }
+    #register-details .danger
+    {
+        background: #f45353;
+        color: #ffff;
+        font-weight: 600;
+    }
+    #register-details .succes
+    {
+        background: #4fc728;
+        color: #ffff;
+        font-weight: 600;
     }
     #register-details a
     {
         padding: 0em 0.40em;
         font-size: 1.1em;
-    
     }
     #register-details .edit
     {
@@ -138,33 +149,24 @@
       
         color: #1b126f; 
     }
-    #register-details .check
+    #register-details .check, #payment-details .check
     {
       
         color: #3da309; 
     }
-    #register-details .wating
+    #register-details .wating, #payment-details .wating
     {
         color: #fff308;
     }
-    #register-details .wating span
+    #register-details .wating span, #payment-details .wating span
     {
         color: #d3c90d;
         font-size: 0.85em;
         font-weight: 600;
     }
-    #register-details .notcheck
+    #register-details .add-pyt
     {
-        color: #ec0909;
-    }
-    #register-details .confirmbtn
-    {
-        font-size: 0.89em;
-        font-weight: 600;
-        border: none;
-        padding: 0.40em 0.80em;
-        background: #111158;
-        color: #ffff;
+        color: #17146b;
     }
     /* Media Query*/
     @media(max-width:964px)
@@ -189,7 +191,7 @@
         margin-top: 1.4em;
         padding-top:2em ;
      }
-     #register-details
+     #register-details, #payment-details
      {
         font-size: 0.90em;
      }
@@ -218,66 +220,61 @@
 
 <main>
     <section id="register-box">
+        
         <div class="contaier-fluid">
             <div class="register-details">
-                <h4>Register Form</h4>
+                <h4>Add Payment</h4>
                 <div class="line"></div>
+
+                <!-- Message Section -->
                 {% if msg == 1 %}
-                <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-check"></i>Registeration Successfull </p>
-                </div>
-                {% elif  msg == 2 %}
-                <div class="message-bx-confirm" id="msgbox">
-                    <p><i class="bi bi-check-all"></i>Registeration Completed </p>
-                </div>
-                {% elif  msg == 3 %}
-                <div class="message-bx-delete" id="msgbox">
-                    <p><i class="bi bi-x"></i></i>Oops Deleted the User </p>
-                </div>
+                    <div class="message-bx" id="msgbox">
+                        <p><i class="bi bi-check"></i>Payment Added Successfull </p>
+                    </div>
+                    {% elif  msg == 2 %}
+                    <div class="message-bx-confirm" id="msgbox">
+                        <p><i class="bi bi-check-all"></i>Registeration Completed </p>
+                    </div>
+                    {% elif  msg == 3 %}
+                    <div class="message-bx-delete" id="msgbox">
+                        <p><i class="bi bi-x"></i></i>Oops Deleted the User </p>
+                    </div>
                 {% endif %}
-                <form action="{% url 'register_Details'  %}" method="post">
+              
+               
+                <form action="{% url 'save_payment'  %}" method="post">
                     {% csrf_token %}
                     <div class="input-group-box" >
                         <label>Full Name</label>
-                        <input type="text" name="name" required>
+                        <input type="text" name="" value="{{reg_dt.fullName}}" required readonly>
+                        <input type="text" name="payname" value="{{reg_dt.id}}" hidden>
+                    </div>
+                    <div class="input-group-box" >
+                        <label>Payment Head</label>
+                        <input type="text" name="payhname" required >
                     </div>
                     <div class="input-group-box">
-                        <label>Date Of Joing</label>
-                        <input type="date" name="dfj" required>
+                        <label>Date Of Payment</label>
+                        <input type="date" name="pdfj"  >
                     </div>
                     <div class="input-group-box">
-                        <label>Phone Number</label>
-                        <input type="tel" name="phno"  pattern="[789][0-9]{9}">
+                        <label>Progress</label>
+                        <input type="text" name="progres"  value="{{reg_dt.payprogress}}" required> %
                     </div>
+
                     <div class="input-group-box">
-                        <label>Referenced By</label>
-                        <input type="text" name="refby" required>
+                        <label>Amount</label>
+                        <input type="text" name="pinit_amunt"  required>
                     </div>
-                    <div class="input-group-box">
-                        <label>Department</label>
-                        <select name="dept" required >
-                            <option >-- Select Department -- </option>
-                            {% for j in dept %}
-                            <option value="{{j.id}}" >{{j.department}} </option>
-                            {% endfor %}
-                        </select>
-                        
-                    </div>
-                    <div class="input-group-box">
-                        <label>Initial Amount</label>
-                        <input type="text" name="init_amunt" required>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Total Amount</label>
-                        <input type="text" name="tot_amount" required>
-                    </div>
+                    
                     <div class="submit_button">
-                        <button type="submit">Register</button>
+                        <button type="submit">ADD PAYMENT</button>
                     </div>
                 </form>
             </div>
             <div class="register-details-table">
-                <h4>Registeration Details</h4>
+
+                <h4>Payments Details</h4>
                 <div class="line"></div>
                 <div class="container">
 
@@ -285,16 +282,12 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Full Name</th>
-                                <th>Date Of Joing</th>
-                                <th>Phone Number</th>
-                                <th>Department</th>
-                                <th>Referenced By</th>
-                                <th>Initial Amount</th>
-                                <th>Balance Amount</th>
-                                <th>Total Amount</th>
-                                <th>Pay Staus</th>
-                                <th>Action</th>
+                                <th> Name</th>
+                               
+                                <th>Bl Amount</th>
+                                <th>Tl Amount</th>
+                                <th>Payments</th>
+                              
 
                             </tr>
                         </thead>
@@ -302,42 +295,56 @@
                             {% for i in reg %}
                             <tr>
                                 <td>
-                                    <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                    <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a>
+                                    <a href="{% url 'addpayment_details' i.id %}" class="add-pyt"><i class="bi bi-plus-circle-fill"></i></a>
                                 </td>
-                                <td>{{i.fullName}}</td>
-                                <td>{{i.dofj}}</td>
-                                <td>{{i.Phone}}</td>
-                                <td>{{i.dept_id.department}}</td>
-                                <td>{{i.refrence}}</td>
-                                {% for j in payhis %}
-                                    {% if j.id == i.firstpay_id %}
-                                        <td>{{j.payintial_amt}}</td>
-                                        
-                                        <td>{{i.regbalance_amt}} </td> 
-                            
-                                        <td> {{j.paytotal_amt}}</td>
-                                   
-                              
-                                        <td>
-                                            {% if j.admin_payconfirm == 1 %}
-                                                <a class="check">
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                </a>
-                                            {% else %}
-                                                <a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a>
-                                            {% endif %}  
-                                        </td>
-                                        <td>
-                                            {% if j.admin_payconfirm == 1 %}
-                                                <a href="{% url 'confirm' i.id %}" class="confirmbtn">
-                                                    Confirm
-                                                </a>
-            
-                                            {% endif %}  
-                                        </td>
-                                    {% endif %}
-                                {% endfor %}
+                                <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.fullName}}</a></td>
+                               
+                                {% if i.regbalance_amt > 0 %}
+                                <td class="danger">{{i.regbalance_amt}}</td> 
+                                {% else %}
+                                <td class="succes">{{i.paybalance_amt}}</td> 
+                                {% endif %}
+                                <td>{{i.regtotal_amt}}</td> 
+                                <td><a href="{% url 'payment_details' i.id %}" class="add-pyt"><i class="bi bi-arrow-right-square-fill"></i></a></td>
+                            </tr>
+                            {% endfor %}
+                          
+                        </tbody>
+                       
+                    </table>
+
+                </div>
+            </div>
+            <div class="register-details-table">
+                <h4>Payments List</h4>
+                <div class="line"></div>
+                <div class="container">
+
+                    <table id="payment-details" class="display" >
+                        <thead>
+                            <tr>
+                               
+                                <th> Payment Head</th>
+                                <th>Pyment Date</th>
+                                <th>Amount</th>
+                                <th>Pay Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in pay_dt %}
+                            <tr>
+                               
+                                <td> {{i.head_name}}</td>
+                                <td>{{i.paydofj}}</td> 
+                                <td>{{i.payintial_amt}}</td> 
+                                <td>
+                                    {% if i.admin_payconfirm == 1 %}
+                                        <a href="#" class="check"><i class="bi bi-check-circle-fill"></i></a>
+                                    {% else %}
+                                        <a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a>
+                                    {% endif %}  
+                                </td>
+                               
                             </tr>
                             {% endfor %}
                           

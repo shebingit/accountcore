@@ -46,6 +46,11 @@
         <i class='bi bi-people-fill nav_icon'></i><h5>Register</h5>
     </div>
 </a>
+<a href="{% url 'pyment_form' %}">
+    <div class="card">
+        <i class="bi bi-currency-rupee"></i><h5>Add Payments</h5>
+    </div>
+</a>
 <a href="{% url 'department_form' %}">
     <div class="card">
         <i class="bi bi-box-fill"></i><h5>Department</h5>
@@ -54,10 +59,140 @@
 </div>
 <!--Container Main end-->
 
+
+
+<!-- Register-list Style -->
+
+    <style>
+        #register-list 
+        {
+            padding: 1em 0.50em;
+        }
+        #register-list h5{
+            font-weight: 700;
+            font-size: 1.4em;
+            margin: 0.70em 0em;
+        }
+        #register-list .card
+        {
+            padding: 0.80em 1em;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            border: none;
+
+        }
+        #register-details tbody td
+        {
+            font-size: 0.90em;
+        }
+        #register-details .danger
+        {
+            background: #e54c26;
+            color:#fff;
+            font-weight: 600;
+        }
+        #register-details .success
+        {
+            background: #2cdb11;
+            color:#fff;
+            font-weight: 600;
+        }
+        #register-details .warning
+        {
+            background:#fceb2e;
+            color:#fff;
+            font-weight: 600;
+        }
+        .progress-bar-start
+        {
+            background: #1031a8;
+        }
+        .progress-bar-warning
+        {
+            background: #fceb2e;
+        }
+        .progress-bar-success
+        {
+            background: #27a814;
+        }
+    </style>
+
+<!-- Register-list Style -->
+
 <!--Container List Show-->
-<!-- <div class="container-fluid">
-    <h5>List Of students</h5>
-</div> -->
+<div class="container-fluid" id="register-list">
+    <h5> Payments List </h5>
+    <div class="card">
+        <table id="register-details" class="display" >
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Full Name</th>
+                    <th>Date Of Joing</th>
+                    
+                    <th>Department</th>
+                   
+                    <th>Balance Amount</th>
+                    <th>Total Amount</th>
+                    <th> Pay Progress</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in reg %}
+                <tr>
+                    <td>
+                        <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
+                        <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                    </td>
+                    <td>{{i.fullName}}</td>
+                    <td>{{i.dofj}}</td>
+                
+                    <td>{{i.dept_id.department}}</td>
+                    {% if i.payprogress <= 10 %}
+                    <td class="danger">{{i.regbalance_amt}}</td>
+                    {% elif  i.payprogress > 10 and i.payprogress <= 89  %}
+                    <td class="warning">{{i.regbalance_amt}}</td>
+                    {% else %}
+                    <td class="success">{{i.regbalance_amt}}</td>
+                    {% endif %}
+                    <td>{{i.regtotal_amt}}</td>
+                    <td>
+                       {% if i.payprogress <= 10 %}
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-start" 
+                                role="progressbar" style="width: {{i.payprogress}}%;" 
+                                aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
+
+                                </div>
+                            </div>
+                        {% elif  i.payprogress > 10 and i.payprogress <= 89  %}
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-warning" 
+                                role="progressbar" style="width: {{i.payprogress}}%;" 
+                                aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
+
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" 
+                                role="progressbar" style="width: {{i.payprogress}}%;" 
+                                aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
+
+                                </div>
+                            </div>
+                        {% endif %}
+                       
+                    </td>
+                </tr>
+                {% endfor %}
+              
+            </tbody>
+           
+        </table>
+
+    </div>
+</div>
 
 </main>
 

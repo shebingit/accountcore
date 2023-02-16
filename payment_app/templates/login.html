@@ -22,7 +22,7 @@
             <div class="card col-lg-4 col-12 mx-auto">
               <div class="card-body px-5 py-5">
                 <h3 class="card-title text-center mb-5">Login</h3>
-                <form  method="post"   autocomplete="off">
+                <form action="{% url 'admin_dashboard' %}" method="post"   autocomplete="off">
                   {% csrf_token %}
                   <div class="form-group">
                     <label>Username or email *</label>
@@ -38,6 +38,7 @@
                         
                     </div>
                     <a href="{% url 'dashboard' %}" class="forgot-pass">Forgot password</a>
+                    <a href="{% url 'admin_dashboard' %}" class="forgot-pass">Admin</a>
                   </div>
                   <div class="text-center">
                     <button type="submit" class="btn btn-primary btn-block enter-btn">Login</button>
