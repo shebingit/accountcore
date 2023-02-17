@@ -4,7 +4,8 @@ from payment_app.models import *
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User,auth
-from datetime import datetime
+from datetime import datetime,timedelta
+
 
 
 def login(request):
@@ -22,7 +23,9 @@ def login_dashboard(request):
 
 def dashboard(request):
     reg=Register.objects.filter(reg_status=1)
-    return render(request,'account/dashboard.html',{'reg':reg})
+    cur_date=datetime.now().date()
+    
+    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date})
 
 def department_form(request):
     dept=Department.objects.all()
@@ -118,8 +121,19 @@ def register_Details(request):
             reg.refrence=request.POST['refby']
             reg.regtotal_amt=int(request.POST['tot_amount'])
             reg.dept_id=Department.objects.get(id=request.POST['dept'])
-        
+            next_date=request.POST['nxtpdof']
+
+            if next_date:
+                reg.next_pay_date=request.POST['nxtpdof']
+
+            else:
+                # Calculate the date after 30 days
+                current_date = request.POST['dfj']
+                current_date = datetime.strptime(current_date, "%Y-%m-%d").date()
+                after_30_days = current_date + timedelta(days=30)
+                reg.next_pay_date=after_30_days
             reg.save()
+
             payhis=PaymentHistory()
             payhis.head_name='First Payment'
             payhis.payintial_amt=int(request.POST['init_amunt'])

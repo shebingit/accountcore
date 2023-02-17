@@ -113,17 +113,35 @@
             color:#fff;
             font-weight: 600;
         }
+        #register-details .dangermsg
+        {
+            
+            color: #e54c26;
+            font-weight: 700;
+        }
         #register-details .success
         {
             background: #2cdb11;
             color:#fff;
             font-weight: 600;
         }
+        #register-details .successmsg
+        {
+            background: #2cdb11;
+            color:#ffffff;
+            font-weight: 700;
+        }
+        
         #register-details .warning
         {
             background:#fceb2e;
             color:#fff;
             font-weight: 600;
+        }
+        #register-details .warningmsg
+        {
+            color:#ffe02e;;
+            font-weight: 700;
         }
         #register-details .edit
         {
@@ -162,6 +180,8 @@
             color: #37be19;
             font-weight: 800;
         }
+      
+        
     </style>
 
 <!-- Register-list Style -->
@@ -170,6 +190,7 @@
 <div class="container-fluid" id="register-list">
     <h5> Payments List </h5>
     <div class="card">
+       
         {% if msg == 1 %}
             <div class="message-bx" id="msgbox">
                 <p><i class="bi bi-check"></i>Payments All Completed </p>
@@ -180,12 +201,11 @@
                 <tr>
                     <th></th>
                     <th>Full Name</th>
+                    <th>Message</th>
                     <th>Date Of Joing</th>
-                    
                     <th>Department</th>
-                   
-                    <th>Balance Amount</th>
-                    <th>Total Amount</th>
+                    <th>BAL Amount</th>
+                    <th>TL Amount</th>
                     <th> Pay Progress</th>
                     <th>Action</th>
 
@@ -200,7 +220,28 @@
                       <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
                         <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                     </td>
-                    <td>{{i.fullName}}</td>
+                    {% if cur_date < i.next_pay_date %}
+                    <td>
+                        {{i.fullName}}
+                    </td>
+                    <td class="successmsg">
+                        <span >Next Payment On {{ i.next_pay_date}} </span>
+                    </td>
+                    {% elif cur_date > i.next_pay_date %}
+                    <td class="danger">
+                       {{i.fullName}}   
+                    </td>
+                    <td>
+                        <span class="dangermsg"><i class="bi bi-exclamation-triangle-fill"></i> Payment Date Exceed</span>
+                    </td>
+                    {% else %}
+                    <td class="warning">
+                        {{i.fullName}}
+                    </td>
+                    <td>
+                        <span class="warningmsg"><i class="bi bi-exclamation-triangle-fill"></i> Last Date For Payment</span>
+                    </td>
+                    {% endif %}
                     <td>{{i.dofj}}</td>
                 
                     <td>{{i.dept_id.department}}</td>
