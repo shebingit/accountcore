@@ -60,7 +60,7 @@
 <a href="{% url 'newpay_confirm_list' %}">
     <div class="card">
         
-        <i class='bi bi-currency-rupee nav_icon'></i><h5>New RegisterationPayments</h5>
+        <i class='bi bi-currency-rupee nav_icon'></i><h5>New Registeration Payments</h5>
         <div class="nofication">
             <span>{{payhis}}</span>
         </div>
@@ -74,10 +74,98 @@
 </div>
 <!--Container Main end-->
 
+<style>
+    #payment-approve .card
+    {
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        border: none;
+        padding: 0.80em 0.50em;
+    }
+    #payment-approve .card h4{
+        margin-top:0.30em;
+        margin-bottom: 1em;
+        font-weight: 600;
+        font-size: 1.4em;
+        text-align: center;
+    }
+    #payment-approve .card .display
+    {
+        font-size: 0.90em;
+    }
+    #payment-approve .card .wating
+    {
+        color: #f4e91b;
+    }
+    #payment-approve .card .confirm
+    {
+        background: #230e4b;
+        color: #fff;
+        padding: 0.50em 1em;
+        font-size: 0.93em;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+    }
+</style>
+
 <!--Container List Show-->
-<!-- <div class="container-fluid">
-    <h5>List Of students</h5>
-</div> -->
+ <div class="container-fluid" id="payment-approve">
+   
+    <div class="card">
+        <div class="register-details-table">
+            <h4>Payments List For Approve</h4>
+            <div class="line"></div>
+            <div class="container">
+
+                <table id="register-details" class="display" >
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Full Name</th>
+                            <th>Date Of Payed</th>
+                            <!-- <th>Phone Number</th>
+                            <th>Department</th>
+                            <th>Referenced By</th> -->
+                            <th>Payed Amount</th>
+                            <th>Balance Amount</th>
+                            <th>Total Amount</th>
+                            <th> Staus</th>
+                            <th>Action</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in payhis_list %}
+                        <tr>
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+                            <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.reg_id.fullName}}</a></td>
+                            <td>{{i.paydofj}}</td>
+                            <!-- <td>{{i.Phone}}</td>
+                            <td>{{i.dept_id.department}}</td>
+                            <td>{{i.refrence}}</td> -->
+                            <td>{{i.payintial_amt}}</td>
+                            {% if i.paybalance_amt > 0 %}
+                            <td class="danger">{{i.paybalance_amt}}</td> 
+                            {% else %}
+                            <td class="succes">{{i.paybalance_amt}}</td> 
+                            {% endif %}
+                            <td>{{i.paytotal_amt}}</td> 
+                            <td><a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a></td>
+                            <td>
+                                <a href="{% url 'admin_confirm' i.id %}" class="confirm">Confirm</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                      
+                    </tbody>
+                   
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 </main>
 

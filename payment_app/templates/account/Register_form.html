@@ -51,7 +51,7 @@
 
     .register-details .message-bx,  .register-details .message-bx-confirm
     {
-        background: #6fc146;
+       
         color: #fafafa;
         font-size: 0.98em;
         font-weight: 600;
@@ -60,6 +60,15 @@
         height: 5vh;
         margin-top: 1.2em; 
     }
+    .register-details .message-bx
+    {
+        background: #e8e340;
+    }
+    .register-details .message-bx-confirm
+    {
+        background: #6fc146;
+    }
+  
     .register-details .message-bx-delete
     {
         background: #f7684c;
@@ -224,7 +233,7 @@
                 <div class="line"></div>
                 {% if msg == 1 %}
                 <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-check"></i>Registeration Successfull </p>
+                    <p><i class="bi bi-check"></i>Registeration Wating For Admin Approve. </p>
                 </div>
                 {% elif  msg == 2 %}
                 <div class="message-bx-confirm" id="msgbox">

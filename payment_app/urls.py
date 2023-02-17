@@ -18,18 +18,27 @@ urlpatterns = [
     path('Payment-Save',views.save_payment,name='save_payment'),
     
     
-    
-    
-    
     path('Department-Form',views.department_form,name='department_form'),
     path('Add-Department',views.department_add,name='department_add'),
     path('Remove-Department/<int:pk>',views.remove_dept,name="remove_dept"),
+
+    # Payments History section
+    path('Payments-List',views.pyments_history,name='pyments_history'),
+    path('PaymentsView-List',views.paymentfull_view,name='paymentfull_view'),
+    
+    path('User-Payments-Details/<int:pk>',views.singleuser_details,name="singleuser_details"),
+    path('Previous-Details/<int:pk>',views.previous_data,name="previous_data"),
+    path('Next-Payments-Details/<int:pk>',views.next_data,name="next_data"),
+    
+
     
 
     path('Register-Form',views.Register_form,name='Register_form'),
     path('Register-Save',views.register_Details,name='register_Details'),
     path('Confirm/<int:pk>',views.confirm,name="confirm"),
     path('Remove/<int:pk>',views.remove,name="remove"),
+    path('Payment-Completed/<int:pk>',views.payment_completed,name="payment_completed"),
+    
     
 
     #admin 
@@ -37,6 +46,8 @@ urlpatterns = [
     path('Admin-Remove/<int:pk>',views.admin_remove,name="admin_remove"),
     path('View-Register/<int:pk>',views.view_details,name="view_details"),
     path('Approve-Payment/<int:pk>',views.admin_approve,name="admin_approve"),
+    path('Confirm-Payment/<int:pk>',views.admin_confirm,name="admin_confirm"),
+    
     
     
     

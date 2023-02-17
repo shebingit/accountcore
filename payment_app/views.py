@@ -170,14 +170,71 @@ def remove(request,pk):
     payhis=PaymentHistory.objects.all()
     msg=3
     return render(request,'account/Register_form.html',{'msg':msg,'dept':dept,'reg':reg,'payhis':payhis})
-     
+
+
+#Payments History section 
+
+def pyments_history(request):
+    reg=Register.objects.filter(reg_status=1)
+    payhis=PaymentHistory.objects.all()
+    return render(request,'account/payments_history.html',{'reg':reg,'payhis':payhis})
+
+def paymentfull_view(request):
+    payhis=PaymentHistory.objects.all()
+    return render(request,'account/paymentsfull_View.html',{'payhis':payhis})
+
+
+#Single User Payments Viev
+
+def singleuser_details(request,pk):
+    reg=Register.objects.get(reg_status=1,id=pk)
+    payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
+    return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
+
+def previous_data(request,pk):
+    try:
+        pk=int(pk-1)
+        reg=Register.objects.get(reg_status=1,id=pk)
+        payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
+        return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
+    
+    except Register.DoesNotExist:
+        reg=Register.objects.filter(reg_status=1).first()
+        payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
+        return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
+    
+    
+
+def next_data(request,pk):
+    try:
+        pk=int(pk+1)
+        reg=Register.objects.get(reg_status=1,id=pk)
+        payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
+        return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
+    except Register.DoesNotExist:
+        reg=Register.objects.filter(reg_status=1).last()
+        payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
+        return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
+
+
+
+def payment_completed(request,pk):
+    reg=Register.objects.get(id=pk)
+    reg.payment_status=1
+    reg.save()
+    msg=1
+    reg=Register.objects.filter(reg_status=1)
+    return render(request,'account/dashboard.html',{'reg':reg,'msg':msg})
+
 
 # Admin Module Section
 
 def admin_dashboard(request):
     reg=Register.objects.filter(reg_status=0)
     payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).count
-    return render(request,'Admin/Admin_dashboard.html',{'payhis':payhis})
+    reg1=Register.objects.filter(reg_status=1)
+    payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+    return render(request,'Admin/Admin_dashboard.html',{'payhis':payhis,'payhis_list':payhis_list})
 
 def newpay_confirm_list(request):
     reg=Register.objects.filter(reg_status=0)
@@ -200,7 +257,19 @@ def admin_approve(request,pk):
     reg.regbalance_amt= int(reg.regtotal_amt - pay_aprove.payintial_amt)
     reg.save()
     return redirect('newpay_confirm_list')
-     
+
+def admin_confirm(request,pk):
+    pay_aprove=PaymentHistory.objects.get(id=pk)
+    pay_aprove.admin_payconfirm=1
+    pay_aprove.pay_status=1
+    pay_aprove.save()
+    reg=Register.objects.get(id=pay_aprove.reg_id_id)
+    reg.regbalance_amt= int(reg.regbalance_amt - pay_aprove.payintial_amt)
+    reg.save()
+    pay_aprove.paybalance_amt= int(reg.regbalance_amt)
+    pay_aprove.paytotal_amt=int(reg.regtotal_amt)
+    pay_aprove.save()
+    return redirect('admin_dashboard')
 
 def admin_remove(request,pk):
     payhis=PaymentHistory.objects.get(id=pk)

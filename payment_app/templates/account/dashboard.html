@@ -51,6 +51,11 @@
         <i class="bi bi-currency-rupee"></i><h5>Add Payments</h5>
     </div>
 </a>
+<a href="{% url 'pyments_history' %}">
+    <div class="card">
+        <i class="bi bi-database-fill-add"></i><h5>Payments History</h5>
+    </div>
+</a>
 <a href="{% url 'department_form' %}">
     <div class="card">
         <i class="bi bi-box-fill"></i><h5>Department</h5>
@@ -67,6 +72,24 @@
         #register-list 
         {
             padding: 1em 0.50em;
+        }
+        #register-list .message-bx
+        {
+            background: #81e372;
+            padding: 0.10em 0.50em;
+            margin: 0 auto;
+            margin-bottom: 0.30em;
+            border-radius: 5px;
+            text-align: start;
+            width: 20%;
+           
+        }
+        #register-list .message-bx p{
+            font-size: 0.99em;
+            color: #fff;
+            font-weight: 800;
+           margin-top: 0.30em;
+           text-align: center;
         }
         #register-list h5{
             font-weight: 700;
@@ -102,6 +125,12 @@
             color:#fff;
             font-weight: 600;
         }
+        #register-details .edit
+        {
+            padding-left: 0.50em;
+            margin-right: 0em;
+            cursor: pointer;
+        }
         .progress-bar-start
         {
             background: #1031a8;
@@ -114,6 +143,25 @@
         {
             background: #27a814;
         }
+        .actiontd
+        {
+            text-align: center;
+            
+        }
+        #register-details .complete
+        {
+            background: #0c1846;
+            color: #fff;
+            padding: 0.50em 1em;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+           
+        }
+        #register-details .completed
+        {
+            color: #37be19;
+            font-weight: 800;
+        }
     </style>
 
 <!-- Register-list Style -->
@@ -122,6 +170,11 @@
 <div class="container-fluid" id="register-list">
     <h5> Payments List </h5>
     <div class="card">
+        {% if msg == 1 %}
+            <div class="message-bx" id="msgbox">
+                <p><i class="bi bi-check"></i>Payments All Completed </p>
+            </div>
+        {% endif %}
         <table id="register-details" class="display" >
             <thead>
                 <tr>
@@ -134,6 +187,7 @@
                     <th>Balance Amount</th>
                     <th>Total Amount</th>
                     <th> Pay Progress</th>
+                    <th>Action</th>
 
                 </tr>
             </thead>
@@ -141,7 +195,9 @@
                 {% for i in reg %}
                 <tr>
                     <td>
-                        <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
+                        {{ forloop.counter }}
+                       
+                      <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
                         <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                     </td>
                     <td>{{i.fullName}}</td>
@@ -183,6 +239,13 @@
                             </div>
                         {% endif %}
                        
+                    </td>
+                    <td class="actiontd">
+                        {% if i.payprogress == 100 and i.payment_status == 0 %}
+                        <a href="{% url 'payment_completed' i.id %}" class="complete">Complete</a>
+                        {% elif i.payprogress == 100 and i.payment_status == 1 %}
+                        <span class="completed"><i class="bi bi-check-circle-fill px-1"></i> Completed</span>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
