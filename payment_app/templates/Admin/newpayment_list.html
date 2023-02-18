@@ -129,9 +129,9 @@
         color: #ffff;
         font-weight: 600;
     }
-    #register-details .succes
+    #register-details .warning
     {
-        background: #4fc728;
+        background: #f7fb25;
         color: #ffff;
         font-weight: 600;
     }
@@ -273,9 +273,6 @@
                                 <th></th>
                                 <th>Full Name</th>
                                 <th>Date Of Payed</th>
-                                <!-- <th>Phone Number</th>
-                                <th>Department</th>
-                                <th>Referenced By</th> -->
                                 <th>Payed Amount</th>
                                 <th>Balance Amount</th>
                                 <th>Total Amount</th>
@@ -292,15 +289,11 @@
                                 </td>
                                 <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.reg_id.fullName}}</a></td>
                                 <td>{{i.paydofj}}</td>
-                                <!-- <td>{{i.Phone}}</td>
-                                <td>{{i.dept_id.department}}</td>
-                                <td>{{i.refrence}}</td> -->
-                                <td>{{i.payintial_amt}}</td>
-                                {% if i.paybalance_amt > 0 %}
-                                <td class="danger">{{i.paybalance_amt}}</td> 
-                                {% else %}
-                                <td class="succes">{{i.paybalance_amt}}</td> 
-                                {% endif %}
+                                
+                                <td class="warning">{{i.payintial_amt}}</td>
+                               
+                                <td>{{i.paybalance_amt}}</td> 
+                                
                                 <td>{{i.paytotal_amt}}</td> 
                                 <td><a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a></td>
                                 <td>

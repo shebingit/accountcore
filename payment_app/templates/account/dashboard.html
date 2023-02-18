@@ -73,18 +73,27 @@
         {
             padding: 1em 0.50em;
         }
-        #register-list .message-bx
+        #register-list .message-bx 
         {
             background: #81e372;
+        }
+        #register-list .msgbox-deactive
+        {
+            background: #f0442d;
+        }
+
+        #register-list .message-bx,  #register-list .msgbox-deactive
+        {
+            
             padding: 0.10em 0.50em;
             margin: 0 auto;
             margin-bottom: 0.30em;
             border-radius: 5px;
             text-align: start;
-            width: 20%;
+            width: 40%;
            
         }
-        #register-list .message-bx p{
+        #register-list .message-bx p,  #register-list .msgbox-deactive{
             font-size: 0.99em;
             color: #fff;
             font-weight: 800;
@@ -109,14 +118,14 @@
         }
         #register-details .danger
         {
-            background: #e54c26;
+            background: #ef552e;
             color:#fff;
             font-weight: 600;
         }
         #register-details .dangermsg
         {
             
-            color: #e54c26;
+            color:#ef552e;
             font-weight: 700;
         }
         #register-details .success
@@ -127,8 +136,8 @@
         }
         #register-details .successmsg
         {
-            background: #2cdb11;
-            color:#ffffff;
+            color: #2cdb11;
+           
             font-weight: 700;
         }
         
@@ -143,15 +152,19 @@
             color:#ffe02e;;
             font-weight: 700;
         }
+        .payprogress
+        {
+            background: #fff;
+        }
         #register-details .edit
         {
             padding-left: 0.50em;
             margin-right: 0em;
             cursor: pointer;
         }
-        .progress-bar-start
+        .progress-bar-danger
         {
-            background: #1031a8;
+            background: #eb4c20;
         }
         .progress-bar-warning
         {
@@ -196,6 +209,11 @@
                 <p><i class="bi bi-check"></i>Payments All Completed </p>
             </div>
         {% endif %}
+        {% if msgalert %}
+            <div class="msgbox-deactive" id="msgbox">
+                <p style="margin-top: 0.40em;"><i class="bi bi-check"></i> {{msgalert}}</p>
+            </div>
+        {% endif %}
         <table id="register-details" class="display" >
             <thead>
                 <tr>
@@ -203,66 +221,52 @@
                     <th>Full Name</th>
                     <th>Message</th>
                     <th>Date Of Joing</th>
+                    <th>Referenced By</th>
                     <th>Department</th>
                     <th>BAL Amount</th>
                     <th>TL Amount</th>
                     <th> Pay Progress</th>
-                    <th>Action</th>
+                    <th>Status</th>
 
                 </tr>
             </thead>
             <tbody>
                 {% for i in reg %}
-                <tr>
-                    <td>
-                        {{ forloop.counter }}
-                       
-                      <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                        <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
-                    </td>
-                    {% if cur_date < i.next_pay_date %}
-                    <td>
-                        {{i.fullName}}
-                    </td>
-                    <td class="successmsg">
-                        <span >Next Payment On {{ i.next_pay_date}} </span>
-                    </td>
-                    {% elif cur_date > i.next_pay_date %}
-                    <td class="danger">
-                       {{i.fullName}}   
-                    </td>
-                    <td>
-                        <span class="dangermsg"><i class="bi bi-exclamation-triangle-fill"></i> Payment Date Exceed</span>
-                    </td>
-                    {% else %}
-                    <td class="warning">
-                        {{i.fullName}}
-                    </td>
-                    <td>
-                        <span class="warningmsg"><i class="bi bi-exclamation-triangle-fill"></i> Last Date For Payment</span>
-                    </td>
-                    {% endif %}
-                    <td>{{i.dofj}}</td>
-                
-                    <td>{{i.dept_id.department}}</td>
-                    {% if i.payprogress <= 10 %}
-                    <td class="danger">{{i.regbalance_amt}}</td>
-                    {% elif  i.payprogress > 10 and i.payprogress <= 89  %}
-                    <td class="warning">{{i.regbalance_amt}}</td>
-                    {% else %}
-                    <td class="success">{{i.regbalance_amt}}</td>
-                    {% endif %}
-                    <td>{{i.regtotal_amt}}</td>
-                    <td>
-                       {% if i.payprogress <= 10 %}
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-start" 
-                                role="progressbar" style="width: {{i.payprogress}}%;" 
-                                aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
+                {% if i.payprogress >= 10 and i.payment_status == 0 %}
+                    <tr >
+                        <td>
+                            {{ forloop.counter }}
+                        
+                        <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
+                            <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                        </td>
+                        {% if cur_date < i.next_pay_date %}
+                        <td class="warning">{{i.fullName}}</td>
+                        <td class="successmsg warning">
+                            <span >Next Payment On {{ i.next_pay_date}} </span>
+                        </td>
+                        {% elif cur_date > i.next_pay_date %}
+                        <td class="danger">
+                        {{i.fullName}}   
+                        </td>
+                        <td class="warning">
+                            <span class="dangermsg"><i class="bi bi-exclamation-triangle-fill"></i> Payment Date Exceed</span>
+                        </td>
+                        {% else %}
+                        <td class="warning">
+                            {{i.fullName}}
+                        </td>
+                        <td>
+                            <span class="warningmsg"><i class="bi bi-exclamation-triangle-fill"></i> Last Date For Payment</span>
+                        </td>
+                        {% endif %}
+                        <td class="warning">{{i.dofj}}</td>
+                        <td class="warning">{{i.refrence}}</td>
+                        <td class="warning">{{i.dept_id.department}}</td>
 
-                                </div>
-                            </div>
-                        {% elif  i.payprogress > 10 and i.payprogress <= 89  %}
+                        <td class="warning">{{i.regbalance_amt}}</td>
+                        <td class="warning">{{i.regtotal_amt}}</td>
+                        <td class="payprogress">
                             <div class="progress">
                                 <div class="progress-bar progress-bar-warning" 
                                 role="progressbar" style="width: {{i.payprogress}}%;" 
@@ -270,25 +274,94 @@
 
                                 </div>
                             </div>
-                        {% else %}
+                        </td>
+                        <td > <span class="" style="color: #0c376b;font-size:0.92em;font-weight:600;">Active</span></td>
+                    </tr>
+
+                {% elif  i.payprogress == 100 or i.payment_status == 1 and i.next_pay_date == None  %}
+
+                    <tr >
+                        <td>
+                            {{ forloop.counter }}
+                        
+                        <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
+                            <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                        </td>
+                        <td class="success">{{i.fullName}}</td>
+                        <td class="successmsg success">
+                            
+                            <span style="color: #fff;">Payment All Done.</span>
+                           
+                        </td>
+                        
+                        <td class="success">{{i.dofj}}</td>
+                        <td class="success">{{i.refrence}}</td>
+                        <td class="success">{{i.dept_id.department}}</td>
+
+                        <td class="success">{{i.regbalance_amt}}</td>
+                        <td class="success">{{i.regtotal_amt}}</td>
+                        <td class="payprogress">
                             <div class="progress">
                                 <div class="progress-bar progress-bar-success" 
                                 role="progressbar" style="width: {{i.payprogress}}%;" 
                                 aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
-
+                            
                                 </div>
                             </div>
-                        {% endif %}
-                       
-                    </td>
-                    <td class="actiontd">
-                        {% if i.payprogress == 100 and i.payment_status == 0 %}
-                        <a href="{% url 'payment_completed' i.id %}" class="complete">Complete</a>
-                        {% elif i.payprogress == 100 and i.payment_status == 1 %}
-                        <span class="completed"><i class="bi bi-check-circle-fill px-1"></i> Completed</span>
-                        {% endif %}
-                    </td>
-                </tr>
+                        </td>
+                        <td class="actiontd  payprogress">
+                           
+                          
+                            <span class="completed"><i class="bi bi-check-circle-fill px-1"></i> Completed</span>
+                           
+                        </td>
+                    </tr>
+
+                {% else %}
+                    {% if  i.payment_status == 2 or i.reg_status == 2  %}
+
+                        <tr >
+                            <td>
+                                {{ forloop.counter }}
+                            
+                            <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
+                                <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                            </td>
+                            {% if cur_date > i.next_pay_date %}
+                            <td class="danger">
+                            {{i.fullName}}   
+                            </td>
+                            <td>
+                                <span class="dangermsg"><i class="bi bi-exclamation-triangle-fill"></i> Payment Date Exceed</span>
+                            </td>
+                            {% else %}
+                            <td class="danger">
+                                {{i.fullName}}
+                            </td>
+                            <td class="danger">
+                                <span style="color: #fff;"><i class="bi bi-exclamation-triangle-fill"></i>Payments Not Completed</span>
+                            </td>
+                            {% endif %}
+                            <td class="danger">{{i.dofj}}</td>
+                            <td class="danger">{{i.refrence}}</td>
+                            <td class="danger">{{i.dept_id.department}}</td>
+
+                            <td class="danger">{{i.regbalance_amt}}</td>
+                            <td class="danger">{{i.regtotal_amt}}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-danger" 
+                                    role="progressbar" style="width: {{i.payprogress}}%;" 
+                                    aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
+                                
+                                    </div>
+                                </div>
+                            </td>
+                            <td > <span class="" style="color: #f32424;font-size:0.92em;font-weight:700;">Deactive</span></td>
+                        </tr>
+                    
+                    {% endif %}
+                {% endif %}
                 {% endfor %}
               
             </tbody>

@@ -301,7 +301,7 @@
                                                         <td class="start">{{j.payintial_amt}}</td>
                                                         <td >
                                                             {% if j.pay_status == 1 %}
-                                                            <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
+                                                            <a href="{% url 'singeldata_receipt' j.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
                                                             {% else %}
                                                             <a href="#" class="not-download"><i class="bi bi-exclamation-circle-fill"></i></a>
                                                             {% endif %}

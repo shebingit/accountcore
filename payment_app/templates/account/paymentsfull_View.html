@@ -234,6 +234,7 @@
     #register-details .start
     {
         background: #ec0909;
+        color: #fff;
     }
     #register-details .progressing
     {
@@ -241,13 +242,9 @@
     }
     #register-details .end
     {
-        background: #8de769;
+        background: #74f342;
     }
-    #register-details .completed
-    {
-        color: #37be19;
-        font-weight: 800;
-    }
+   
 </style>
 
 
@@ -272,14 +269,14 @@
                                 <th>Date</th>
                                 <th>Amount</th>
                                 <th>Pay Status</th>
-                                <th>Complete</th>
+                                <th>Status</th>
                                 <th>Receipt</th>
                               
                             </tr>
                         </thead>
                         <tbody>
                             {% for i in payhis %}
-                                {% if i.reg_id.payprogress <= 10 %}
+                                {% if i.reg_id.payprogress >= 10 and i.reg_id.payment_status == 0 %}
                                 
                                     <tr>
                                         <td>
@@ -287,14 +284,14 @@
                                             <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
                                             <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                                         </td>
-                                        <td>{{i.reg_id.fullName}}</td>
+                                        <td class="progressing">{{i.reg_id.fullName}}</td>
                                     
-                                        <td>{{i.reg_id.dept_id.department}}</td>
-                                        <td class="start">{{i.paybalance_amt}} </td> 
-                                        <td>{{i.paytotal_amt}} </td> 
-                                        <td>{{i.head_name}}</td>
-                                        <td>{{i.paydofj}}</td>
-                                        <td class="start">{{i.payintial_amt}}</td>
+                                        <td class="progressing">{{i.reg_id.dept_id.department}}</td>
+                                        <td class="progressing">{{i.paybalance_amt}} </td> 
+                                        <td class="progressing">{{i.paytotal_amt}} </td> 
+                                        <td class="progressing">{{i.head_name}}</td>
+                                        <td class="progressing">{{i.paydofj}}</td>
+                                        <td class="progressing">{{i.payintial_amt}}</td>
                                         <td class="text-center">
                                             {% if i.admin_payconfirm == 1 and i.pay_status == 1 %}
                                                 <a href="#" class="check"><i class="bi bi-check-circle-fill"></i></a>
@@ -303,17 +300,15 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {% if i.reg_id.payment_status == 1 %}
-                                            <span class="completed">Completed</span>
-                                            {% else %}
-                                            <span>Progressing..</span>
-                                            {% endif %}
+                                            
+                                            <span style="color: #0f1271; font-size:0.90em; font-weight: 800;" >Progressing</span>
+                                    
                                         </td>
                                         <td class="text-center"> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
                                         
                                     </tr>
                                 
-                                {% elif  i.reg_id.payprogress  >= 11 and  i.reg_id.payprogress  <= 99  %}
+                                {% elif  i.reg_id.payprogress == 100 or i.reg_id.payment_status == 1 %}
 
                                 <tr>
                                     <td>
@@ -321,14 +316,14 @@
                                         <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
                                         <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                                     </td>
-                                    <td>{{i.reg_id.fullName}}</td>
+                                    <td class="end">{{i.reg_id.fullName}}</td>
                                 
-                                    <td>{{i.reg_id.dept_id.department}}</td>
-                                    <td class="progressing">{{i.paybalance_amt}} </td> 
-                                    <td>{{i.paytotal_amt}} </td> 
-                                    <td>{{i.head_name}}</td>
-                                    <td>{{i.paydofj}}</td>
-                                    <td class="progressing">{{i.payintial_amt}}</td>
+                                    <td class="end">{{i.reg_id.dept_id.department}}</td>
+                                    <td class="end">{{i.paybalance_amt}} </td> 
+                                    <td class="end">{{i.paytotal_amt}} </td> 
+                                    <td class="end">{{i.head_name}}</td>
+                                    <td class="end">{{i.paydofj}}</td>
+                                    <td class="end">{{i.payintial_amt}}</td>
                                     <td class="text-center">
                                         {% if i.admin_payconfirm == 1 and i.pay_status == 1 %}
                                             <a href="#" class="check"><i class="bi bi-check-circle-fill"></i></a>
@@ -338,49 +333,51 @@
                                     </td>
                                     <td>
                                         {% if i.reg_id.payment_status == 1 %}
-                                        <span class="completed">Completed</span>
-                                        {% else %}
-                                        <span>Progressing..</span>
+                                            <span style="color: #44c60c; font-size:0.90em; font-weight: 800;">Completed</span>
+                                        
                                         {% endif %}
                                     </td>
-                                    <td class="text-center"> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
-                                    
+                                    {% if i.pay_status == 1 %}
+                                    <td class="text-center"> <a href="{% url 'singeldata_receipt' i.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                    {% else %}
+                                    <td class="text-center"> <a href="#" class="not-download"><i class="bi bi-exclamation-diamond-fill"></i></a></td>
+                                    {% endif %}
                                 </tr>
 
                                 {% else %}
+                                    {% if i.reg_id.payment_status == 2 or i.reg_id.reg_status == 2  %}
 
-                                <tr>
-                                    <td>
-                                        {{ forloop.counter }}
-                                        <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                        <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
-                                    </td>
-                                    <td>{{i.reg_id.fullName}}</td>
-                                
-                                    <td>{{i.reg_id.dept_id.department}}</td>
-                                    <td class="end">{{i.paybalance_amt}} </td> 
-                                    <td>{{i.paytotal_amt}} </td> 
-                                    <td>{{i.head_name}}</td>
-                                    <td>{{i.paydofj}}</td>
-                                    <td class="end">{{i.payintial_amt}}</td>
-                                    <td class="text-center">
-                                        {% if i.admin_payconfirm == 1 and i.pay_status == 1 %}
-                                            <a href="#" class="check"><i class="bi bi-check-circle-fill"></i></a>
-                                        {% else %}
-                                        <a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i>wating..</a>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if i.reg_id.payment_status == 1 %}
-                                        <span class="completed">Completed</span>
-                                        {% else %}
-                                        <span>Progressing..</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-center"> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
-                                    
-                                </tr>
+                                        <tr>
+                                            <td>
+                                                {{ forloop.counter }}
+                                                <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
+                                                <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                                            </td>
+                                            <td class="start">{{i.reg_id.fullName}}</td>
+                                        
+                                            <td class="start">{{i.reg_id.dept_id.department}}</td>
+                                            <td class="start">{{i.paybalance_amt}} </td> 
+                                            <td class="start">{{i.paytotal_amt}} </td> 
+                                            <td class="start">{{i.head_name}}</td>
+                                            <td class="start">{{i.paydofj}}</td>
+                                            <td class="start">{{i.payintial_amt}}</td>
+                                            <td class="text-center">
+                                                {% if i.admin_payconfirm == 1 and i.pay_status == 1 %}
+                                                    <a href="#" class="check"><i class="bi bi-check-circle-fill"></i></a>
+                                                {% else %}
+                                                <a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i>wating..</a>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                               
+                                                <span style="color: #ec0909; font-size:0.90em; font-weight: 800;">Deactive</span>
+                                                
+                                            </td>
+                                            <td class="text-center"> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                            
+                                        </tr>
 
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
                           

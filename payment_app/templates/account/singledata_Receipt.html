@@ -1,0 +1,162 @@
+
+</head>
+<body>
+
+<div class="container">
+    
+       
+    </div>
+</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PayMent Receipt</title>
+    <!-- Bootstrap 5 CSS -->
+   
+
+    <style>
+        .container
+        {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-top: 10em;
+        }
+        .container h3
+        {
+            font-size: 18px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: 600;
+            margin-bottom: -5px;
+        }
+        .container span{
+            font-size: 14px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: 400;
+            line-height: 10px; 
+        }
+        .container p{
+            font-size: 12px;
+            font-weight: 400;
+        }
+       
+        
+    </style>
+  </head>
+  <body>
+   <br>
+    <div class="container ">
+       
+        <table class="table table-striped">
+			<thead>
+				<tr>
+					<th></th>
+					<th></th>
+					<th><h3>ALTOS Technologies</h3>
+                        <span>1st Floor, Carnival Infopark Phase 1
+                         <br><br>Kakkanad, Kochi</span>
+                         <p>Date : {{date}}</p>
+                    </th>
+				</tr>
+			</thead>
+			
+		</table>
+        <br><br>
+        <div class="h3">
+            <h3 class="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                PAYMENT RECEIPT</h3>
+        </div>
+        <div class="contents">
+            <br><br><br>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th> <span>Received with thanks from (Name)</th>
+                       
+                        <th class="line"><span style="font-size: 16px;">{{payhis.reg_id.fullName|upper}}</span></th>
+                    </tr>
+                    <tr></tr>
+                    <tr></tr>
+                    <tr>
+                        <th>  <span>Amount Received in words:</span></th>
+                        <th class="line"><span> {{number_in_words|upper}} &nbsp; RUPEES ONLY</span></th>
+                    </tr>
+                    <tr></tr>
+                    <tr></tr>
+                    <tr>
+                        <th><span>For the purpose of Software Training</span></th>
+                        <th class="line" ><span style="font-size: 14px;">{{payhis.reg_id.dept_id.department}}</span></th>
+                    </tr>
+                    <tr></tr>
+                    <tr></tr>
+                    <tr>
+                        <th> <span>Payment Date:</span></th>
+                        <th class="line" ><span style="font-size: 14px;">{{payhis.paydofj}}</span></th>
+                    </tr>
+                    <tr></tr>
+                    <tr></tr>
+                    <tr>
+                        <th> <span>Amount:</span></th>
+                        <th class="line" ><span style="font-size: 14px;">Rs&nbsp; {{payhis.payintial_amt}}.00</span></th>
+                    </tr>
+                </thead>
+                
+            </table>
+            <br><br> 
+            <hr>
+           
+           <br><br><br>  <br><br><br>  <br><br><br>  <br><br> 
+          
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                           
+                           <span>Received By</span> 
+                        </th>
+                        <th></th>
+                        <th>
+                            <span>Authorized Signature</span>
+                        </th>
+                    </tr>
+                </thead>
+                
+            </table>
+            <br><br><br><br> <br><br><br>
+            <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               
+                <span>There is no refund for the payment you have done.</span><br>
+                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               
+                <span>Thank you!!!</span>
+            </h5>
+            <br>
+            <hr>
+            <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               
+               
+          
+            <span>Email: info@altostechnologies.com | Website: www.altostechnologies.com</span>
+        </div>
+    </div>
+    
+  </body>
+</html>

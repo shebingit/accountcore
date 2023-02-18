@@ -307,7 +307,7 @@
                                 <th>Balance Amount</th>
                                 <th>Total Amount</th>
                                 <th>Pay Staus</th>
-                                <th>Action</th>
+                                <th>Status</th>
 
                             </tr>
                         </thead>
@@ -342,10 +342,14 @@
                                             {% endif %}  
                                         </td>
                                         <td>
-                                            {% if j.admin_payconfirm == 1 %}
-                                                <a href="{% url 'confirm' i.id %}" class="confirmbtn">
-                                                    Confirm
+                                            {% if j.admin_payconfirm == 1 and i.reg_status == 1 %}
+                                                <a href="#" class="confirmbtn">
+                                                   Active
                                                 </a>
+                                            {% else %}
+                                            <a href="#" class="confirmbtn">
+                                                Deactive
+                                             </a>
             
                                             {% endif %}  
                                         </td>

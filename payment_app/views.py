@@ -5,6 +5,11 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User,auth
 from datetime import datetime,timedelta
+from django.conf import settings
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from num2words import num2words
 
 
 
@@ -61,6 +66,21 @@ def save_payment(request):
         paymt.reg_id=reg
         paymt.head_name=request.POST['payhname']
         paymt.payintial_amt=int(request.POST['pinit_amunt'])
+
+        next_date=request.POST['pnxtpdof']
+        if next_date:
+            reg.next_pay_date=request.POST['pnxtpdof']
+
+        else:
+            # Calculate the date after 30 days
+            if request.POST['pdfj']:
+               current_date=request.POST['pdfj']
+               current_date = datetime.strptime(current_date, "%Y-%m-%d").date()
+            else:
+                current_date = datetime.date.now()
+            
+            after_30_days = current_date + timedelta(days=30)
+            reg.next_pay_date=after_30_days
 
         if request.POST['pdfj']:
             paymt.paydofj=request.POST['pdfj']
@@ -156,23 +176,23 @@ def register_Details(request):
     #     return redirect('login')
 
 
-def confirm(request,pk):
-    reg1=Register.objects.get(id=pk, reg_status=0)
-    reg1.reg_status=1
+# def confirm(request,pk):
+#     reg1=Register.objects.get(id=pk, reg_status=0)
+#     reg1.reg_status=1
    
-    dept=Department.objects.filter(dpt_Status=1)
-    reg=Register.objects.filter(reg_status=0)
-    payhis=PaymentHistory.objects.get(reg_id_id=reg1.id)
-    reg1.regbalance_amt=int(reg1.regtotal_amt) - int(payhis.payintial_amt)
-    reg1.save()
+#     dept=Department.objects.filter(dpt_Status=1)
+#     reg=Register.objects.filter(reg_status=0)
+#     payhis=PaymentHistory.objects.get(reg_id_id=reg1.id)
+#     reg1.regbalance_amt=int(reg1.regtotal_amt) - int(payhis.payintial_amt)
+#     reg1.save()
 
-    payhis.pay_status=1
-    payhis.paybalance_amt=int(reg1.regbalance_amt)
-    payhis.save()
+#     payhis.pay_status=1
+#     payhis.paybalance_amt=int(reg1.regbalance_amt)
+#     payhis.save()
 
-    payhis=PaymentHistory.objects.all()
-    msg=2
-    return render(request,'account/Register_form.html',{'msg':msg,'dept':dept,'reg':reg,'payhis':payhis})
+#     payhis=PaymentHistory.objects.all()
+#     msg=2
+#     return render(request,'account/Register_form.html',{'msg':msg,'dept':dept,'reg':reg,'payhis':payhis})
 
 
 def remove(request,pk):
@@ -205,6 +225,34 @@ def singleuser_details(request,pk):
     payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
     return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
 
+def reactivate_user(request,pk):
+    reg=Register.objects.get(reg_status=1,id=pk)
+    reg.payment_status=0
+    reg.save()
+    msgalert=reg.fullName + " User is Reactivated"
+    reg=Register.objects.filter(reg_status=1)
+    cur_date=datetime.now().date()
+    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'msgalert':msgalert})
+
+def deactive_user(request,pk):
+    reg=Register.objects.get(reg_status=1,id=pk)
+    reg.payment_status=2
+    reg.save()
+    msgalert=reg.fullName + " User is Deactivated"
+    reg=Register.objects.filter(reg_status=1)
+    cur_date=datetime.now().date()
+    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'msgalert':msgalert})
+    
+def delete_user(request,pk):
+    reg=Register.objects.get(reg_status=1,id=pk)
+    reg.payment_status=2
+    reg.reg_status=2
+    reg.save()
+    msgalert=reg.fullname + " User is Deleted"
+    reg=Register.objects.filter(reg_status=1)
+    cur_date=datetime.now().date()
+    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'msgalert':msgalert})
+
 def previous_data(request,pk):
     try:
         pk=int(pk-1)
@@ -232,13 +280,13 @@ def next_data(request,pk):
 
 
 
-def payment_completed(request,pk):
-    reg=Register.objects.get(id=pk)
-    reg.payment_status=1
-    reg.save()
-    msg=1
-    reg=Register.objects.filter(reg_status=1)
-    return render(request,'account/dashboard.html',{'reg':reg,'msg':msg})
+# def payment_completed(request,pk):
+#     reg=Register.objects.get(id=pk)
+#     reg.payment_status=1
+#     reg.save()
+#     msg=1
+#     reg=Register.objects.filter(reg_status=1)
+#     return render(request,'account/dashboard.html',{'reg':reg,'msg':msg})
 
 
 # Admin Module Section
@@ -269,6 +317,14 @@ def admin_approve(request,pk):
     pay_aprove.save()
     reg=Register.objects.get(id=pay_aprove.reg_id_id)
     reg.regbalance_amt= int(reg.regtotal_amt - pay_aprove.payintial_amt)
+    pay_aprove.paybalance_amt=int( reg.regbalance_amt)
+    pay_aprove.save()
+    reg.reg_status=1
+
+    if reg.regbalance_amt <= 0:
+        reg.next_pay_date=None
+        reg.payment_status=1
+        reg.payprogress=100
     reg.save()
     return redirect('newpay_confirm_list')
 
@@ -277,11 +333,19 @@ def admin_confirm(request,pk):
     pay_aprove.admin_payconfirm=1
     pay_aprove.pay_status=1
     pay_aprove.save()
+
     reg=Register.objects.get(id=pay_aprove.reg_id_id)
     reg.regbalance_amt= int(reg.regbalance_amt - pay_aprove.payintial_amt)
     reg.save()
+
+    if reg.regbalance_amt <= 0:
+        reg.next_pay_date=None
+        reg.payment_status=1
+        reg.save()
+
     pay_aprove.paybalance_amt= int(reg.regbalance_amt)
     pay_aprove.paytotal_amt=int(reg.regtotal_amt)
+    pay_aprove.paybalance_amt=int(reg.regbalance_amt)
     pay_aprove.save()
     return redirect('admin_dashboard')
 
@@ -295,3 +359,30 @@ def admin_remove(request,pk):
     return render(request,'Admin/newpayment_list.html',{'payhis':payhis,'firstpayhis':firstpayhis})
      
      
+
+# Receipt Download single data
+def singeldata_receipt(request,pk):
+
+    date = datetime.now().date()   
+    payhis = PaymentHistory.objects.get(id=pk)
+    number_in_words = num2words(payhis.payintial_amt)
+    template_path = 'account/singledata_Receipt.html'
+    context = {'payhis': payhis,
+               'number_in_words':number_in_words,
+    'media_url':settings.MEDIA_URL,
+    'date':date,
+    }
+   
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="Receipt.pdf"'
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+       html, dest=response)
+    
+     # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response

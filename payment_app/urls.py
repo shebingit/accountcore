@@ -30,14 +30,23 @@ urlpatterns = [
     path('Previous-Details/<int:pk>',views.previous_data,name="previous_data"),
     path('Next-Payments-Details/<int:pk>',views.next_data,name="next_data"),
     
+    path('Deactive-User/<int:pk>',views.deactive_user,name="deactive_user"),
+    path('Reactive-User/<int:pk>',views.reactivate_user,name="reactivate_user"),
+    path('Delete-User/<int:pk>',views.delete_user,name="delete_user"),
+    
+    
+    #Receipt Sigle data 
+    path('Payment-Recipt/<int:pk>',views.singeldata_receipt,name="singeldata_receipt"),
+
+    
 
     
 
     path('Register-Form',views.Register_form,name='Register_form'),
     path('Register-Save',views.register_Details,name='register_Details'),
-    path('Confirm/<int:pk>',views.confirm,name="confirm"),
+    #path('Confirm/<int:pk>',views.confirm,name="confirm"),
     path('Remove/<int:pk>',views.remove,name="remove"),
-    path('Payment-Completed/<int:pk>',views.payment_completed,name="payment_completed"),
+    #path('Payment-Completed/<int:pk>',views.payment_completed,name="payment_completed"),
     
     
 

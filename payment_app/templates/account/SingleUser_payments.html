@@ -191,6 +191,38 @@
     /*Register Box Register-details End Style */
 
      /*Register Box Register-details Table Style */
+     .register-details-table  .user_action
+     {
+        display: flex;
+        text-align: center;
+        justify-content: end;
+
+     }
+     .user_action .reactive
+     {
+        background: #2ac312;
+     }
+     .user_action .delete
+     {
+        background: #f63e19;
+     }
+     .user_action .deactive
+     {
+        background: #0a2d68;
+     }
+      .user_action .delete, .user_action .deactive, .user_action .reactive{
+        
+        color: #fff;
+        padding: 0.30em 1em;
+        cursor: pointer;
+        margin: 0em 0.10em;
+        
+     }
+     .user_action .delete span, .user_action .deactive span, .user_action .reactive span{
+        font-weight: 600;
+        font-size: 0.88em;
+        margin-left: 0.30em;
+     }
      .register-details-table .container
      {
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
@@ -334,6 +366,14 @@
             <div class="register-details-table">
                 <h4>Payments Details</h4>
                 <div class="line"></div>
+                <div class="user_action">
+                    {% if reg.payment_status == 0 %}
+                    <a href="{% url 'deactive_user' reg.id  %}" class="deactive"><i class="bi bi-person-fill-exclamation"></i><span>Deactive</span> </a>
+                    {% else %}
+                    <a href="{% url 'reactivate_user' reg.id  %}" class="reactive"><i class="bi bi-person-fill-check"></i><span>Reactivate</span> </a>
+                    {% endif %}
+                    <a href="{% url 'delete_user' reg.id  %}" class="delete"><i class="bi bi-person-fill-x"></i><span>Delete</span> </a>
+                </div>
                 <div class="container">
 
                     <table id="register-details" class="display" >
