@@ -129,6 +129,27 @@
         color: #ffff;
         font-weight: 600;
     }
+    #register-details .progressing, #payment-details .progressing
+    {
+        background: #ffff41;
+        color: #373535;
+        font-weight: 800;
+       
+    }
+    #register-details .completed, #payment-details .completed
+    {
+        background: #26a905;
+        color: #fafafa;
+        font-weight: 800;
+    }
+    #register-details .incompleted, #payment-details .incompleted
+    {
+        background: #ef2626;
+        color: #fffcfc;
+        font-weight: 800;
+    }
+    
+    
     #register-details .succes
     {
         background: #4fc728;
@@ -255,7 +276,7 @@
                     </div>
                     <div class="input-group-box">
                         <label>Date Of Payment</label>
-                        <input type="date" name="pdfj"  >
+                        <input type="date" name="pdfj"  required>
                     </div>
                     <div class="input-group-box">
                         <label>Next Payment Date</label>
@@ -297,20 +318,33 @@
                         </thead>
                         <tbody>
                             {% for i in reg %}
+                            {% if i.payprogress >= 10 and i.payment_status == 0 %}
                             <tr>
-                                <td>
-                                    <a href="{% url 'addpayment_details' i.id %}" class="add-pyt"><i class="bi bi-plus-circle-fill"></i></a>
-                                </td>
-                                <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.fullName}}</a></td>
-                               
-                                {% if i.regbalance_amt > 0 %}
-                                <td class="danger">{{i.regbalance_amt}}</td> 
-                                {% else %}
-                                <td class="succes">{{i.paybalance_amt}}</td> 
-                                {% endif %}
-                                <td>{{i.regtotal_amt}}</td> 
+                                <td><a href="{% url 'addpayment_details' i.id %}" class="add-pyt"><i class="bi bi-plus-circle-fill"></i></a></td>
+                                <td class="progressing">{{i.fullName}}</td>
+                                <td class="progressing">{{i.regbalance_amt}}</td> 
+                                <td class="progressing">{{i.regtotal_amt}}</td> 
                                 <td><a href="{% url 'payment_details' i.id %}" class="add-pyt"><i class="bi bi-arrow-right-square-fill"></i></a></td>
                             </tr>
+                            {% elif  i.payprogress == 100 or i.payment_status == 1  %}
+                            <tr>
+                                <td><a href="{% url 'addpayment_details' i.id %}" class="add-pyt"><i class="bi bi-plus-circle-fill"></i></a></td>
+                                <td class="completed">{{i.fullName}}</td>
+                                <td class="completed">{{i.regbalance_amt}}</td> 
+                                <td class="completed">{{i.regtotal_amt}}</td> 
+                                <td><a href="{% url 'payment_details' i.id %}" class="add-pyt"><i class="bi bi-arrow-right-square-fill"></i></a></td>
+                            </tr>
+                            {% else %}
+                            {% if  i.payment_status == 2 or i.reg_status == 2  %}
+                            <tr>
+                                <td><a href="{% url 'addpayment_details' i.id %}" class="add-pyt"><i class="bi bi-plus-circle-fill"></i></a></td>
+                                <td class="incompleted">{{i.fullName}}</td>
+                                <td class="incompleted">{{i.regbalance_amt}}</td> 
+                                <td class="incompleted">{{i.regtotal_amt}}</td> 
+                                <td><a href="{% url 'payment_details' i.id %}" class="add-pyt"><i class="bi bi-arrow-right-square-fill"></i></a></td>
+                            </tr>
+                            {% endif %}
+                            {% endif %}
                             {% endfor %}
                           
                         </tbody>
@@ -336,11 +370,12 @@
                         </thead>
                         <tbody>
                             {% for i in pay_dt %}
+                            {% if i.reg_id.payprogress >= 10 and i.reg_id.payment_status == 0 %}
                             <tr>
                                
-                                <td> {{i.head_name}}</td>
-                                <td>{{i.paydofj}}</td> 
-                                <td>{{i.payintial_amt}}</td> 
+                                <td class="progressing"> {{i.head_name}}</td>
+                                <td class="progressing">{{i.paydofj}}</td> 
+                                <td class="progressing">{{i.payintial_amt}}</td> 
                                 <td>
                                     {% if i.admin_payconfirm == 1 %}
                                         <a href="#" class="check"><i class="bi bi-check-circle-fill"></i></a>
@@ -350,6 +385,40 @@
                                 </td>
                                
                             </tr>
+                            {% elif  i.reg_id.payprogress == 100 or i.reg_id.payment_status == 1  %}
+                            <tr>
+                               
+                                <td class="completed"> {{i.head_name}}</td>
+                                <td class="completed">{{i.paydofj}}</td> 
+                                <td class="completed">{{i.payintial_amt}}</td> 
+                                <td>
+                                    {% if i.admin_payconfirm == 1 %}
+                                        <a href="#" class="check"><i class="bi bi-check-circle-fill"></i></a>
+                                    {% else %}
+                                        <a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a>
+                                    {% endif %}  
+                                </td>
+                               
+                            </tr>
+                            {% else %}
+                                {% if  i.reg_id.payment_status == 2 or i.reg_id.reg_status == 2  %}
+                                <tr>
+                               
+                                    <td class="incompleted"> {{i.head_name}}</td>
+                                    <td class="incompleted">{{i.paydofj}}</td> 
+                                    <td class="incompleted">{{i.payintial_amt}}</td> 
+                                    <td>
+                                        {% if i.admin_payconfirm == 1 %}
+                                            <a href="#" class="check"><i class="bi bi-check-circle-fill"></i></a>
+                                        {% else %}
+                                            <a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a>
+                                        {% endif %}  
+                                    </td>
+                                   
+                                </tr>
+
+                                {% endif %}
+                            {% endif %}
                             {% endfor %}
                           
                         </tbody>

@@ -27,7 +27,7 @@ class Register(models.Model):
 
 class PaymentHistory(models.Model):
     reg_id=models.ForeignKey(Register, on_delete=models.CASCADE, null=True,default='')
-    paydofj   = models.DateField(auto_now_add=True,null=True)
+    paydofj   = models.DateField(auto_now_add=False,null=True)
     head_name = models.CharField(max_length=255,default='')
     payintial_amt =  models.IntegerField(default=0)
     paybalance_amt =  models.IntegerField(default=0)

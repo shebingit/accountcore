@@ -203,9 +203,10 @@
      .register-details-table .container
      {
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        height: 70vh;
+      
         margin-top: 1.4em;
         padding-top:2em ;
+        padding-bottom:2em ;
      }
      #register-details
      {
@@ -244,6 +245,54 @@
     {
         background: #74f342;
     }
+
+     /*Search Box styling */
+     .register-details-table .form
+     {
+         padding: 0.80em 0.60em;
+         margin-bottom: 1em;
+     }
+
+     .register-details-table  .search-box
+     {
+         display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 1em;
+        justify-content: center;
+        gap: 2em;
+     }
+     .register-details-table  .search-box .input-date-box
+     {
+         padding: 0.80em .50em;
+     }
+     .register-details-table  .search-box .input-date-box label
+     {
+         font-size: 0.92em;
+         font-weight: 600;
+         margin-right: 0.40em;
+     }
+     .register-details-table  .search-box .input-date-box input{
+        padding: 0.30em;
+       
+        border: 1px solid #0c1846;
+        margin: none;
+     }
+     .register-details-table  .search-box button
+     {
+         background: none;
+         border: none;
+         margin: none;
+         cursor: pointer;
+         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+         padding: 0.20;
+     }
+     .register-details-table .search-box button:hover{
+         box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+     }
+
+       /* End Search Box styling */
    
 </style>
 
@@ -255,6 +304,24 @@
             <div class="register-details-table">
                 <h4>Payments List <a href="{% url 'pyments_history' %}"><i class="bi bi-arrow-left-square-fill"></i></a></h4>
                 <div class="line"></div>
+
+                <form action="{% url 'Search_data_full' %}" method="post">
+                    {% csrf_token %}
+                    <div class="search-box">
+                        <div class="input-date-box">
+                            <label>From Date :</label>
+                            <input type="date" name="fr_data">
+                        </div>
+                        <div class="input-date-box">
+                            <label>To Date :</label>
+                            <input type="date" name="to_date">
+                        </div>
+                        <div class="submit-box">
+                            <button type="submit"><i class="bi bi-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+
                 <div class="container">
 
                     <table id="register-details" class="display" >
@@ -304,7 +371,7 @@
                                             <span style="color: #0f1271; font-size:0.90em; font-weight: 800;" >Progressing</span>
                                     
                                         </td>
-                                        <td class="text-center"> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                        <td class="text-center"> <a href="{% url 'singeldata_receipt' i.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
                                         
                                     </tr>
                                 
@@ -373,7 +440,7 @@
                                                 <span style="color: #ec0909; font-size:0.90em; font-weight: 800;">Deactive</span>
                                                 
                                             </td>
-                                            <td class="text-center"> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                            <td class="text-center"> <a href="{% url 'singeldata_receipt' i.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
                                             
                                         </tr>
 

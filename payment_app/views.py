@@ -21,8 +21,6 @@ def login_dashboard(request):
     return render(request,'Admin/Admin_dashboard.html')
 
 
-
-
 # Account Module Section
 
 
@@ -31,6 +29,19 @@ def dashboard(request):
     cur_date=datetime.now().date()
     
     return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date})
+
+def Users_list(request):
+    reg=Register.objects.all()
+    dept=Department.objects.all()
+    editreg=Register.objects.all().first()
+    return render(request,'account/users.html',{'editreg':editreg,'reg':reg,'dept':dept})
+
+def edit_user(request,pk):
+    reg=Register.objects.all()
+    dept=Department.objects.all()
+    editreg=Register.objects.get(id=pk)
+    return render(request,'account/users.html',{'editreg':editreg,'reg':reg,'dept':dept})
+
 
 def department_form(request):
     dept=Department.objects.all()
@@ -63,9 +74,13 @@ def save_payment(request):
     if request.method =='POST':
         paymt=PaymentHistory()
         reg=Register.objects.get(id=int(request.POST['payname']))
+        pay_amt=int(request.POST['pinit_amunt'])
+        total_amt=int(reg.regtotal_amt)
+        cal=total_amt / 3
+
         paymt.reg_id=reg
         paymt.head_name=request.POST['payhname']
-        paymt.payintial_amt=int(request.POST['pinit_amunt'])
+        paymt.payintial_amt=pay_amt
 
         next_date=request.POST['pnxtpdof']
         if next_date:
@@ -77,13 +92,18 @@ def save_payment(request):
                current_date=request.POST['pdfj']
                current_date = datetime.strptime(current_date, "%Y-%m-%d").date()
             else:
-                current_date = datetime.date.now()
-            
-            after_30_days = current_date + timedelta(days=30)
-            reg.next_pay_date=after_30_days
+                current_date = reg.next_pay_date
 
-        if request.POST['pdfj']:
-            paymt.paydofj=request.POST['pdfj']
+            if pay_amt >= cal:
+            
+                after_days = current_date + timedelta(days=30)
+            else:
+                 after_days = current_date + timedelta(days=15)
+
+            reg.next_pay_date=after_days
+
+     
+        paymt.paydofj=request.POST['pdfj']
         pay_amt=int(request.POST['pinit_amunt'])
         paymt.paybalance_amt=int(reg.regbalance_amt) - pay_amt
         paymt.paytotal_amt=int(reg.regtotal_amt)
@@ -139,7 +159,12 @@ def register_Details(request):
             reg.Phone=request.POST['phno']
             reg.dofj=request.POST['dfj']
             reg.refrence=request.POST['refby']
-            reg.regtotal_amt=int(request.POST['tot_amount'])
+            intial_amt=int(request.POST['init_amunt'])
+            total_amt=int(request.POST['tot_amount'])
+            cal=total_amt / 3
+          
+
+            reg.regtotal_amt=total_amt
             reg.dept_id=Department.objects.get(id=request.POST['dept'])
             next_date=request.POST['nxtpdof']
 
@@ -147,17 +172,25 @@ def register_Details(request):
                 reg.next_pay_date=request.POST['nxtpdof']
 
             else:
-                # Calculate the date after 30 days
+               
                 current_date = request.POST['dfj']
                 current_date = datetime.strptime(current_date, "%Y-%m-%d").date()
-                after_30_days = current_date + timedelta(days=30)
-                reg.next_pay_date=after_30_days
+                # Calculate the date after 30 days
+                if intial_amt >= cal:
+                    after_days = current_date + timedelta(days=30)
+                   
+                # Calculate the date after 15 days
+                else:
+                     after_days = current_date + timedelta(days=15)
+                   
+                reg.next_pay_date=after_days
             reg.save()
 
             payhis=PaymentHistory()
-            payhis.head_name='First Payment'
-            payhis.payintial_amt=int(request.POST['init_amunt'])
-            payhis.paytotal_amt=int(request.POST['tot_amount'])
+            payhis.head_name='Initial Payment'
+            payhis.paydofj=(request.POST['dfpayment'])
+            payhis.payintial_amt=intial_amt
+            payhis.paytotal_amt=total_amt
             
 
             payhis.pay_status=1
@@ -175,6 +208,79 @@ def register_Details(request):
     # else:
     #     return redirect('login')
 
+def edit_Details(request,pk):
+    if request.method =='POST':
+        reg=Register.objects.get(id=pk)
+        reg.fullName=request.POST['editname']
+        reg.Phone=request.POST['editphno']
+
+        if request.POST['editdfj']:
+            reg.dofj=request.POST['editdfj']
+        else:
+            reg.dofj= reg.dofj
+        
+        if request.POST['editnxtpdof']:
+            reg.next_pay_date= request.POST['editnxtpdof']
+        else:
+            reg.next_pay_date= reg.next_pay_date
+        
+        reg.refrence=request.POST['editrefby']
+        reg.dept_id=Department.objects.get(id=request.POST['editdept'])
+        reg.save()
+        msge='Data Updated'
+        reg=Register.objects.all()
+        dept=Department.objects.all()
+        editreg=Register.objects.all().first()
+        return render(request,'account/users.html',{'editreg':editreg,'reg':reg,'dept':dept,'msge':msge})
+
+    else:
+        return redirect('Users_list')
+
+def register_edit(request,pk):
+    reg=Register.objects.get(id=pk)
+    payhis=PaymentHistory.objects.get(reg_id_id=reg)
+    dept=Department.objects.all()
+    payhist=PaymentHistory.objects.all()
+    if payhis.admin_payconfirm == 0:
+        return render(request,'account/register_edit_form.html',{'reg':reg,'dept':dept,'payhist':payhist})
+    else:
+        return redirect('Register_form')
+    
+
+def register_edit_save(request,pk):
+    if request.method =='POST':
+        reg=Register.objects.get(id=pk)
+        reg.fullName=request.POST['name']
+        reg.Phone=request.POST['phno']
+       
+        if request.POST['dfj']:
+             reg.dofj=request.POST['dfj']
+        else:
+            reg.dofj=reg.dofj
+
+        reg.refrence=request.POST['refby']
+        reg.regtotal_amt=int(request.POST['tot_amount'])
+        reg.dept_id=Department.objects.get(id=request.POST['dept'])
+
+        if request.POST['nxtpdof']:
+            reg.next_pay_date=request.POST['nxtpdof']
+        else:
+             reg.next_pay_date= reg.next_pay_date
+
+        payhis=PaymentHistory.objects.get(id=reg.firstpay_id)
+        payhis.payintial_amt=request.POST['init_amunt']
+        if request.POST['dfpayment']:
+            payhis.paydofj=request.POST['dfpayment']
+        else:
+            payhis.paydofj= payhis.paydofj
+        payhis.paytotal_amt= int(request.POST['tot_amount'])  
+        payhis.save()
+        reg.save()
+        return redirect('Register_form')
+    else:
+         return redirect('Register_form')
+
+    
 
 # def confirm(request,pk):
 #     reg1=Register.objects.get(id=pk, reg_status=0)
@@ -197,7 +303,6 @@ def register_Details(request):
 
 def remove(request,pk):
     reg=Register.objects.get(id=pk)
-    reg.reg_status=2
     reg.delete()
     dept=Department.objects.filter(dpt_Status=1)
     reg=Register.objects.filter(reg_status=0)
@@ -357,8 +462,29 @@ def admin_remove(request,pk):
     firstpayhis=PaymentHistory.objects.filter(admin_payconfirm=0).first
     payhis=PaymentHistory.objects.filter(admin_payconfirm=0)
     return render(request,'Admin/newpayment_list.html',{'payhis':payhis,'firstpayhis':firstpayhis})
-     
-     
+
+
+#Search Data using From Date and To Date 
+
+def Search_data(request):
+    if request.method =='POST':
+           
+        payhis=PaymentHistory.objects.filter(paydofj__gte=request.POST['fr_data'],paydofj__lte=request.POST['to_date']).values_list('reg_id').distinct()
+        cur_date=datetime.now().date()
+       
+        reg=Register.objects.filter(id__in=payhis)
+        return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date})
+    else:
+        return redirect('dashboard')
+    
+def Search_data_full(request):
+    if request.method =='POST':
+        payhis=PaymentHistory.objects.filter(paydofj__gte=request.POST['fr_data'],paydofj__lte=request.POST['to_date'])
+        return render(request,'account/paymentsfull_View.html',{'payhis':payhis})
+    else:
+        return redirect('paymentfull_view')
+
+
 
 # Receipt Download single data
 def singeldata_receipt(request,pk):

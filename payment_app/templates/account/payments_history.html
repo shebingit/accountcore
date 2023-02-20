@@ -177,7 +177,7 @@
     }
     .down-load
     {
-        color: #ec0909;
+        color: #f62020;
         cursor: pointer;
     }
     .not-download
@@ -203,9 +203,10 @@
      .register-details-table .container
      {
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        height: 70vh;
+        
         margin-top: 1.4em;
         padding-top:2em ;
+        padding-bottom:2em ;
      }
      #register-details
      {
@@ -243,6 +244,10 @@
     {
         background: #8de769;
     }
+    #register-details .recipt
+    {
+        background: #fff;
+    }
 </style>
 
 
@@ -270,18 +275,18 @@
                         </thead>
                         <tbody>
                             {% for i in reg %}
-                                {% if i.payprogress <= 10 %}
+                                {% if i.payprogress >= 10 and i.payment_status == 0 %}
                                     <tr>
                                         <td>
                                             {{ forloop.counter }}
                                             <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
                                             <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                                         </td>
-                                        <td>{{i.fullName}}</td>
+                                        <td class="progressing">{{i.fullName}}</td>
                                     
-                                        <td>{{i.dept_id.department}}</td>
-                                        <td class="start">{{i.regbalance_amt}} </td> 
-                                        <td>{{i.regtotal_amt}} </td> 
+                                        <td class="progressing">{{i.dept_id.department}}</td>
+                                        <td class="progressing">{{i.regbalance_amt}} </td> 
+                                        <td class="progressing">{{i.regtotal_amt}} </td> 
                                         <td>
                                             <table id="pay-details" class="display" >
                                             <thead>
@@ -295,11 +300,11 @@
                                             <tbody>
                                                 {% for j in payhis %}
                                                     {% if j.reg_id_id == i.id %}
-                                                    <tr>
+                                                    <tr  class="progressing">
                                                         <td>{{j.head_name}}</td>
                                                         <td>{{j.paydofj}}</td>
-                                                        <td class="start">{{j.payintial_amt}}</td>
-                                                        <td >
+                                                        <td class="progressing">{{j.payintial_amt}}</td>
+                                                        <td class="recipt">
                                                             {% if j.pay_status == 1 %}
                                                             <a href="{% url 'singeldata_receipt' j.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
                                                             {% else %}
@@ -313,10 +318,10 @@
                                             </table>
 
                                         </td>
-                                        <td> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                        <td class="recipt"> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
                                         
                                     </tr>
-                                {% elif i.payprogress >= 11 and i.payprogress <= 99  %}
+                                {% elif  i.payprogress == 100 or i.payment_status == 1  %}
                             
                                 <tr>
                                     <td>
@@ -324,11 +329,11 @@
                                         <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
                                         <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                                     </td>
-                                    <td>{{i.fullName}}</td>
+                                    <td class="end">{{i.fullName}}</td>
                                 
-                                    <td>{{i.dept_id.department}}</td>
-                                    <td class="progressing">{{i.regbalance_amt}} </td> 
-                                    <td>{{i.regtotal_amt}} </td> 
+                                    <td class="end">{{i.dept_id.department}}</td>
+                                    <td class="end">{{i.regbalance_amt}} </td> 
+                                    <td class="end">{{i.regtotal_amt}} </td> 
                                     <td>
                                         <table id="pay-details" class="display" >
                                         <thead>
@@ -342,13 +347,13 @@
                                         <tbody>
                                             {% for j in payhis %}
                                                 {% if j.reg_id_id == i.id %}
-                                                <tr>
+                                                <tr class="end">
                                                     <td>{{j.head_name}}</td>
                                                     <td>{{j.paydofj}}</td>
-                                                    <td class="progressing">{{j.payintial_amt}}</td>
-                                                    <td class="">
+                                                    <td class="end">{{j.payintial_amt}}</td>
+                                                    <td class="recipt">
                                                         {% if j.pay_status == 1 %}
-                                                    <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
+                                                        <a href="{% url 'singeldata_receipt' j.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
                                                         {% else %}
                                                         <a href="#" class="not-download"><i class="bi bi-exclamation-circle-fill"></i></a>
                                                         {% endif %}
@@ -360,23 +365,24 @@
                                         </table>
 
                                     </td>
-                                    <td> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                    <td class="recipt"> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
                                     
                                 </tr>
 
                                 {% else %}
+                                {% if  i.payment_status == 2 or i.reg_status == 2  %}
 
-                                    <tr >
+                                    <tr>
                                         <td>
                                             {{ forloop.counter }}
                                             <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
                                             <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                                         </td>
-                                        <td>{{i.fullName}}</td>
+                                        <td class="start">{{i.fullName}}</td>
                                     
-                                        <td>{{i.dept_id.department}}</td>
-                                        <td class="end">{{i.regbalance_amt}} </td> 
-                                        <td>{{i.regtotal_amt}} </td> 
+                                        <td class="start">{{i.dept_id.department}}</td>
+                                        <td class="start">{{i.regbalance_amt}} </td> 
+                                        <td class="start">{{i.regtotal_amt}} </td> 
                                         <td>
                                             <table id="pay-details" class="display" >
                                             <thead>
@@ -390,13 +396,13 @@
                                             <tbody>
                                                 {% for j in payhis %}
                                                     {% if j.reg_id_id == i.id %}
-                                                    <tr>
+                                                    <tr class="start">
                                                         <td>{{j.head_name}}</td>
                                                         <td>{{j.paydofj}}</td>
-                                                        <td class="end">{{j.payintial_amt}}</td>
-                                                        <td class="">
+                                                        <td >{{j.payintial_amt}}</td>
+                                                        <td class="recipt">
                                                             {% if j.pay_status == 1 %}
-                                                        <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
+                                                        <a href="{% url 'singeldata_receipt' j.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
                                                             {% else %}
                                                             <a href="#" class="not-download"><i class="bi bi-exclamation-circle-fill"></i></a>
                                                             {% endif %}
@@ -408,9 +414,10 @@
                                             </table>
 
                                         </td>
-                                        <td> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                        <td class="recipt"> <a href="#" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
                                         
                                     </tr>
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
                           

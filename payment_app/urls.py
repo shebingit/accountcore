@@ -12,10 +12,26 @@ urlpatterns = [
 
     #account
     path('Account-Dashboard',views.dashboard,name='dashboard'),
+    path('Users-List',views.Users_list,name='Users_list'),
+    path('Edit-User/<int:pk>',views.edit_user,name="edit_user"),
+    path('Edit-User-Details/<int:pk>',views.edit_Details,name="edit_Details"),
+    path('Edit-Register-User/<int:pk>',views.register_edit,name="register_edit"),
+    path('Edit-Register-Save/<int:pk>',views.register_edit_save,name="register_edit_save"),
+    
+    
+    
+    
+    
     path('Payment-Add',views.pyment_form,name='pyment_form'),
     path('Add-Pay-Details/<int:pk>',views.addpayment_details,name="addpayment_details"),
     path('Pay-Details/<int:pk>',views.payment_details,name="payment_details"),
     path('Payment-Save',views.save_payment,name='save_payment'),
+
+    #Search Data based on Date
+    
+    path('Search',views.Search_data,name='Search_data'),
+    path('Search-Full',views.Search_data_full,name='Search_data_full'),
+     
     
     
     path('Department-Form',views.department_form,name='department_form'),
