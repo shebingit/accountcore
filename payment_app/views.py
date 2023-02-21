@@ -26,15 +26,98 @@ def login_dashboard(request):
 
 def dashboard(request):
     reg=Register.objects.filter(reg_status=1)
+    reg_count=Register.objects.all().count()
+    dept_count=Department.objects.all().count()
     cur_date=datetime.now().date()
+    pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
+   
+    pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
+    content={'dept_count':dept_count,
+             'reg_count':reg_count,
+             'pay_count':pay_count,
+             'pay_pending_count':pay_pending_count}
+    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content})
+
+def track_payments(request):
+    reg=Register.objects.filter(reg_status=1,payment_status=0)
+    cur_date=datetime.now().date()
+    return render(request,'account/track_Payments.html',{'reg':reg,'cur_date':cur_date})
+
+
+def upcoming_payments_list(request):
+    if request.method =='POST':
+        fr_date=request.POST['up_fr_data']
+        to_date=request.POST['up_to_date']
+        cur_date=datetime.now().date()
+        reg=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,payment_status=0)
+        reg_count=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,payment_status=0).count()
+        tk_amount=0
+        for i in reg:
+            tk_amount=tk_amount + int(i.reg_payedtotal)
+
+        content={'fr_date':fr_date,
+                 'to_date':to_date,
+                 'reg_count':reg_count,
+                 'tk_amount':tk_amount,
+                 'cur_date':cur_date
+                 }
+        return render(request,'account/track_Payments.html',{'reg':reg,'content':content})
+    else:
+        return redirect('track_payments')
+
+
+def allpayments(request):
+    reg=Register.objects.all()
+    cur_date=datetime.now().date()
+    return render(request,'account/allpaymets.html',{'reg':reg,'cur_date':cur_date})
+
+def pending_payments(request):
+    reg=Register.objects.filter(payment_status=0)
+    cur_date=datetime.now().date()
+    return render(request,'account/allpaymets.html',{'reg':reg,'cur_date':cur_date})
+
+def completed_payments(request):
+    reg=Register.objects.filter(payment_status=1)
+    cur_date=datetime.now().date()
+    return render(request,'account/allpaymets.html',{'reg':reg,'cur_date':cur_date})
+
+def incompleted_payments(request):
+    reg=Register.objects.filter(payment_status=2)
+    cur_date=datetime.now().date()
+    return render(request,'account/allpaymets.html',{'reg':reg,'cur_date':cur_date})
+
+
+def paysearch(request):
+    if request.method =='POST':
+           
+        payhis=PaymentHistory.objects.filter(paydofj__gte=request.POST['pfr_data'],paydofj__lte=request.POST['pto_date']).values_list('reg_id').distinct()
+        cur_date=datetime.now().date()
+       
+        reg=Register.objects.filter(id__in=payhis)
+        return render(request,'account/allpaymets.html',{'reg':reg,'cur_date':cur_date})
+    else:
+        return redirect('allpayments')
     
-    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date})
+
 
 def Users_list(request):
-    reg=Register.objects.all()
+
     dept=Department.objects.all()
-    editreg=Register.objects.all().first()
-    return render(request,'account/users.html',{'editreg':editreg,'reg':reg,'dept':dept})
+
+    try:
+        reg=Register.objects.all()
+        editreg=Register.objects.all().first()
+        if editreg:
+            return render(request,'account/users.html',{'editreg':editreg,'reg':reg,'dept':dept})
+        else:
+             return redirect('dashboard')
+
+    except Register.DoesNotExist:
+        editreg=None
+        return redirect('dashboard')
+
+    
+   
 
 def edit_user(request,pk):
     reg=Register.objects.all()
@@ -88,11 +171,8 @@ def save_payment(request):
 
         else:
             # Calculate the date after 30 days
-            if request.POST['pdfj']:
-               current_date=request.POST['pdfj']
-               current_date = datetime.strptime(current_date, "%Y-%m-%d").date()
-            else:
-                current_date = reg.next_pay_date
+           
+            current_date = reg.next_pay_date
 
             if pay_amt >= cal:
             
@@ -163,7 +243,7 @@ def register_Details(request):
             total_amt=int(request.POST['tot_amount'])
             cal=total_amt / 3
           
-
+            reg.next_pat_amt=cal
             reg.regtotal_amt=total_amt
             reg.dept_id=Department.objects.get(id=request.POST['dept'])
             next_date=request.POST['nxtpdof']
@@ -393,8 +473,13 @@ def next_data(request,pk):
 #     reg=Register.objects.filter(reg_status=1)
 #     return render(request,'account/dashboard.html',{'reg':reg,'msg':msg})
 
+#============================== End Account Module ====================================================================
 
-# Admin Module Section
+
+
+
+
+# ===========================Admin Module Section ======================================
 
 def admin_dashboard(request):
     reg=Register.objects.filter(reg_status=0)
@@ -402,6 +487,55 @@ def admin_dashboard(request):
     reg1=Register.objects.filter(reg_status=1)
     payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
     return render(request,'Admin/Admin_dashboard.html',{'payhis':payhis,'payhis_list':payhis_list})
+
+def admin_trackPayments(request):
+    reg=Register.objects.filter(reg_status=1,payment_status=0)
+    cur_date=datetime.now().date()
+    return render(request,'Admin/admintrack_Payments.html',{'reg':reg,'cur_date':cur_date})
+
+
+
+def adminupcomingPayments(request):
+    if request.method =='POST':
+        sdate=request.POST['start_date']
+        edate=request.POST['end_date']
+        cur_date=datetime.now().date()
+        reg=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,payment_status=0)
+        reg_count=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,payment_status=0).count()
+        tk_amount=0
+        for i in reg:
+            tk_amount=tk_amount + int(i.reg_payedtotal)
+
+        content={'fr_date':sdate,
+                 'to_date':edate,
+                 'reg_count':reg_count,
+                 'tk_amount':tk_amount,
+                 'cur_date':cur_date
+                 }
+        return render(request,'Admin/admintrack_Payments.html',{'reg':reg,'content':content})
+    else:
+        return redirect('admin_trackPayments')
+    
+
+def admin_paymentsview(request):
+    reg=Register.objects.filter(reg_status=1)
+    payhis=PaymentHistory.objects.all()
+    return render(request,'Admin/adminpayments_history.html',{'reg':reg,'payhis':payhis})
+
+
+def adminpaymentfull_view(request):
+    payhis=PaymentHistory.objects.all()
+    return render(request,'Admin/adminpaymentsfull_View.html',{'payhis':payhis})
+
+def adminsearch_data_full(request):
+    if request.method =='POST':
+        payhis=PaymentHistory.objects.filter(paydofj__gte=request.POST['fr_data'],paydofj__lte=request.POST['to_date'])
+        return render(request,'Admin/adminpaymentsfull_View.html',{'payhis':payhis})
+    else:
+        return redirect('adminpaymentfull_view')
+
+
+    
 
 def newpay_confirm_list(request):
     reg=Register.objects.filter(reg_status=0)
@@ -424,10 +558,30 @@ def admin_approve(request,pk):
     reg.regbalance_amt= int(reg.regtotal_amt - pay_aprove.payintial_amt)
     pay_aprove.paybalance_amt=int( reg.regbalance_amt)
     pay_aprove.save()
+    reg.reg_payedtotal=int(pay_aprove.payintial_amt)
     reg.reg_status=1
+
+    #next payment calculation
+
+    cal=reg.regtotal_amt / 3
+    
+    if reg.next_pat_amt == pay_aprove.payintial_amt:
+        reg.next_pat_amt = cal
+
+    elif reg.next_pat_amt >  pay_aprove.payintial_amt:
+          reg.next_pat_amt =  int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
+
+    elif  reg.next_pat_amt <  pay_aprove.payintial_amt:
+        amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
+        reg.next_pat_amt = int(cal) - int(amt)
+
+    else:
+        print('error')
+
 
     if reg.regbalance_amt <= 0:
         reg.next_pay_date=None
+        reg.next_pat_amt = 0
         reg.payment_status=1
         reg.payprogress=100
     reg.save()
@@ -441,11 +595,38 @@ def admin_confirm(request,pk):
 
     reg=Register.objects.get(id=pay_aprove.reg_id_id)
     reg.regbalance_amt= int(reg.regbalance_amt - pay_aprove.payintial_amt)
+    reg.reg_payedtotal=int( reg.reg_payedtotal)+int(pay_aprove.payintial_amt)
+    reg.save()
+
+    #next payment calculation
+
+    cal=reg.regtotal_amt / 3
+    
+    if reg.next_pat_amt == pay_aprove.payintial_amt:
+        reg.next_pat_amt = cal
+
+    elif reg.next_pat_amt >  pay_aprove.payintial_amt:
+        amt =  int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
+
+        if  reg.next_pat_amt < cal:
+            reg.next_pat_amt =  cal + amt
+        else:
+           reg.next_pat_amt = int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
+
+
+    elif  reg.next_pat_amt <  pay_aprove.payintial_amt:
+        amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
+        reg.next_pat_amt = int(cal) - int(amt)
+
+    else:
+        print('error')
+
     reg.save()
 
     if reg.regbalance_amt <= 0:
         reg.next_pay_date=None
         reg.payment_status=1
+        reg.next_pat_amt = 0
         reg.save()
 
     pay_aprove.paybalance_amt= int(reg.regbalance_amt)
@@ -483,6 +664,57 @@ def Search_data_full(request):
         return render(request,'account/paymentsfull_View.html',{'payhis':payhis})
     else:
         return redirect('paymentfull_view')
+    
+
+def admin_user_list(request):
+    dept=Department.objects.all()
+    reg=Register.objects.all()
+
+    try:
+        editreg=Register.objects.all().first()
+    
+    except Register.DoesNotExist:
+        editreg=None
+        return redirect('admin_dashboard')
+
+    return render(request,'Admin/users_list.html',{'editreg':editreg,'reg':reg,'dept':dept})
+
+
+def admin_allpayments_list(request):
+    reg=Register.objects.all()
+    cur_date=datetime.now().date()
+    return render(request,'Admin/adminallpaymets.html',{'reg':reg,'cur_date':cur_date})
+
+
+def admin_pending_payments(request):
+    reg=Register.objects.filter(payment_status=0)
+    cur_date=datetime.now().date()
+    return render(request,'Admin/adminallpaymets.html',{'reg':reg,'cur_date':cur_date})
+
+def admin_completed_payments(request):
+    reg=Register.objects.filter(payment_status=1)
+    cur_date=datetime.now().date()
+    return render(request,'Admin/adminallpaymets.html',{'reg':reg,'cur_date':cur_date})
+
+def admin_incompleted_payments(request):
+    reg=Register.objects.filter(payment_status=2)
+    cur_date=datetime.now().date()
+    return render(request,'Admin/adminallpaymets.html',{'reg':reg,'cur_date':cur_date})
+
+
+def adminpaysearch(request):
+    if request.method =='POST':
+           
+        payhis=PaymentHistory.objects.filter(paydofj__gte=request.POST['adpfr_data'],paydofj__lte=request.POST['adpto_date']).values_list('reg_id').distinct()
+        cur_date=datetime.now().date()
+       
+        reg=Register.objects.filter(id__in=payhis)
+        return render(request,'Admin/adminallpaymets.html',{'reg':reg,'cur_date':cur_date})
+    else:
+        return redirect('admin_allpayments_list')
+
+
+# =========================== End Admin Module Section ======================================
 
 
 
@@ -512,3 +744,35 @@ def singeldata_receipt(request,pk):
     if pisa_status.err:
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
+
+
+
+# Receipt Download single user full payment data
+def singelUserfull_receipt(request,pk):
+
+    date = datetime.now().date() 
+    reg=Register.objects.get(id=pk)  
+    payhis = PaymentHistory.objects.filter(reg_id=reg).last()
+    number_in_words = num2words(reg.reg_payedtotal)
+    template_path = 'account/singleUser_full_Receipt.html'
+    context = {'reg': reg,
+               'payhis':payhis,
+               'number_in_words':number_in_words,
+    'media_url':settings.MEDIA_URL,
+    'date':date,
+    }
+   
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="Full-Receipt.pdf"'
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+       html, dest=response)
+    
+     # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response
+

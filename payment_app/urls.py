@@ -12,6 +12,17 @@ urlpatterns = [
 
     #account
     path('Account-Dashboard',views.dashboard,name='dashboard'),
+    path('All-Payments',views.allpayments,name='allpayments'),
+    path('Pending-Payments',views.pending_payments,name='pending_payments'),
+    path('Completed-Payments',views.completed_payments,name='completed_payments'),
+    path('Incompleted-Payments',views.incompleted_payments,name='incompleted_payments'),
+    path('Next-Payments',views.track_payments,name='track_payments'),
+    path('Upcoming-Payments',views.upcoming_payments_list,name='upcoming_payments_list'),
+    path('Payments-Search',views.paysearch,name='paysearch'),
+
+    
+    
+    
     path('Users-List',views.Users_list,name='Users_list'),
     path('Edit-User/<int:pk>',views.edit_user,name="edit_user"),
     path('Edit-User-Details/<int:pk>',views.edit_Details,name="edit_Details"),
@@ -53,6 +64,8 @@ urlpatterns = [
     
     #Receipt Sigle data 
     path('Payment-Recipt/<int:pk>',views.singeldata_receipt,name="singeldata_receipt"),
+    path('Full-Payment-Recipt/<int:pk>',views.singelUserfull_receipt,name="singelUserfull_receipt"),
+    
 
     
 
@@ -66,12 +79,32 @@ urlpatterns = [
     
     
 
-    #admin 
+    #========================== Admin ==============================================
+
     path('New-Payments-List',views.newpay_confirm_list,name='newpay_confirm_list'),
+    path('Payment-Track',views.admin_trackPayments,name='admin_trackPayments'),
+    path('Admin-Upcoming-Payments',views.adminupcomingPayments,name='adminupcomingPayments'),
+    path('Admin-Payments-View',views.admin_paymentsview,name='admin_paymentsview'),
+    path('Admin-Payments-FullView',views.adminpaymentfull_view,name='adminpaymentfull_view'),
+    path('Admin-Payments-Search',views.adminsearch_data_full,name='adminsearch_data_full'),
+    
+    
+    path('Admin-User-List',views.admin_user_list,name='admin_user_list'),
+    path('Admin-AllUser-Payments',views.admin_allpayments_list,name='admin_allpayments_list'),
+    path('Admin-Pending-Payments',views.admin_pending_payments,name='admin_pending_payments'),
+    path('Admin-Completed-Payments',views.admin_completed_payments,name='admin_completed_payments'),
+    path('Admin-Incompleted-Payments',views.admin_incompleted_payments,name='admin_incompleted_payments'),
+    path('Admin-Payment-Search',views.adminpaysearch,name='adminpaysearch'),
+    
+    
+    
+    
+    
     path('Admin-Remove/<int:pk>',views.admin_remove,name="admin_remove"),
     path('View-Register/<int:pk>',views.view_details,name="view_details"),
     path('Approve-Payment/<int:pk>',views.admin_approve,name="admin_approve"),
     path('Confirm-Payment/<int:pk>',views.admin_confirm,name="admin_confirm"),
+    
     
     
     

@@ -1,0 +1,464 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+    #action-box
+    {
+        background:var( --white-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1em;
+        padding:1em 1.2em;
+    }
+    #action-box .card
+    {
+        height: 130px;
+        width: 270px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        border: none;
+        margin: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    #action-box .card:hover{
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        transition: 0.5s;
+    }
+    #action-box .card h5{
+        margin-top: 0.40em;
+        margin-bottom: 0.80em;
+        color:rgb(21, 74, 139);
+        font-weight: 600;
+        font-size: 1.2em;
+    }
+    #action-box  a:nth-child(1) i
+    {
+        color: rgb(245, 234, 24);
+        font-size: 32px;
+        margin-bottom: 0.50em;
+    }
+    #action-box  a:nth-child(2) i
+    {
+        color: rgb(35, 150, 31);
+        font-size: 32px;
+        margin-bottom: 0.50em;
+    }
+    #action-box  a:nth-child(3) i
+    {
+        color: rgb(255, 54, 23);
+        font-size: 32px;
+        margin-bottom: 0.50em;
+    }
+</style>
+<main>
+<!--Container Main start-->
+<div class=" container-fluid" id="action-box">
+<a href="{% url 'admin_pending_payments' %}">
+    <div class="card">
+        <i class="bi bi-arrow-repeat"></i><h5>Pending Payments</h5>
+    </div>
+</a>
+<a href="{% url 'admin_completed_payments' %}">
+    <div class="card">
+        <i class="bi bi-check-circle-fill"></i><h5>Completed Payments</h5>
+    </div>
+</a>
+<a href="{% url 'admin_incompleted_payments' %}">
+    <div class="card">
+        <i class="bi bi-x-circle-fill"></i><h5>Incompleted Payments</h5>
+    </div>
+</a>
+<!-- <a href="{% url 'pyments_history' %}">
+    <div class="card">
+        <i class="bi bi-database-fill-add"></i><h5>Payments History</h5>
+    </div>
+</a>
+<a href="{% url 'department_form' %}">
+    <div class="card">
+        <i class="bi bi-box-fill"></i><h5>Department</h5>
+    </div>
+</a> -->
+</div>
+<!--Container Main end-->
+
+<style>
+    #register-list 
+    {
+        padding: 1em 0.50em;
+        overflow-x: scroll;
+    
+    }
+    #register-list .message-bx 
+    {
+        background: #81e372;
+    }
+    #register-list .msgbox-deactive
+    {
+        background: #f0442d;
+    }
+
+    #register-list .message-bx,  #register-list .msgbox-deactive
+    {
+        
+        padding: 0.10em 0.50em;
+        margin: 0 auto;
+        margin-bottom: 0.30em;
+        border-radius: 5px;
+        text-align: start;
+        width: 40%;
+       
+    }
+    #register-list .message-bx p,  #register-list .msgbox-deactive{
+        font-size: 0.99em;
+        color: #fff;
+        font-weight: 800;
+       margin-top: 0.30em;
+       text-align: center;
+    }
+    #register-list h5{
+        font-weight: 700;
+        font-size: 1.4em;
+        margin: 0.70em 0em;
+    }
+    #register-list .card
+    {
+        padding: 0.80em 1em;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        border: none;
+       
+
+    }
+
+    /*Search Box styling */
+    #register-list .card .form
+    {
+        padding: 0.80em 0.60em;
+        margin-bottom: 1em;
+    }
+
+    #register-list .card .search-box
+    {
+        display: flex;
+       flex-wrap: wrap;
+       flex-direction: row;
+       align-items: center;
+       margin-bottom: 1em;
+       justify-content: center;
+       gap: 2em;
+    }
+    #register-list .card .search-box .input-date-box
+    {
+        padding: 0.80em .50em;
+    }
+    #register-list .card .search-box .input-date-box label
+    {
+        font-size: 0.92em;
+        font-weight: 600;
+        margin-right: 0.40em;
+    }
+    #register-list .card .search-box .input-date-box input{
+       padding: 0.30em;
+      
+       border: 1px solid #0c1846;
+       margin: none;
+    }
+    #register-list .card .search-box button
+    {
+        background: none;
+        border: none;
+        margin: none;
+        cursor: pointer;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        padding: 0.20;
+    }
+    #register-list .card .search-box button:hover{
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+    }
+
+      /* End Search Box styling */
+     
+
+    #register-details tbody td
+    {
+        font-size: 0.90em;
+    }
+    #register-details .danger
+    {
+        background: #ef552e;
+        color:#fff;
+        font-weight: 600;
+    }
+    #register-details .dangermsg
+    {
+        
+        color:#ef552e;
+        font-weight: 700;
+    }
+    #register-details .success
+    {
+        background: #2cdb11;
+        color: #252527;
+        font-weight: 600;
+    }
+    #register-details .successmsg
+    {
+        color: #2cdb11;
+       
+        font-weight: 700;
+    }
+    
+    #register-details .warning
+    {
+        background:#fceb2e;
+        color: #252527;
+        font-weight: 600;
+    }
+    #register-details .warningmsg
+    {
+        color:#ffe02e;;
+        font-weight: 700;
+    }
+    .payprogress
+    {
+        background: #fff;
+    }
+    #register-details .edit
+    {
+        padding-left: 0.50em;
+        margin-right: 0em;
+        cursor: pointer;
+    }
+    .progress-bar-danger
+    {
+        background: #eb4c20;
+    }
+    .progress-bar-warning
+    {
+        background: #fceb2e;
+       
+    }
+    .progress-bar-success
+    {
+        background: #27a814;
+    }
+    .actiontd
+    {
+        text-align: center;
+        
+    }
+    #register-details .complete
+    {
+        background: #0c1846;
+        color: #fff;
+        padding: 0.50em 1em;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+       
+    }
+    #register-details .completed
+    {
+        color: #37be19;
+        font-weight: 800;
+    }
+  
+    
+</style>
+
+<!-- Register-list Style -->
+
+<!--Container List Show-->
+<div class="container-fluid" id="register-list">
+<h5> Payments List </h5>
+<div class="card">
+
+    <form action="{% url 'paysearch' %}" method="post">
+
+        {% csrf_token %}
+        <div class="search-box">
+         
+            <div class="input-date-box">
+                <label>From Date :</label>
+                <input type="date" name="pfr_data">
+            </div>
+            <div class="input-date-box">
+                <label>To Date :</label>
+                <input type="date" name="pto_date">
+            </div>
+            <div class="submit-box">
+                <button type="submit"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </form>
+   
+   
+    <table id="register-details" class="display" >
+        <thead>
+            <tr>
+                <th></th>
+                <th>Full Name</th>
+                <th>Message</th>
+                <th>Next Pay AMT</th>
+                <th>Date Of Joing</th>
+                <th>Referenced By</th>
+                <th>Department</th>
+                <th>BAL Amount</th>
+                <th>TL Amount</th>
+                <th> Pay Progress</th>
+                <th>Status</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in reg %}
+            {% if i.payprogress >= 10 and i.payment_status == 0 %}
+                <tr >
+                    <td>
+                        {{ forloop.counter }}
+                    
+                    <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
+                        <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                    </td>
+                    {% if cur_date < i.next_pay_date %}
+                    <td class="warning">{{i.fullName}}</td>
+                    <td class="successmsg warning">
+                        <span >Next Payment On {{ i.next_pay_date}} </span>
+                    </td>
+                    {% elif cur_date > i.next_pay_date %}
+                    <td class="danger">
+                    {{i.fullName}}   
+                    </td>
+                    <td class="warning">
+                        <span class="dangermsg"><i class="bi bi-exclamation-triangle-fill"></i> Payment Date Exceed</span>
+                    </td>
+                    {% else %}
+                    <td class="warning">
+                        {{i.fullName}}
+                    </td>
+                    <td>
+                        <span class="warningmsg"><i class="bi bi-exclamation-triangle-fill"></i> Last Date For Payment</span>
+                    </td>
+                    {% endif %}
+                    <td class="warning"> {{i.next_pat_amt}}</td>
+                    <td class="warning">{{i.dofj}}</td>
+                    <td class="warning">{{i.refrence}}</td>
+                    <td class="warning">{{i.dept_id.department}}</td>
+
+                    <td class="warning">{{i.regbalance_amt}}</td>
+                    <td class="warning">{{i.regtotal_amt}}</td>
+                    <td class="payprogress">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-warning" 
+                            role="progressbar" style="width: {{i.payprogress}}%;" 
+                            aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
+
+                            </div>
+                        </div>
+                    </td>
+                    <td > <span class="" style="color: #0c376b;font-size:0.92em;font-weight:600;">Active-User</span></td>
+                </tr>
+
+            {% elif  i.payprogress == 100 or i.payment_status == 1 and i.next_pay_date == None  %}
+
+                <tr >
+                    <td>
+                        {{ forloop.counter }}
+                    
+                    <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
+                        <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                    </td>
+                    <td class="success">{{i.fullName}}</td>
+                    <td class="successmsg success">
+                        
+                        <span style="color: #fff;">Payment All Done.</span>
+                       
+                    </td>
+                    <td class="success"> {{i.next_pat_amt}}</td>
+                    <td class="success">{{i.dofj}}</td>
+                    <td class="success">{{i.refrence}}</td>
+                    <td class="success">{{i.dept_id.department}}</td>
+
+                    <td class="success">{{i.regbalance_amt}}</td>
+                    <td class="success">{{i.regtotal_amt}}</td>
+                    <td class="payprogress">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success" 
+                            role="progressbar" style="width: {{i.payprogress}}%;" 
+                            aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
+                        
+                            </div>
+                        </div>
+                    </td>
+                    <td class="actiontd  payprogress">
+                       
+                      
+                        <span class="completed"><i class="bi bi-check-circle-fill px-1"></i> Completed</span>
+                       
+                    </td>
+                </tr>
+
+            {% else %}
+                {% if  i.payment_status == 2 or i.reg_status == 2  %}
+
+                    <tr >
+                        <td>
+                            {{ forloop.counter }}
+                        
+                        <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
+                            <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                        </td>
+                        {% if cur_date > i.next_pay_date %}
+                        <td class="danger">
+                        {{i.fullName}}   
+                        </td>
+                        <td>
+                            <span class="dangermsg"><i class="bi bi-exclamation-triangle-fill"></i> Payment Date Exceed</span>
+                        </td>
+                        {% else %}
+                        <td class="danger">
+                            {{i.fullName}}
+                        </td>
+                        <td class="danger">
+                            <span style="color: #fff;"><i class="bi bi-exclamation-triangle-fill"></i>Payments Not Completed</span>
+                        </td>
+                        {% endif %}
+                        <td class="danger"> {{i.next_pat_amt}}</td>
+                        <td class="danger">{{i.dofj}}</td>
+                        <td class="danger">{{i.refrence}}</td>
+                        <td class="danger">{{i.dept_id.department}}</td>
+
+                        <td class="danger">{{i.regbalance_amt}}</td>
+                        <td class="danger">{{i.regtotal_amt}}</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-danger" 
+                                role="progressbar" style="width: {{i.payprogress}}%;" 
+                                aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
+                            
+                                </div>
+                            </div>
+                        </td>
+                        <td > <span class="" style="color: #f32424;font-size:0.92em;font-weight:700;">Deactive</span></td>
+                    </tr>
+                
+                {% endif %}
+            {% endif %}
+            {% endfor %}
+          
+        </tbody>
+       
+    </table>
+
+</div>
+</div>
+
+
+
+</main>
+
+{% endblock %}

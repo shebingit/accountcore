@@ -11,7 +11,7 @@
         justify-content: center;
         flex-wrap: wrap;
         gap: 1em;
-        height: 30vh;
+        padding:1em 1.2em;
     }
     #action-box .card
     {
@@ -37,18 +37,48 @@
         font-weight: 600;
         font-size: 1.2em;
     }
+    .nofication 
+    {
+        background-color: rgb(239, 24, 24);
+        margin-top:0.10em;
+        color: #ffff;
+        width: 30px;
+        height: 30px;
+        border-radius: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .nofication span{
+        font-size: 0.83em;
+        font-weight: 600;
+    }
 </style>
 <main>
 <!--Container Main start-->
-<div class="height-100 container-fluid" id="action-box">
+<div class=" container-fluid" id="action-box">
 <a href="{% url 'Register_form' %}">
     <div class="card">
         <i class='bi bi-people-fill nav_icon'></i><h5>Register</h5>
+        <div class="nofication">
+            <span>{{content.reg_count}}</span>
+        </div>
     </div>
 </a>
 <a href="{% url 'pyment_form' %}">
     <div class="card">
         <i class="bi bi-currency-rupee"></i><h5>Add Payments</h5>
+        <div class="nofication">
+            <span>{{content.pay_pending_count}}</span>
+        </div>
+    </div>
+</a>
+<a href="{% url 'track_payments' %}">
+    <div class="card">
+        <i class="bi bi-search"></i><h5>Track Payments</h5>
+        <div class="nofication">
+            <span>{{content.pay_count}}</span>
+        </div>
     </div>
 </a>
 <a href="{% url 'pyments_history' %}">
@@ -59,6 +89,9 @@
 <a href="{% url 'department_form' %}">
     <div class="card">
         <i class="bi bi-box-fill"></i><h5>Department</h5>
+        <div class="nofication">
+            <span>{{content.dept_count}}</span>
+        </div>
     </div>
 </a>
 </div>
@@ -72,6 +105,8 @@
         #register-list 
         {
             padding: 1em 0.50em;
+            overflow-x: scroll;
+        
         }
         #register-list .message-bx 
         {
@@ -110,6 +145,7 @@
             padding: 0.80em 1em;
             box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
             border: none;
+           
 
         }
 
@@ -160,6 +196,7 @@
         }
 
           /* End Search Box styling */
+         
 
         #register-details tbody td
         {
@@ -180,7 +217,7 @@
         #register-details .success
         {
             background: #2cdb11;
-            color:#fff;
+            color: #252527;
             font-weight: 600;
         }
         #register-details .successmsg
@@ -193,7 +230,7 @@
         #register-details .warning
         {
             background:#fceb2e;
-            color:#fff;
+            color: #252527;
             font-weight: 600;
         }
         #register-details .warningmsg
@@ -218,6 +255,7 @@
         .progress-bar-warning
         {
             background: #fceb2e;
+           
         }
         .progress-bar-success
         {
@@ -289,6 +327,7 @@
                     <th></th>
                     <th>Full Name</th>
                     <th>Message</th>
+                    <th>Next Pay AMT</th>
                     <th>Date Of Joing</th>
                     <th>Referenced By</th>
                     <th>Department</th>
@@ -329,6 +368,7 @@
                             <span class="warningmsg"><i class="bi bi-exclamation-triangle-fill"></i> Last Date For Payment</span>
                         </td>
                         {% endif %}
+                        <td class="warning"> {{i.next_pat_amt}}</td>
                         <td class="warning">{{i.dofj}}</td>
                         <td class="warning">{{i.refrence}}</td>
                         <td class="warning">{{i.dept_id.department}}</td>
@@ -344,7 +384,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td > <span class="" style="color: #0c376b;font-size:0.92em;font-weight:600;">Active</span></td>
+                        <td > <span class="" style="color: #0c376b;font-size:0.92em;font-weight:600;">Active-User</span></td>
                     </tr>
 
                 {% elif  i.payprogress == 100 or i.payment_status == 1 and i.next_pay_date == None  %}
@@ -362,7 +402,7 @@
                             <span style="color: #fff;">Payment All Done.</span>
                            
                         </td>
-                        
+                        <td class="success"> {{i.next_pat_amt}}</td>
                         <td class="success">{{i.dofj}}</td>
                         <td class="success">{{i.refrence}}</td>
                         <td class="success">{{i.dept_id.department}}</td>
@@ -411,6 +451,7 @@
                                 <span style="color: #fff;"><i class="bi bi-exclamation-triangle-fill"></i>Payments Not Completed</span>
                             </td>
                             {% endif %}
+                            <td class="danger"> {{i.next_pat_amt}}</td>
                             <td class="danger">{{i.dofj}}</td>
                             <td class="danger">{{i.refrence}}</td>
                             <td class="danger">{{i.dept_id.department}}</td>

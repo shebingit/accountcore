@@ -1,4 +1,4 @@
-
+{% load static %}
 </head>
 <body>
 
@@ -38,7 +38,11 @@
             font-size: 12px;
             font-weight: 400;
         }
-       
+       .last_line
+       {
+        color:  rgb(255, 8, 58);
+        
+       }
         
     </style>
   </head>
@@ -48,8 +52,9 @@
        
         <table class="table table-striped">
 			<thead>
+                
 				<tr>
-					<th><img src="static/logo.png" height="95" width="270"> </th>
+					<th> <img src="static/logo.png" height="95" width="270"> </th>
 					<th></th>
 					<th><h3>ALTOS Technologies</h3>
                         <span>1st Floor, Carnival Infopark Phase 1
@@ -75,7 +80,7 @@
                     <tr>
                         <th> <span>Received with thanks from </th>
                        
-                        <th class="line"><span style="font-size: 16px;">{{payhis.reg_id.fullName|upper}}</span></th>
+                        <th class="line"><span style="font-size: 16px;">{{reg.fullName|upper}}</span></th>
                     </tr>
                     <tr></tr>
                     <tr></tr>
@@ -87,7 +92,7 @@
                     <tr></tr>
                     <tr>
                         <th><span>For the purpose of Software Training</span></th>
-                        <th class="line" ><span style="font-size: 14px;">{{payhis.reg_id.dept_id.department}}</span></th>
+                        <th class="line" ><span style="font-size: 14px;">{{reg.dept_id.department}}</span></th>
                     </tr>
                     <tr></tr>
                     <tr></tr>
@@ -99,7 +104,7 @@
                     <tr></tr>
                     <tr>
                         <th> <span>Amount:</span></th>
-                        <th class="line" ><span style="font-size: 14px;">Rs&nbsp; {{payhis.payintial_amt}}.00</span></th>
+                        <th class="line" ><span style="font-size: 14px;">Rs&nbsp; {{reg.reg_payedtotal}}.00</span></th>
                     </tr>
                 </thead>
                 
@@ -145,7 +150,7 @@
                 <span>Thank you!!!</span>
             </h5>
             <br>
-            <hr>
+            <hr class="last_line" >
             <br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

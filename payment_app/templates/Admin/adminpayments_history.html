@@ -1,7 +1,6 @@
-{% extends 'account/account_base.html' %}
+{% extends 'Admin/adminbase.html' %}
 {% load static %}
 {% block body %}
-
 
 
 <style>
@@ -256,7 +255,7 @@
         <div class="contaier-fluid">
             
             <div class="register-details-table">
-                <h4>Payments List <a href="{% url 'paymentfull_view' %}"><i class="bi bi-arrow-right-square-fill"></i></a></h4>
+                <h4>Payments List <a href="{% url 'adminpaymentfull_view' %}"><i class="bi bi-arrow-right-square-fill"></i></a></h4>
                 <div class="line"></div>
                 <div class="container">
 
@@ -437,4 +436,3 @@
 </main>
 
 {% endblock %}
-

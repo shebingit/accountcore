@@ -151,8 +151,11 @@
                     <a href="{% url 'admin_dashboard' %}" class="nav_link active"> 
                         <i class="bi bi-grid-1x2-fill nav_icon"></i> <span class="nav_name">Dashboard</span> 
                     </a> 
-                    <a href="#" class="nav_link"> 
+                    <a href="{% url 'admin_user_list' %}" class="nav_link"> 
                         <i class='bi bi-people-fill nav_icon'></i> <span class="nav_name">Users</span> 
+                    </a> 
+                    <a href="{% url 'admin_allpayments_list' %}" class="nav_link"> 
+                        <i class="bi bi-wallet-fill"></i> <span class="nav_name">Payments</span> 
                     </a> 
                     <!-- <a href="#" class="nav_link"> 
                     <i class='bx bx-message-square-detail nav_icon'></i> <span class="nav_name">Messages</span> </a> <a href="#" class="nav_link"> 
