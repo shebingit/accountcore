@@ -38,6 +38,8 @@ def dashboard(request):
              'pay_pending_count':pay_pending_count}
     return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content})
 
+
+
 def track_payments(request):
     reg=Register.objects.filter(reg_status=1,payment_status=0)
     cur_date=datetime.now().date()
@@ -188,7 +190,7 @@ def save_payment(request):
         paymt.paybalance_amt=int(reg.regbalance_amt) - pay_amt
         paymt.paytotal_amt=int(reg.regtotal_amt)
         paymt.save()
-        reg.payprogress=int(request.POST['progres'])
+        #reg.payprogress=int(request.POST['progres'])
         reg.save()
         msg=1
         reg=Register.objects.filter(reg_status=1)
@@ -415,9 +417,20 @@ def reactivate_user(request,pk):
     reg.payment_status=0
     reg.save()
     msgalert=reg.fullName + " User is Reactivated"
+
     reg=Register.objects.filter(reg_status=1)
+    reg_count=Register.objects.all().count()
+    dept_count=Department.objects.all().count()
     cur_date=datetime.now().date()
-    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'msgalert':msgalert})
+    
+    pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
+   
+    pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
+    content={'dept_count':dept_count,
+             'reg_count':reg_count,
+             'pay_count':pay_count,
+             'pay_pending_count':pay_pending_count}
+    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content,'msgalert':msgalert})
 
 def deactive_user(request,pk):
     reg=Register.objects.get(reg_status=1,id=pk)
@@ -425,8 +438,19 @@ def deactive_user(request,pk):
     reg.save()
     msgalert=reg.fullName + " User is Deactivated"
     reg=Register.objects.filter(reg_status=1)
+    reg_count=Register.objects.all().count()
+    dept_count=Department.objects.all().count()
     cur_date=datetime.now().date()
-    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'msgalert':msgalert})
+    
+    pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
+   
+    pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
+    content={'dept_count':dept_count,
+             'reg_count':reg_count,
+             'pay_count':pay_count,
+             'pay_pending_count':pay_pending_count}
+    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content,'msgalert':msgalert})
+
     
 def delete_user(request,pk):
     reg=Register.objects.get(reg_status=1,id=pk)
@@ -435,8 +459,19 @@ def delete_user(request,pk):
     reg.save()
     msgalert=reg.fullname + " User is Deleted"
     reg=Register.objects.filter(reg_status=1)
+    reg_count=Register.objects.all().count()
+    dept_count=Department.objects.all().count()
     cur_date=datetime.now().date()
-    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'msgalert':msgalert})
+    
+    pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
+   
+    pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
+    content={'dept_count':dept_count,
+             'reg_count':reg_count,
+             'pay_count':pay_count,
+             'pay_pending_count':pay_pending_count}
+    return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content,'msgalert':msgalert})
+
 
 def previous_data(request,pk):
     try:
@@ -595,7 +630,11 @@ def admin_confirm(request,pk):
 
     reg=Register.objects.get(id=pay_aprove.reg_id_id)
     reg.regbalance_amt= int(reg.regbalance_amt - pay_aprove.payintial_amt)
-    reg.reg_payedtotal=int( reg.reg_payedtotal)+int(pay_aprove.payintial_amt)
+    paytol=int( reg.reg_payedtotal)+int(pay_aprove.payintial_amt)
+    reg.reg_payedtotal=paytol
+    progres=int((paytol  * 100) / reg.regtotal_amt)
+    
+    reg.payprogress=progres
     reg.save()
 
     #next payment calculation
@@ -654,7 +693,19 @@ def Search_data(request):
         cur_date=datetime.now().date()
        
         reg=Register.objects.filter(id__in=payhis)
-        return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date})
+       
+        reg_count=Register.objects.all().count()
+        dept_count=Department.objects.all().count()
+        cur_date=datetime.now().date()
+        pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
+    
+        pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
+        content={'dept_count':dept_count,
+                'reg_count':reg_count,
+                'pay_count':pay_count,
+                'pay_pending_count':pay_pending_count}
+        return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content})
+       
     else:
         return redirect('dashboard')
     

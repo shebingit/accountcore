@@ -138,7 +138,9 @@
         #register-list h5{
             font-weight: 700;
             font-size: 1.4em;
-            margin: 0.70em 0em;
+            margin: 0.90em 0em;
+            font-family: 'Times New Roman', Times, serif;
+            text-align: center;
         }
         #register-list .card
         {
@@ -184,15 +186,17 @@
         }
         #register-list .card .search-box button
         {
-            background: none;
+            background: #0c1846;
             border: none;
             margin: none;
             cursor: pointer;
             box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-            padding: 0.20;
+            padding: 0.30em 0.70em;
+            color: #fff;
         }
         #register-list .card .search-box button:hover{
             box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+            background: #040f3b;
         }
 
           /* End Search Box styling */
@@ -280,6 +284,14 @@
             color: #37be19;
             font-weight: 800;
         }
+        #register-details  
+        {
+            margin-top: 2em;
+        }
+        #register-details thead th{
+            font-size: 0.85em;
+        }
+       
       
         
     </style>
@@ -288,7 +300,7 @@
 
 <!--Container List Show-->
 <div class="container-fluid" id="register-list">
-    <h5> Payments List </h5>
+    <h5> PAYMENT LIST</h5>
     <div class="card">
 
         <form action="{% url 'Search_data' %}" method="post">
@@ -298,14 +310,14 @@
              
                 <div class="input-date-box">
                     <label>From Date :</label>
-                    <input type="date" name="fr_data">
+                    <input type="date" name="fr_data" required>
                 </div>
                 <div class="input-date-box">
                     <label>To Date :</label>
-                    <input type="date" name="to_date">
+                    <input type="date" name="to_date" required>
                 </div>
                 <div class="submit-box">
-                    <button type="submit"><i class="bi bi-search"></i></button>
+                    <button type="submit"><i class="bi bi-search"></i> Search</button>
                 </div>
             </div>
         </form>
@@ -331,6 +343,7 @@
                     <th>Date Of Joing</th>
                     <th>Referenced By</th>
                     <th>Department</th>
+                    <th>TL Paid</th>
                     <th>BAL Amount</th>
                     <th>TL Amount</th>
                     <th> Pay Progress</th>
@@ -372,7 +385,7 @@
                         <td class="warning">{{i.dofj}}</td>
                         <td class="warning">{{i.refrence}}</td>
                         <td class="warning">{{i.dept_id.department}}</td>
-
+                        <td class="warning">{{i.reg_payedtotal}}</td>
                         <td class="warning">{{i.regbalance_amt}}</td>
                         <td class="warning">{{i.regtotal_amt}}</td>
                         <td class="payprogress">
@@ -406,7 +419,7 @@
                         <td class="success">{{i.dofj}}</td>
                         <td class="success">{{i.refrence}}</td>
                         <td class="success">{{i.dept_id.department}}</td>
-
+                        <td class="success">{{i.reg_payedtotal}}</td>
                         <td class="success">{{i.regbalance_amt}}</td>
                         <td class="success">{{i.regtotal_amt}}</td>
                         <td class="payprogress">
@@ -455,7 +468,7 @@
                             <td class="danger">{{i.dofj}}</td>
                             <td class="danger">{{i.refrence}}</td>
                             <td class="danger">{{i.dept_id.department}}</td>
-
+                            <td class="danger">{{i.reg_payedtotal}}</td>
                             <td class="danger">{{i.regbalance_amt}}</td>
                             <td class="danger">{{i.regtotal_amt}}</td>
                             <td>

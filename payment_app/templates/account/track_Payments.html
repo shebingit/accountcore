@@ -7,6 +7,16 @@
 <style>
 
 /*Register Box Register-details  Style */
+h6
+{
+    letter-spacing: 0.04em;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color:rgb(38, 17, 63);
+    text-align: center;
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 1em;
+}
 
     #register-box .contaier-fluid
     {
@@ -24,6 +34,34 @@
         background: #ffff;
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
        
+    }
+    .register-details-table .top-section
+    {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+ 
+    .register-details-table .quick-search .quick_links
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1.5em 1em;
+        gap: 1em;
+
+    }
+    .register-details-table .quick-search .quick_links .card
+    {
+        width: 200px;
+        text-align: center;
+        padding: 0.80em 1em;
+        border: none;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        font-size: 0.90em;
+        font-weight: 600;
+        background: #020738;
+        color: #fff;
+        border-radius: 20px;
     }
 
     .register-details h4, .register-details-table h4{
@@ -280,16 +318,19 @@
         margin: none;
      }
      .register-details-table  .search-box button
-     {
-         background: none;
-         border: none;
-         margin: none;
-         cursor: pointer;
-         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-         padding: 0.20;
+     { background: #0c1846;
+        border: none;
+        margin: none;
+        cursor: pointer;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        padding: 0.30em 0.70em;
+        color: #fff;
      }
      .register-details-table .search-box button:hover{
          box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+         background: #040f3b;
+         
+        
      }
 
        /* End Search Box styling */
@@ -327,29 +368,46 @@
             
             <div class="register-details-table">
                 <h4>UPCOMING PAYMENTS</h4> <!--<a href="{% url 'pyments_history' %}"><i class="bi bi-arrow-left-square-fill"></i></a> -->
-                <div class="line"></div>
+                <div class="line mb-5"></div>
 
-                <!-- Form Searching upcoming payments -->
-                <form action="{% url 'upcoming_payments_list' %}" method="post">
-                    {% csrf_token %}
-                    <div class="search-box">
-                        <div class="input-date-box">
-                            <label>From Date :</label>
-                            <input type="date" name="up_fr_data">
+                <div class="top-section">
+
+                    <div class="quick-search">
+                        <h6 >{% now "F" %} Month Payments -  Quick Track</h6>
+                       
+                        <div class="quick_links">
+                            <a href="#"><div class="card">From &nbsp;1 &nbsp;To&nbsp; 7 &nbsp;Days</div></a>
+                            <a href="#"><div class="card"> From &nbsp;8 &nbsp;To &nbsp;15&nbsp; Days </div></a>
+                            <a href="#"><div class="card"> From &nbsp;16 &nbsp;To &nbsp;30&nbsp; Days </div></a>
                         </div>
-                        <div class="input-date-box">
-                            <label>To Date :</label>
-                            <input type="date" name="up_to_date">
-                        </div>
-                        <div class="submit-box">
-                            <button type="submit"><i class="bi bi-search"></i></button>
-                        </div>
+                        
                     </div>
-                </form>
+                    
+    
+                    <!-- Form Searching upcoming payments -->
+                    <form action="{% url 'upcoming_payments_list' %}" method="post" class="mt-5">
+                        {% csrf_token %}
+                        <h6 class="text-center">Track With Date</h6>
+                        <div class="search-box">
+                            <div class="input-date-box">
+                                <label>From Date :</label>
+                                <input type="date" name="up_fr_data" required>
+                            </div>
+                            <div class="input-date-box">
+                                <label>To Date :</label>
+                                <input type="date" name="up_to_date" required>
+                            </div>
+                            <div class="submit-box">
+                                <button type="submit"><i class="bi bi-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
                 <!-- End Form Searching upcoming payments -->
 
                 <div class="notice container">
-                    <p>Note : <span>From The Date  &nbsp;{{content.fr_date|date:'d-m-Y' }} &nbsp;  To  &nbsp;{{content.to_date|date:'d-m-Y'}}  
+                    <p>Note : <span>From The Date  &nbsp;{{content.fr_date}} &nbsp;  To  &nbsp;{{content.to_date}}  
                         &nbsp;There Are {{content.reg_count}} Records Found And The <b>Total Amount</b> Is  &nbsp;<span class="amount">{{content.tk_amount}} </span>
                     </span></p>
                  
