@@ -308,7 +308,7 @@
                             <tr>
                                 <th></th>
                                 <th> Name</th>
-                               
+                                <th>Paid Amount</th>
                                 <th>Bl Amount</th>
                                 <th>Tl Amount</th>
                                 <th>Payments</th>
@@ -322,6 +322,7 @@
                             <tr>
                                 <td><a href="{% url 'addpayment_details' i.id %}" class="add-pyt"><i class="bi bi-plus-circle-fill"></i></a></td>
                                 <td class="progressing">{{i.fullName}}</td>
+                                <td class="progressing">{{i.reg_payedtotal}}</td>
                                 <td class="progressing">{{i.regbalance_amt}}</td> 
                                 <td class="progressing">{{i.regtotal_amt}}</td> 
                                 <td><a href="{% url 'payment_details' i.id %}" class="add-pyt"><i class="bi bi-arrow-right-square-fill"></i></a></td>
@@ -330,6 +331,7 @@
                             <tr>
                                 <td><a href="{% url 'addpayment_details' i.id %}" class="add-pyt"><i class="bi bi-plus-circle-fill"></i></a></td>
                                 <td class="completed">{{i.fullName}}</td>
+                                <td class="completed">{{i.reg_payedtotal}}</td>
                                 <td class="completed">{{i.regbalance_amt}}</td> 
                                 <td class="completed">{{i.regtotal_amt}}</td> 
                                 <td><a href="{% url 'payment_details' i.id %}" class="add-pyt"><i class="bi bi-arrow-right-square-fill"></i></a></td>
@@ -339,6 +341,7 @@
                             <tr>
                                 <td><a href="{% url 'addpayment_details' i.id %}" class="add-pyt"><i class="bi bi-plus-circle-fill"></i></a></td>
                                 <td class="incompleted">{{i.fullName}}</td>
+                                <td class="incompleted">{{i.reg_payedtotal}}</td>
                                 <td class="incompleted">{{i.regbalance_amt}}</td> 
                                 <td class="incompleted">{{i.regtotal_amt}}</td> 
                                 <td><a href="{% url 'payment_details' i.id %}" class="add-pyt"><i class="bi bi-arrow-right-square-fill"></i></a></td>

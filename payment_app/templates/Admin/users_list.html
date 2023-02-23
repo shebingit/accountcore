@@ -241,6 +241,7 @@
                                 <th>Phone Number</th>
                                 <th>Department</th>
                                 <th>Referenced By</th>
+                                <th>Paid Amount</th>
                                 <th>Balance Amount</th>
                                 <th>Total Amount</th>
                                 <th>Status</th>
@@ -252,15 +253,13 @@
                             {% if i.payment_status == 0 %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <!-- <td>
-                                    <a href="{% url 'edit_user' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                    <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a>
-                                </td> -->
+                                
                                 <td class="progressing">{{i.fullName}}</td>
                                 <td class="progressing">{{i.dofj}}</td>
                                 <td class="progressing">{{i.Phone}}</td>
                                 <td class="progressing">{{i.dept_id.department}}</td>
                                 <td class="progressing">{{i.refrence}}</td>
+                                <td class="progressing">{{i.regtotal_amt}}</td>
                                 <td class="progressing">{{i.regbalance_amt}}</td>
                                 <td class="progressing">{{i.regtotal_amt}}</td>
                                 <td class="progressing">
@@ -270,15 +269,13 @@
                             {% elif i.payment_status == 1  %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <!-- <td>
-                                     <a hreh="{% url 'edit_user' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                    <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a>
-                                </td> -->
+                               
                                 <td class="complete">{{i.fullName}}</td>
                                 <td class="complete">{{i.dofj}}</td>
                                 <td class="complete">{{i.Phone}}</td>
                                 <td class="complete">{{i.dept_id.department}}</td>
                                 <td class="complete">{{i.refrence}}</td>
+                                <td class="complete">{{i.regtotal_amt}}</td>
                                 <td class="complete">{{i.regbalance_amt}}</td>
                                 <td class="complete">{{i.regtotal_amt}}</td>
                                 <td class="complete"> 
@@ -289,15 +286,13 @@
                             {% if  i.payment_status == 2 or i.reg_status == 2  %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <!-- <td>
-                                     <a href="{% url 'edit_user' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                                    <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a>
-                                </td> -->
+                                
                                 <td class="incomplete">{{i.fullName}}</td>
                                 <td class="incomplete">{{i.dofj}}</td>
                                 <td class="incomplete">{{i.Phone}}</td>
                                 <td class="incomplete">{{i.dept_id.department}}</td>
                                 <td class="incomplete">{{i.refrence}}</td>
+                                <td class="incomplete">{{i.regtotal_amt}}</td>
                                 <td class="incomplete">{{i.regbalance_amt}}</td>
                                 <td class="incomplete">{{i.regtotal_amt}}</td>
                                 <td class="incomplete">

@@ -6,7 +6,7 @@ from django.conf import settings
 
 urlpatterns = [
 
-    path('',views.login,name='login'),
+    path('',views.login_page,name='login_page'),
     path('Login-Dashboard',views.login_dashboard,name='login_dashboard'),
     path('Admin-Dashboard',views.admin_dashboard,name='admin_dashboard'),
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path('Incompleted-Payments',views.incompleted_payments,name='incompleted_payments'),
     path('Next-Payments',views.track_payments,name='track_payments'),
     path('Upcoming-Payments',views.upcoming_payments_list,name='upcoming_payments_list'),
+    path('Quick-Search/<int:pk>',views.quick_search,name="quick_search"),
     path('Payments-Search',views.paysearch,name='paysearch'),
 
     
@@ -80,6 +81,8 @@ urlpatterns = [
     
 
     #========================== Admin ==============================================
+    
+    path('Admin-Profile',views.admin_account,name='admin_account'),
 
     path('New-Payments-List',views.newpay_confirm_list,name='newpay_confirm_list'),
     path('Payment-Track',views.admin_trackPayments,name='admin_trackPayments'),
@@ -90,13 +93,13 @@ urlpatterns = [
     
     
     path('Admin-User-List',views.admin_user_list,name='admin_user_list'),
-    path('Admin-AllUser-Payments',views.admin_allpayments_list,name='admin_allpayments_list'),
+    path('Admin-All-User-Payments',views.admin_allpayments_list,name='admin_allpayments_list'),
     path('Admin-Pending-Payments',views.admin_pending_payments,name='admin_pending_payments'),
     path('Admin-Completed-Payments',views.admin_completed_payments,name='admin_completed_payments'),
     path('Admin-Incompleted-Payments',views.admin_incompleted_payments,name='admin_incompleted_payments'),
     path('Admin-Payment-Search',views.adminpaysearch,name='adminpaysearch'),
     
-    
+    path('Admin-Quick-Search/<int:pk>',views.adminquick_search,name="adminquick_search"),
     
     
     
@@ -106,7 +109,7 @@ urlpatterns = [
     path('Confirm-Payment/<int:pk>',views.admin_confirm,name="admin_confirm"),
     
     
-    
+    path('LogOut',views.logout_page,name='logout_page'),
     
     
     

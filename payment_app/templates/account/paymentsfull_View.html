@@ -257,7 +257,7 @@
      {
          display: flex;
         flex-wrap: wrap;
-        flex-direction: row;
+        
         align-items: center;
         margin-bottom: 1em;
         justify-content: center;
@@ -281,15 +281,26 @@
      }
      .register-details-table  .search-box button
      {
-         background: none;
-         border: none;
-         margin: none;
-         cursor: pointer;
-         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-         padding: 0.20;
+        background: #0c1846;
+        border: none;
+        margin: none;
+        cursor: pointer;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        padding: 0.30em 0.70em;
+        color: #fff;
      }
      .register-details-table .search-box button:hover{
-         box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+        background: #040f3b;
+     }
+     @media(max-width:832px)
+     {
+        .register-details-table  .search-box
+        {
+    
+           flex-direction: column;
+           gap: 1em;
+        }
      }
 
        /* End Search Box styling */
@@ -307,7 +318,10 @@
 
                 <form action="{% url 'Search_data_full' %}" method="post">
                     {% csrf_token %}
+                    <p class="text-center mb-4 mt-2"><span style="color: #f83b3b;"> Note :</span> Search Payments By Paid Date </p>
+                       
                     <div class="search-box">
+                        
                         <div class="input-date-box">
                             <label>From Date :</label>
                             <input type="date" name="fr_data">
@@ -348,8 +362,7 @@
                                     <tr>
                                         <td>
                                             {{ forloop.counter }}
-                                            <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                            <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                                            
                                         </td>
                                         <td class="progressing">{{i.reg_id.fullName}}</td>
                                     
@@ -380,8 +393,7 @@
                                 <tr>
                                     <td>
                                         {{ forloop.counter }}
-                                        <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                        <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                                       
                                     </td>
                                     <td class="end">{{i.reg_id.fullName}}</td>
                                 
@@ -417,8 +429,7 @@
                                         <tr>
                                             <td>
                                                 {{ forloop.counter }}
-                                                <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                                <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                                                
                                             </td>
                                             <td class="start">{{i.reg_id.fullName}}</td>
                                         

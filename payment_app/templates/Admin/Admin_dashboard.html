@@ -3,6 +3,36 @@
 {% block body %}
 
 <style>
+       /* Login Success Message Box*/
+       .welcome_messagebox
+       {
+          margin-top: 1em;
+          
+          height: 60px;
+       
+          padding: 0.07em 0.10em;
+         
+       }
+       .welcome_messagebox .msg-box
+       {
+           padding: 1em;
+           background: #a0ef94;
+         
+           width: 100%;
+           height: 100%;
+          
+       }
+       .welcome_messagebox .msg-box p{
+           font-weight: 600;
+           font-size: 0.88em;
+           color: #121e50;
+          
+       }
+       .welcome_messagebox .msg-box i{
+           color: #0c376b;
+           padding-right: 0.60em;
+       }
+      
     #action-box
     {
         background:var( --white-color);
@@ -12,6 +42,7 @@
         flex-wrap: wrap;
         gap: 1em;
         height: 30vh;
+       
     }
     #action-box .card
     {
@@ -53,9 +84,31 @@
         font-size: 0.83em;
         font-weight: 600;
     }
+    @media (max-width:832px)
+    {
+        #action-box
+        {
+            background:var( --white-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1em;
+            height: auto;
+            padding: 1em 0.20em;
+        }
+    }
 </style>
 <main>
 <!--Container Main start-->
+{% if msg_succes == 1 %}
+<div class="welcome_messagebox" id="msgbox">
+    <div class="msg-box">
+        <p><i class="bi bi-person-check-fill"></i> Login Successfull...</p>
+    </div>
+</div>
+{% endif %}
+
 <div class="height-100 container-fluid" id="action-box">
 <a href="{% url 'newpay_confirm_list' %}">
     <div class="card">
@@ -94,6 +147,7 @@
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
         border: none;
         padding: 0.80em 0.50em;
+        overflow: scroll;
     }
     #payment-approve .card h4{
         margin-top:0.30em;
@@ -136,9 +190,7 @@
                             <th></th>
                             <th>Full Name</th>
                             <th>Date Of Payed</th>
-                            <!-- <th>Phone Number</th>
-                            <th>Department</th>
-                            <th>Referenced By</th> -->
+                            
                             <th>Paied Amount</th>
                             <th>Balance Amount</th>
                             <th>Total Amount</th>
@@ -155,9 +207,7 @@
                             </td>
                             <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.reg_id.fullName}}</a></td>
                             <td>{{i.paydofj}}</td>
-                            <!-- <td>{{i.Phone}}</td>
-                            <td>{{i.dept_id.department}}</td>
-                            <td>{{i.refrence}}</td> -->
+                           
                             <td>{{i.payintial_amt}}</td>
                             {% if i.paybalance_amt > 0 %}
                             <td class="danger">{{i.paybalance_amt}}</td> 

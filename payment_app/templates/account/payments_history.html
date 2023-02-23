@@ -266,6 +266,7 @@
                                 <th></th>
                                 <th>Full Name</th>
                                 <th>Department</th>
+                                <th>Paid Amount</th>
                                 <th>BAL Amount</th>
                                 <th>TL Amount</th>
                                 <th>Payment List</th>
@@ -279,12 +280,11 @@
                                     <tr>
                                         <td>
                                             {{ forloop.counter }}
-                                            <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                            <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                                         </td>
                                         <td class="progressing">{{i.fullName}}</td>
                                     
                                         <td class="progressing">{{i.dept_id.department}}</td>
+                                        <td class="progressing">{{i.reg_payedtotal}} </td> 
                                         <td class="progressing">{{i.regbalance_amt}} </td> 
                                         <td class="progressing">{{i.regtotal_amt}} </td> 
                                         <td>
@@ -326,12 +326,11 @@
                                 <tr>
                                     <td>
                                         {{ forloop.counter }}
-                                        <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                        <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                                     </td>
                                     <td class="end">{{i.fullName}}</td>
                                 
                                     <td class="end">{{i.dept_id.department}}</td>
+                                    <td class="end">{{i.reg_payedtotal}} </td> 
                                     <td class="end">{{i.regbalance_amt}} </td> 
                                     <td class="end">{{i.regtotal_amt}} </td> 
                                     <td>
@@ -375,12 +374,12 @@
                                     <tr>
                                         <td>
                                             {{ forloop.counter }}
-                                            <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                            <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                                            
                                         </td>
                                         <td class="start">{{i.fullName}}</td>
                                     
                                         <td class="start">{{i.dept_id.department}}</td>
+                                        <td class="start">{{i.reg_payedtotal}} </td> 
                                         <td class="start">{{i.regbalance_amt}} </td> 
                                         <td class="start">{{i.regtotal_amt}} </td> 
                                         <td>

@@ -148,6 +148,10 @@
                     <i class='bx bx-layer nav_logo-icon'></i> <span class="nav_logo-name">Altos Core</span> 
                 </a>
                 <div class="nav_list"> 
+                    <a href="{% url 'admin_account' %}" class="nav_link"> 
+                        <i class="bi bi-person-circle nav_icon"></i>
+                        <span class="nav_name">Account</span> 
+                    </a>
                     <a href="{% url 'admin_dashboard' %}" class="nav_link active"> 
                         <i class="bi bi-grid-1x2-fill nav_icon"></i> <span class="nav_name">Dashboard</span> 
                     </a> 
@@ -164,7 +168,8 @@
                     <i class='bx bx-bar-chart-alt-2 nav_icon'></i> <span class="nav_name">Stats</span> </a>  -->
                 </div>
             </div> 
-            <a href="{% url 'login' %}" class="nav_link"> 
+            
+            <a href="{% url 'logout_page' %}" class="nav_link"> 
                 <i class='bi bi-box-arrow-right nav_icon'></i> 
                 <span class="nav_name">SignOut</span> 
             </a>

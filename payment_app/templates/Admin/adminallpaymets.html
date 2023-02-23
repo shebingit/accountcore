@@ -321,8 +321,7 @@
                     <td>
                         {{ forloop.counter }}
                     
-                    <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                        <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                    
                     </td>
                     {% if cur_date < i.next_pay_date %}
                     <td class="warning">{{i.fullName}}</td>
@@ -369,8 +368,6 @@
                     <td>
                         {{ forloop.counter }}
                     
-                    <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                        <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                     </td>
                     <td class="success">{{i.fullName}}</td>
                     <td class="successmsg success">
@@ -409,8 +406,6 @@
                         <td>
                             {{ forloop.counter }}
                         
-                        <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                            <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
                         </td>
                         {% if cur_date > i.next_pay_date %}
                         <td class="danger">

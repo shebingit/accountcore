@@ -359,6 +359,41 @@ h6
         font-weight: 800;
         font-size: 1.3em;
        }
+       @media (max-width:832px)
+       {
+        h6
+        {
+           
+            font-size: 1.1em;
+            
+        }
+       
+            .register-details-table .top-section
+            {
+                display: grid;
+                grid-template-columns:repeat(1,1fr) 
+            }
+            .register-details-table .quick-search .quick_links
+            {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                margin: 1.5em 1em;
+                gap: 1em;
+
+            }
+            .register-details-table  .search-box
+            {
+                display: flex;
+        
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 1em;
+               
+            }
+       }
 </style>
 
 
@@ -376,18 +411,18 @@ h6
                         <h6 >{% now "F" %} Month Payments -  Quick Track</h6>
                        
                         <div class="quick_links">
-                            <a href="#"><div class="card">From &nbsp;1 &nbsp;To&nbsp; 7 &nbsp;Days</div></a>
-                            <a href="#"><div class="card"> From &nbsp;8 &nbsp;To &nbsp;15&nbsp; Days </div></a>
-                            <a href="#"><div class="card"> From &nbsp;16 &nbsp;To &nbsp;30&nbsp; Days </div></a>
+                            <a href="{% url 'quick_search' 0 %}"><div class="card">From &nbsp;1 &nbsp;To&nbsp; 7 &nbsp;Days</div></a>
+                            <a href="{% url 'quick_search' 1 %}"><div class="card"> From &nbsp;8 &nbsp;To &nbsp;15&nbsp; Days </div></a>
+                            <a href="{% url 'quick_search' 2 %}"><div class="card"> From &nbsp;16 &nbsp;To &nbsp;30&nbsp; Days </div></a>
                         </div>
                         
                     </div>
                     
     
                     <!-- Form Searching upcoming payments -->
-                    <form action="{% url 'upcoming_payments_list' %}" method="post" class="mt-5">
+                    <form action="{% url 'upcoming_payments_list' %}" method="post">
                         {% csrf_token %}
-                        <h6 class="text-center">Track With Date</h6>
+                        <h6 class="text-center">Upcoming Payment Track With Date</h6>
                         <div class="search-box">
                             <div class="input-date-box">
                                 <label>From Date :</label>
@@ -437,8 +472,7 @@ h6
                                     <tr>
                                         <td>
                                             {{ forloop.counter }}
-                                            <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                            <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                                            
                                         </td>
                                         <td class="progressing">{{i.fullName}}</td>
                                     
@@ -454,9 +488,7 @@ h6
                                         <td class="progressing">{{i.reg_payedtotal}} </td> 
                                         <td class="progressing">{{i.regbalance_amt}}</td>
                                         <td class="progressing">{{i.regtotal_amt}}</td>
-                                       
-                                        <!-- <td class="text-center"> <a href="{% url 'singeldata_receipt' i.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td> -->
-                                        
+                                         
                                     </tr>
                                 
                                 {% elif  i.payprogress == 100 or i.payment_status == 1 %}
@@ -464,8 +496,7 @@ h6
                                 <tr>
                                     <td>
                                         {{ forloop.counter }}
-                                        <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                        <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                                       
                                     </td>
                                     <td class="end">{{i.fullName}}</td>
                                 
@@ -485,8 +516,7 @@ h6
                                         <tr>
                                             <td>
                                                 {{ forloop.counter }}
-                                                <!-- <a hreh="#" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                                <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                                                
                                             </td>
                                             <td class="start">{{i.fullName}}</td>
                                         

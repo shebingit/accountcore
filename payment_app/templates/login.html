@@ -13,6 +13,32 @@
     <link rel="stylesheet" href="/static/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="../../assets/images/favicon.png" />
+
+    <style>
+      .messages
+      {
+        font-size: 0.92em;
+        margin-bottom: 1em;
+      }
+      .messages  li
+      {
+        list-style: none;
+        color: rgb(244, 36, 36);
+      }
+      @media(max-width:832px)
+      {
+        .messages
+        {
+          font-size: 0.80em;
+          padding-left: 0em;
+        }
+        .messages  li
+        {
+          list-style: none;
+          color: rgb(244, 36, 36);
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="container-scroller">
@@ -22,15 +48,22 @@
             <div class="card col-lg-4 col-12 mx-auto">
               <div class="card-body px-5 py-5">
                 <h3 class="card-title text-center mb-5">Login</h3>
-                <form action="{% url 'admin_dashboard' %}" method="post"   autocomplete="off">
+                {% if messages %}
+                  <ul class="messages">
+                      {% for message in messages %}
+                      <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                      {% endfor %}
+                  </ul>
+                {% endif %}
+                <form action="{% url 'login_dashboard' %}" method="post"   autocomplete="off">
                   {% csrf_token %}
                   <div class="form-group">
                     <label>Username or email *</label>
-                    <input type="text" name="email" class="form-control p_input text-light" required>
+                    <input type="text" name="uname" class="form-control p_input text-light" required>
                   </div>
                   <div class="form-group">
                     <label>Password *</label>
-                    <input type="password" name="password" class="form-control p_input text-light" required>
+                    <input type="password" name="psw" class="form-control p_input text-light" required>
                   </div>
                   <div class="form-group d-flex align-items-center justify-content-between">
                     <div class="form-check">
@@ -38,7 +71,7 @@
                         
                     </div>
                     <a href="{% url 'dashboard' %}" class="forgot-pass">Forgot password</a>
-                    <a href="{% url 'admin_dashboard' %}" class="forgot-pass">Admin</a>
+                   
                   </div>
                   <div class="text-center">
                     <button type="submit" class="btn btn-primary btn-block enter-btn">Login</button>

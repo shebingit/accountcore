@@ -183,10 +183,13 @@
 
       /* End Search Box styling */
      
-
+    #register-details thead th
+      {
+          font-size: 0.85em;
+      }
     #register-details tbody td
     {
-        font-size: 0.90em;
+        font-size: 0.88em;
     }
     #register-details .danger
     {
@@ -307,6 +310,7 @@
                 <th>Date Of Joing</th>
                 <th>Referenced By</th>
                 <th>Department</th>
+                <th>Paid Amount</th>
                 <th>BAL Amount</th>
                 <th>TL Amount</th>
                 <th> Pay Progress</th>
@@ -322,7 +326,7 @@
                         {{ forloop.counter }}
                     
                     <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                        <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                       
                     </td>
                     {% if cur_date < i.next_pay_date %}
                     <td class="warning">{{i.fullName}}</td>
@@ -348,7 +352,7 @@
                     <td class="warning">{{i.dofj}}</td>
                     <td class="warning">{{i.refrence}}</td>
                     <td class="warning">{{i.dept_id.department}}</td>
-
+                    <td class="warning">{{i.reg_payedtotal}}</td>
                     <td class="warning">{{i.regbalance_amt}}</td>
                     <td class="warning">{{i.regtotal_amt}}</td>
                     <td class="payprogress">
@@ -370,7 +374,7 @@
                         {{ forloop.counter }}
                     
                     <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                        <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                        
                     </td>
                     <td class="success">{{i.fullName}}</td>
                     <td class="successmsg success">
@@ -382,7 +386,7 @@
                     <td class="success">{{i.dofj}}</td>
                     <td class="success">{{i.refrence}}</td>
                     <td class="success">{{i.dept_id.department}}</td>
-
+                    <td class="success">{{i.reg_payedtotal}}</td>
                     <td class="success">{{i.regbalance_amt}}</td>
                     <td class="success">{{i.regtotal_amt}}</td>
                     <td class="payprogress">
@@ -410,7 +414,7 @@
                             {{ forloop.counter }}
                         
                         <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                            <!-- <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a> -->
+                           
                         </td>
                         {% if cur_date > i.next_pay_date %}
                         <td class="danger">
@@ -431,7 +435,7 @@
                         <td class="danger">{{i.dofj}}</td>
                         <td class="danger">{{i.refrence}}</td>
                         <td class="danger">{{i.dept_id.department}}</td>
-
+                        <td class="danger">{{i.reg_payedtotal}}</td>
                         <td class="danger">{{i.regbalance_amt}}</td>
                         <td class="danger">{{i.regtotal_amt}}</td>
                         <td>

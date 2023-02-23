@@ -321,7 +321,7 @@
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>
-                                    <!-- <a hreh="{% url 'edit_user' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> -->
+                                    
                                     <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a>
                                 </td>
                                 <td class="complete">{{i.fullName}}</td>
@@ -340,7 +340,7 @@
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>
-                                    <!-- <a href="{% url 'edit_user' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> -->
+                                  
                                     <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a>
                                 </td>
                                 <td class="incomplete">{{i.fullName}}</td>
