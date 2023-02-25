@@ -21,6 +21,21 @@ urlpatterns = [
     path('Quick-Search/<int:pk>',views.quick_search,name="quick_search"),
     path('Payments-Search',views.paysearch,name='paysearch'),
 
+    # Account Section 
+    path('Account',views.accounts,name='accounts'),
+    path('Salary-Expence',views.salary_expence,name='salary_expence'),
+    path('Employee-Register-Form',views.emp_Register_form,name='emp_Register_form'),
+    path('Employee-Register',views.employee_register_Details,name='employee_register_Details'),
+    path('Remainig-Salary-Payment',views.remaining_salary_expence,name='remaining_salary_expence'),
+    path('Salary-Expence-Form',views.salary_expence_form,name='salary_expence_form'),
+    path('Salary-Expence-Add/<int:pk>',views.salary_expence_add,name="salary_expence_add"),
+    path('Salary-Expence-Save',views.employee_salary_save,name='employee_salary_save'),
+    
+    
+    
+    
+    
+    
     
     
     

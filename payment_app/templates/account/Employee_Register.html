@@ -138,6 +138,9 @@
         font-size: 1.1em;
     
     }
+    #register-details .stus span{
+        font-size: 0.85em;
+    }
     #register-details .edit
     {
         font-size: 0.95em;
@@ -229,45 +232,30 @@
     <section id="register-box">
         <div class="contaier-fluid">
             <div class="register-details">
-                <h4>Internship Register Form</h4>
+                <h4>Employeee Register Form</h4>
                 <div class="line"></div>
                 {% if msg == 1 %}
-                <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-check"></i>Registeration Wating For Admin Approve. </p>
-                </div>
-                {% elif  msg == 2 %}
                 <div class="message-bx-confirm" id="msgbox">
-                    <p><i class="bi bi-check-all"></i>Registeration Completed </p>
+                    <p><i class="bi bi-check-all"></i>Employee Registeration Completed </p>
                 </div>
-                {% elif  msg == 3 %}
-                <div class="message-bx-delete" id="msgbox">
-                    <p><i class="bi bi-x"></i></i>Oops Deleted the User </p>
-                </div>
+                
                 {% endif %}
 
                 <!-- Register Form -->
 
-                <form action="{% url 'register_Details'  %}" method="post">
+                <form action="{% url 'employee_register_Details'  %}" method="post">
                     {% csrf_token %}
                     <div class="input-group-box" >
                         <label>Full Name</label>
-                        <input type="text" name="name" required>
+                        <input type="text" name="empname" required>
                     </div>
                     <div class="input-group-box">
                         <label>Date Of Joing</label>
-                        <input type="date" name="dfj" required>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Phone Number</label>
-                        <input type="tel" name="phno"  pattern="[789][0-9]{9}">
-                    </div>
-                    <div class="input-group-box">
-                        <label>Referenced By</label>
-                        <input type="text" name="refby" required>
+                        <input type="date" name="empdfj" required>
                     </div>
                     <div class="input-group-box">
                         <label>Department</label>
-                        <select name="dept" required >
+                        <select name="empdept" required >
                             <option >-- Select Department -- </option>
                             {% for j in dept %}
                             <option value="{{j.id}}" >{{j.department}} </option>
@@ -275,29 +263,59 @@
                         </select>
                         
                     </div>
+                    
                     <div class="input-group-box">
-                        <label>Date Of Payment</label>
-                        <input type="date" name="dfpayment" required>
+                        <label>Designation </label>
+                        <input type="text" name="empdesig" required>
+                    </div>
+
+                    <div class="input-group-box">
+                        <label>Employeee id </label>
+                        <input type="text" name="empid" required>
+                    </div>
+                    
+                    
+                    <div class="input-group-box">
+                        <label>confirmed Salary</label>
+                        <input type="text" name="empconf_salary" required>
                     </div>
                     <div class="input-group-box">
-                        <label>Initial Amount</label>
-                        <input type="text" name="init_amunt" required>
+                        <label> Salary Amount</label>
+                        <input type="text" name="empsalary_amt" >
                     </div>
                     <div class="input-group-box">
-                        <label>Next Payment Date</label>
-                        <input type="date" name="nxtpdof" >
+                        <label>Salary Month</label>
+                        <select name="empsalary_month"  >
+                            <option >-- Select Salary Month -- </option>
+                           
+                            <option value="Januvary {{current_year}}" >Januvary  {{current_year}}</option>
+                            <option value="February {{current_year}}" >February  {{current_year}}</option>
+                            <option value="March {{current_year}}" >March  {{current_year}}</option>
+                            <option value="April {{current_year}}" >April  {{current_year}}</option>
+                            <option value="May {{current_year}}" >May  {{current_year}}</option>
+                            <option value="June {{current_year}}" >June  {{current_year}}</option>
+                            <option value="July {{current_year}}" >July  {{current_year}}</option>
+                            <option value="August {{current_year}}" >August  {{current_year}}</option>
+                            <option value="September {{current_year}}" >September  {{current_year}}</option>
+                            <option value="October {{current_year}}" >October  {{current_year}}</option>
+                            <option value="November {{current_year}}" >November  {{current_year}}</option>
+                            <option value="December {{current_year}}" >December  {{current_year}}</option>
+
+                           
+                        </select>
                     </div>
                     <div class="input-group-box">
-                        <label>Total Amount</label>
-                        <input type="text" name="tot_amount" required>
+                        <label>Date Of Salary Given</label>
+                        <input type="date" name="empsalary_date" required>
                     </div>
+
                     <div class="submit_button">
                         <button type="submit">Register</button>
                     </div>
                 </form>
             </div>
             <div class="register-details-table">
-                <h4> Internship Registeration Details</h4>
+                <h4> Employeee Registeration Details</h4>
                 <div class="line"></div>
                 <div class="container">
 
@@ -307,61 +325,43 @@
                                 <th></th>
                                 <th>Full Name</th>
                                 <th>Date Of Joing</th>
-                                <th>Phone Number</th>
                                 <th>Department</th>
-                                <th>Referenced By</th>
-                                <th>Initial Amount</th>
-                                <th>Balance Amount</th>
-                                <th>Total Amount</th>
-                                <th>Pay Staus</th>
-                                <th>Status</th>
+                                <th>Designation</th>
+                                <th>Employee Id</th>
+                                <th>Confirmed Salary</th>
+                                <th>Total salary Given</th>
+                                <th>Reg. Status</th>
+                                <th>Salary Status</th>
 
                             </tr>
                         </thead>
                         <tbody>
-                            {% for i in reg %}
+                            {% for i in emp_reg %}
                             <tr>
-                                <td>
-                                    <a href="{% url 'register_edit' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a>
-                                    <a href="{% url 'remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i></a>
-                                </td>
-                                <td>{{i.fullName}}</td>
-                                <td>{{i.dofj}}</td>
-                                <td>{{i.Phone}}</td>
-                                <td>{{i.dept_id.department}}</td>
-                                <td>{{i.refrence}}</td>
-                                {% for j in payhis %}
-                                    {% if j.id == i.firstpay_id %}
-                                        <td>{{j.payintial_amt}}</td>
-                                        
-                                        <td>{{i.regbalance_amt}} </td> 
-                            
-                                        <td> {{j.paytotal_amt}}</td>
-                                   
-                              
-                                        <td>
-                                            {% if j.admin_payconfirm == 1 %}
-                                                <a class="check">
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                </a>
-                                            {% else %}
-                                                <a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a>
-                                            {% endif %}  
-                                        </td>
-                                        <td>
-                                            {% if j.admin_payconfirm == 1 and i.reg_status == 1 %}
-                                                <a href="#" class="confirmbtn">
-                                                   Active
-                                                </a>
-                                            {% else %}
-                                            <a href="#" class="confirmbtn">
-                                                Deactive
-                                             </a>
-            
-                                            {% endif %}  
-                                        </td>
+                                <td>{{forloop.counter}} </td>
+                                <td>{{i.empfullName}}</td>
+                                <td>{{i.empdofj}}</td>
+                                
+                                <td>{{i.empdept_id.department}}</td>
+                                <td>{{i.empdesignation}}</td>
+                                <td>{{i.empidreg}}</td>
+                                <td>{{i.empconfirmsalary}}</td>
+                                <td>{{i.emptol_salary}}</td>
+                                <td class="stus">
+                                    {% if i.emp_status == 1 %}
+                                    <a href="#"><span style="color: #061459;font-weight: 600;"> Active </span></a>
+                                    {% else %}
+                                    <a href="#"><span style="color: #f61212;font-weight: 600;">De-active </span></a>
                                     {% endif %}
-                                {% endfor %}
+                                </td>
+                                <td class="stus">
+                                    {% if i.emp_salary_status == 1 %}
+                                    <a href="#"><span style="color: #6bdb33;font-weight: 600;"> Active </span></a>
+                                    {% else %}
+                                    <a href="#"><span style="color: #f02121;font-weight: 600;">De-active </span></a>
+                                    {% endif %}
+                                </td>
+                                
                             </tr>
                             {% endfor %}
                           

@@ -11,6 +11,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from num2words import num2words
 import calendar
+from django.db.models import Sum
 from django.core.mail import send_mail
 
 
@@ -73,7 +74,6 @@ def login_dashboard(request):
                     else:
                         return redirect('/')
                     
-
             else:
                 messages.info(request, 'Invalid Username  or  Password. Try Again.')
                 return redirect('login_page')
@@ -910,7 +910,187 @@ def next_data(request,pk):
             return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
     else:
         return redirect('/')
+
+#   Account Section 
+
+def accounts(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        emp_reg_count=EmployeeRegister.objects.filter(emp_status=1).count()
+        emp_salary_count=EmployeeRegister.objects.filter(emp_salary_status=1).count()
+        content={'emp_reg_count':emp_reg_count,
+                 'emp_salary_count':emp_salary_count
+                 }
         
+        return render(request,'account/accounts.html',{'content':content})
+    else:
+        return redirect('/')
+    
+ 
+def salary_expence(request):
+    
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+        emp_salary_tol=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+        salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        content={'emp_salary_tol':emp_salary_tol,
+                 'to_date':to_date,
+                 'fr_date':fr_date,
+                 'cur_date':cur_date,
+                 'salary_tol':salary_tol,
+                 }
+        
+        return render(request,'account/salary_expence.html',{'content':content,'salary':salary,})
+    else:
+        return redirect('/')
+    
+
+def salary_expence_form(request):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        current_year = datetime.now().year
+        emp_reg_edit=EmployeeRegister.objects.filter(emp_status=1).first()
+        emp_reg=EmployeeRegister.objects.filter(emp_status=1)
+        return render(request,'account/salary_expence_form.html',{'emp_reg_edit':emp_reg_edit,'emp_reg':emp_reg,'current_year':current_year})
+    else:
+        return redirect('/')
+    
+
+def salary_expence_add(request,pk):
+     
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        current_year = datetime.now().year
+        emp_reg_edit=EmployeeRegister.objects.get(emp_status=1,id=pk)
+        emp_reg=EmployeeRegister.objects.filter(emp_status=1)
+        return render(request,'account/salary_expence_form.html',{'emp_reg_edit':emp_reg_edit,'emp_reg':emp_reg,'current_year':current_year})
+    else:
+        return redirect('/')
+    
+
+def employee_salary_save(request):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        if request.method =='POST':
+            emp_reg=EmployeeRegister.objects.get(id=request.POST['Emp_regid'])
+            emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(request.POST['empsalary_amt'])
+            
+            emp_reg.save()
+
+            emp_salary=EmployeeSalary()
+            emp_salary.empreg_id=emp_reg
+            emp_salary.empsalary_month=request.POST['empsalary_month']
+            emp_salary.empslaray_date=request.POST['empsalary_date']
+            emp_salary.emppaid_amt= int(request.POST['empsalary_amt'])
+            emp_salary.emp_paidstatus=1
+            emp_salary.save()
+          
+            msg=1
+            current_year = datetime.now().year
+            emp_reg=EmployeeRegister.objects.filter(emp_status=1)
+            return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,'current_year':current_year,'msg':msg})
+    else:
+        return redirect('/')
+
+    
+
+def remaining_salary_expence(request):
+     
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        return render(request,'account/salary_expence.html')
+    else:
+        return redirect('/')
+
+
+    
+
+def emp_Register_form(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        current_year = datetime.now().year
+        dept=Department.objects.filter(dpt_Status=1)
+        emp_reg=EmployeeRegister.objects.all()
+        return render(request,'account/Employee_Register.html',{'current_year':current_year,'dept':dept,'emp_reg':emp_reg})
+    else:
+        return redirect('/')
+    
+
+
+def employee_register_Details(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        dept=Department.objects.all()
+        current_year = datetime.now().year
+
+        if request.method =='POST':
+            emp_reg=EmployeeRegister()
+            emp_reg.empfullName=request.POST['empname']
+            emp_reg.empdept_id=Department.objects.get(id=request.POST['empdept'])
+            emp_reg.empdofj=request.POST['empdfj']
+            emp_reg.empdesignation=request.POST['empdesig'].upper()
+            emp_reg.empidreg=request.POST['empid'].upper()
+            emp_reg.empconfirmsalary=int(request.POST['empconf_salary'])
+            emp_reg.empfirst_salry=int(request.POST['empsalary_amt'])
+            emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(request.POST['empsalary_amt'])
+            emp_reg.emp_status=1
+            emp_reg.emp_salary_status=1
+
+            emp_reg.save()
+
+            emp_salary=EmployeeSalary()
+            emp_salary.empreg_id=emp_reg
+            emp_salary.empsalary_month=request.POST['empsalary_month']
+            emp_salary.empslaray_date=request.POST['empsalary_date']
+            emp_salary.emppaid_amt= int(request.POST['empsalary_amt'])
+            emp_salary.emp_paidstatus=1
+            emp_salary.save()
+          
+            msg=1
+
+            dept=Department.objects.filter(dpt_Status=1)
+            emp_reg=EmployeeRegister.objects.all()
+            
+            return render(request,'account/Employee_Register.html',{'current_year':current_year,'dept':dept,'emp_reg':emp_reg,'msg':msg})
+        else:
+            return redirect('emp_Register_form')
+    else:
+        return redirect('/')
+
 
 
 
