@@ -11,7 +11,7 @@
     #register-box .contaier-fluid
     {
         display: grid;
-        grid-template-columns: 0.90fr 2.2fr;
+        grid-template-columns: 0.80fr 2.3fr;
         padding: 1em;
         gap: 1em;
         background-color:#fafafa;
@@ -285,23 +285,19 @@
                     </div>
                     <div class="input-group-box">
                         <label>Salary Month</label>
-                        <select name="empsalary_month"  >
+                        <select name="empsalary_month"   >
                             <option >-- Select Salary Month -- </option>
-                           
-                            <option value="Januvary {{current_year}}" >Januvary  {{current_year}}</option>
-                            <option value="February {{current_year}}" >February  {{current_year}}</option>
-                            <option value="March {{current_year}}" >March  {{current_year}}</option>
-                            <option value="April {{current_year}}" >April  {{current_year}}</option>
-                            <option value="May {{current_year}}" >May  {{current_year}}</option>
-                            <option value="June {{current_year}}" >June  {{current_year}}</option>
-                            <option value="July {{current_year}}" >July  {{current_year}}</option>
-                            <option value="August {{current_year}}" >August  {{current_year}}</option>
-                            <option value="September {{current_year}}" >September  {{current_year}}</option>
-                            <option value="October {{current_year}}" >October  {{current_year}}</option>
-                            <option value="November {{current_year}}" >November  {{current_year}}</option>
-                            <option value="December {{current_year}}" >December  {{current_year}}</option>
+                            {% for value, label in months  %}
+                            <option value="{{ label }}">{{ label }}</option>
+                            {% endfor %}
 
-                           
+                        </select>
+                        <label>Salary Year</label>
+                        <select name="empsalary_year" >
+                            <option value="{{current_year}}">{{current_year}}</option>
+                            {% for value, label in years  %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="input-group-box">
@@ -329,7 +325,7 @@
                                 <th>Designation</th>
                                 <th>Employee Id</th>
                                 <th>Confirmed Salary</th>
-                                <th>Total salary Given</th>
+                                <th>Total Salary</th>
                                 <th>Reg. Status</th>
                                 <th>Salary Status</th>
 

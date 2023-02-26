@@ -4,6 +4,7 @@ from payment_app.models import *
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+import datetime
 from datetime import datetime,timedelta
 from django.conf import settings
 from django.http import HttpResponse
@@ -59,7 +60,39 @@ def login_dashboard(request):
                         reg=Register.objects.filter(reg_status=1)
                         reg_count=Register.objects.all().count()
                         dept_count=Department.objects.all().count()
+
                         cur_date=datetime.now().date()
+                        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+                        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date)
+                        
+                        inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True)).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True))
+                        if inex:
+                            print('Data Found')
+
+                        else:
+                            not_in_inex = fixexp.exclude(fixed_date__in=inex.values_list('exin_date', flat=True)).exclude(fixed_head_name__in=inex.values_list('exin_head_name', flat=True)).values_list('id', flat=True)
+                            fixexp=FixedExpence.objects.filter(id__in=not_in_inex)
+                            for i in fixexp:
+                                incomeexp = IncomeExpence()
+                                incomeexp.exin_head_name=i.fixed_head_name
+                                incomeexp.exin_date=i.fixed_date
+                                incomeexp.exin_amount=i.fixed_amount
+                                incomeexp.exin_typ=2
+                                incomeexp.exin_dese=i.fixed_dese
+                                incomeexp.exin_status=1
+                                incomeexp.save()
+                                exp_date=i.fixed_date
+                                today = date.today()
+
+                                # Calculate the number of days in the current month
+                                days_in_month = (today.replace(month=today.month+1, day=1) - timedelta(days=1)).day
+                            
+                                fr_date=exp_date + timedelta(days=days_in_month)
+                                i.fixed_date=fr_date
+                                i.save()
+
+                          
+                       
                         pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
                     
                         pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
@@ -919,16 +952,152 @@ def accounts(request):
             uid = request.session['uid']
         else:
             return redirect('/')
+        
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        in_ex_count=IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date).count()
+        fixed_ex_count=FixedExpence.objects.all().count()
+        
+
+        income=IncomeExpence.objects.filter(exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        expence=IncomeExpence.objects.filter(exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+
         emp_reg_count=EmployeeRegister.objects.filter(emp_status=1).count()
         emp_salary_count=EmployeeRegister.objects.filter(emp_salary_status=1).count()
         content={'emp_reg_count':emp_reg_count,
-                 'emp_salary_count':emp_salary_count
+                 'emp_salary_count':emp_salary_count,
+                 'income':income,
+                 'expence':expence,
+                 'in_ex_count':in_ex_count,
+                 'fixed_ex_count':fixed_ex_count
+                 
                  }
         
         return render(request,'account/accounts.html',{'content':content})
     else:
         return redirect('/')
     
+def fixed_expence(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        fixededit=FixedExpence.objects.all()
+
+        if fixededit:
+
+            fixededit=None   
+
+        fixedexp=FixedExpence.objects.all()
+        content=''
+        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+    else:
+        return redirect('/')
+
+
+def fixed_expence_add(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        if request.POST['fixed_id']:
+
+            fixededit=FixedExpence.objects.get(fixed_status=1,id=int(request.POST['fixed_id']))
+            fixededit.fixed_head_name=request.POST.get('fixed_head_name').upper()
+
+            if request.POST.get('fixed_date'):
+                fixededit.fixed_date=request.POST.get('fixed_date')
+            else:
+                fixededit.fixed_date= fixededit.fixed_date
+
+            fixededit.fixed_amount=request.POST.get('fixed_amt')
+            fixededit.fixed_dese=request.POST.get('fixed_dese')
+            msg=3
+            fixededit.save()
+
+        else:
+        
+            if request.method =='POST':
+                fixedexp_reg=FixedExpence()
+                fixedexp_reg.fixed_head_name=request.POST['fixed_head_name'].upper()
+                fixedexp_reg.fixed_date=request.POST['fixed_date']
+                fixedexp_reg.fixed_amount=request.POST['fixed_amt']
+                fixedexp_reg.fixed_dese=request.POST['fixed_dese']
+                fixedexp_reg.fixed_status=1
+                fixedexp_reg.save()
+                msg=1
+
+        fixededit=''
+       
+        fixedexp=FixedExpence.objects.all()
+        content={'msg':msg}
+        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+    else:
+        return redirect('/')
+    
+
+def fixed_edit(request,pk):
+    
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        fixededit=FixedExpence.objects.get(id=pk)
+        fixedexp=FixedExpence.objects.all()
+        content=''
+        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+    
+    else:
+        return redirect('/')
+
+def fixed_delete(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        fixededit=FixedExpence.objects.get(fixed_status=1,id=pk)
+        fixededit.delete()
+        fixedexp=FixedExpence.objects.all()
+        fixededit=''
+        msg=2
+        content={'msg':msg}
+        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+        
+    else:
+        return redirect('/')
+    
+
+    
+def fixed_change_status(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        fixededit=FixedExpence.objects.get(id=pk)
+        if fixededit.fixed_status == 1:
+            fixededit.fixed_status=0
+        else:
+             fixededit.fixed_status=1
+        fixededit.save()
+        fixedexp=FixedExpence.objects.all()
+        content=''
+        fixededit=''
+        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+        
+    else:
+        return redirect('/')
+
+
  
 def salary_expence(request):
     
@@ -937,10 +1106,12 @@ def salary_expence(request):
             uid = request.session['uid']
         else:
             return redirect('/')
+        
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
         emp_salary_tol=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
 
         salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
@@ -965,9 +1136,23 @@ def salary_expence_form(request):
         else:
             return redirect('/')
         current_year = datetime.now().year
+
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+        
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+        emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+
         emp_reg_edit=EmployeeRegister.objects.filter(emp_status=1).first()
+        
+        content={'months':months,'years':years}
+
         emp_reg=EmployeeRegister.objects.filter(emp_status=1)
-        return render(request,'account/salary_expence_form.html',{'emp_reg_edit':emp_reg_edit,'emp_reg':emp_reg,'current_year':current_year})
+        return render(request,'account/salary_expence_form.html',{'emp_reg_edit':emp_reg_edit,'emp_reg':emp_reg,
+                            'current_year':current_year,'emp_salary':emp_salary,'content':content})
     else:
         return redirect('/')
     
@@ -979,11 +1164,27 @@ def salary_expence_add(request,pk):
             uid = request.session['uid']
         else:
             return redirect('/')
+
+        
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+        
         
         current_year = datetime.now().year
+
+        
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+        emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+
+        content={'months':months,'years':years}
+
         emp_reg_edit=EmployeeRegister.objects.get(emp_status=1,id=pk)
         emp_reg=EmployeeRegister.objects.filter(emp_status=1)
-        return render(request,'account/salary_expence_form.html',{'emp_reg_edit':emp_reg_edit,'emp_reg':emp_reg,'current_year':current_year})
+        return render(request,'account/salary_expence_form.html',{'emp_reg_edit':emp_reg_edit,
+                                'emp_reg':emp_reg,'current_year':current_year,'emp_salary':emp_salary,'content':content})
     else:
         return redirect('/')
     
@@ -996,6 +1197,10 @@ def employee_salary_save(request):
         else:
             return redirect('/')
         
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+        
+        
         if request.method =='POST':
             emp_reg=EmployeeRegister.objects.get(id=request.POST['Emp_regid'])
             emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(request.POST['empsalary_amt'])
@@ -1004,16 +1209,21 @@ def employee_salary_save(request):
 
             emp_salary=EmployeeSalary()
             emp_salary.empreg_id=emp_reg
-            emp_salary.empsalary_month=request.POST['empsalary_month']
+
+            m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
+            emp_salary.empsalary_month= str(m)+ ' ' + str(request.POST['empsalary_year']),
+
             emp_salary.empslaray_date=request.POST['empsalary_date']
             emp_salary.emppaid_amt= int(request.POST['empsalary_amt'])
             emp_salary.emp_paidstatus=1
             emp_salary.save()
           
             msg=1
+            content={'months':months,'years':years} 
+
             current_year = datetime.now().year
             emp_reg=EmployeeRegister.objects.filter(emp_status=1)
-            return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,'current_year':current_year,'msg':msg})
+            return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,'current_year':current_year,'msg':msg,'content':content})
     else:
         return redirect('/')
 
@@ -1031,6 +1241,41 @@ def remaining_salary_expence(request):
         return redirect('/')
 
 
+def income_expence_form(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('exin_date')
+        return render(request,'account/income_expence.html',{'exp_income':exp_income})
+    else:
+        return redirect('/')
+    
+
+def income_expence_add(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        if request.method =='POST':
+            ex_in=IncomeExpence()
+            ex_in.exin_head_name=request.POST['exin_head_name'].upper()
+            ex_in.exin_date=request.POST['exin_date']
+            ex_in.exin_amount=request.POST['exin_amt']
+            ex_in.exin_dese=request.POST['exin_dese']
+            ex_in.exin_typ=request.POST['exin_type']
+            ex_in.exin_status=1
+            ex_in.save()
+            msg=1
+            exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('exin_date')
+
+        return render(request,'account/income_expence.html',{'msg':msg,'exp_income':exp_income})
+    else:
+        return redirect('/')
+
     
 
 def emp_Register_form(request):
@@ -1039,10 +1284,16 @@ def emp_Register_form(request):
             uid = request.session['uid']
         else:
             return redirect('/')
+        
         current_year = datetime.now().year
+       
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+        
         dept=Department.objects.filter(dpt_Status=1)
+       
         emp_reg=EmployeeRegister.objects.all()
-        return render(request,'account/Employee_Register.html',{'current_year':current_year,'dept':dept,'emp_reg':emp_reg})
+        return render(request,'account/Employee_Register.html',{'current_year':current_year,'dept':dept,'emp_reg':emp_reg,'months':months,'years':years})
     else:
         return redirect('/')
     
@@ -1056,6 +1307,9 @@ def employee_register_Details(request):
             return redirect('/')
         dept=Department.objects.all()
         current_year = datetime.now().year
+        
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
 
         if request.method =='POST':
             emp_reg=EmployeeRegister()
@@ -1074,18 +1328,24 @@ def employee_register_Details(request):
 
             emp_salary=EmployeeSalary()
             emp_salary.empreg_id=emp_reg
-            emp_salary.empsalary_month=request.POST['empsalary_month']
-            emp_salary.empslaray_date=request.POST['empsalary_date']
+          
+            m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
+          
+            emp_salary.empsalary_month= str(m)+ ' ' + str(request.POST['empsalary_year']),
+            emp_salary.empslaray_date= request.POST['empsalary_date']
             emp_salary.emppaid_amt= int(request.POST['empsalary_amt'])
             emp_salary.emp_paidstatus=1
-            emp_salary.save()
+            #emp_salary.save()
           
             msg=1
 
             dept=Department.objects.filter(dpt_Status=1)
             emp_reg=EmployeeRegister.objects.all()
+
+           
             
-            return render(request,'account/Employee_Register.html',{'current_year':current_year,'dept':dept,'emp_reg':emp_reg,'msg':msg})
+            return render(request,'account/Employee_Register.html',{'current_year':current_year,
+                        'dept':dept,'emp_reg':emp_reg,'msg':msg,'months':months,'years':years})
         else:
             return redirect('emp_Register_form')
     else:

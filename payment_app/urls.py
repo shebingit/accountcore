@@ -23,7 +23,19 @@ urlpatterns = [
 
     # Account Section 
     path('Account',views.accounts,name='accounts'),
+    path('Fixed_Expence',views.fixed_expence,name='fixed_expence'),
+    path('Fixed_Expence-Save',views.fixed_expence_add,name='fixed_expence_add'),
+    path('Fixed-Edit/<int:pk>',views.fixed_edit,name="fixed_edit"),
+    path('Fixed-Delete/<int:pk>',views.fixed_delete,name="fixed_delete"),
+    path('Fixed-Status-Change/<int:pk>',views.fixed_change_status,name="fixed_change_status"),
+    
+    
+    
     path('Salary-Expence',views.salary_expence,name='salary_expence'),
+    path('Income-Expence',views.income_expence_form,name='income_expence_form'),
+    path('Income-Expence-Save',views.income_expence_add,name='income_expence_add'),
+    
+    
     path('Employee-Register-Form',views.emp_Register_form,name='emp_Register_form'),
     path('Employee-Register',views.employee_register_Details,name='employee_register_Details'),
     path('Remainig-Salary-Payment',views.remaining_salary_expence,name='remaining_salary_expence'),
@@ -32,12 +44,7 @@ urlpatterns = [
     path('Salary-Expence-Save',views.employee_salary_save,name='employee_salary_save'),
     
     
-    
-    
-    
-    
-    
-    
+
     
     path('Users-List',views.Users_list,name='Users_list'),
     path('Edit-User/<int:pk>',views.edit_user,name="edit_user"),

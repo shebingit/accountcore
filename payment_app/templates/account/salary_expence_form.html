@@ -283,21 +283,17 @@
                         <label>Salary Month</label>
                         <select name="empsalary_month"  required>
                             <option >-- Select Salary Month -- </option>
-                           
-                            <option value="Januvary {{current_year}}" >Januvary  {{current_year}}</option>
-                            <option value="February {{current_year}}" >February  {{current_year}}</option>
-                            <option value="March {{current_year}}" >March  {{current_year}}</option>
-                            <option value="April {{current_year}}" >April  {{current_year}}</option>
-                            <option value="May {{current_year}}" >May  {{current_year}}</option>
-                            <option value="June {{current_year}}" >June  {{current_year}}</option>
-                            <option value="July {{current_year}}" >July  {{current_year}}</option>
-                            <option value="August {{current_year}}" >August  {{current_year}}</option>
-                            <option value="September {{current_year}}" >September  {{current_year}}</option>
-                            <option value="October {{current_year}}" >October  {{current_year}}</option>
-                            <option value="November {{current_year}}" >November  {{current_year}}</option>
-                            <option value="December {{current_year}}" >December  {{current_year}}</option>
+                            {% for value, label in content.months  %}
+                            <option value="{{ label }}">{{ label }}</option>
+                            {% endfor %}
 
-                           
+                        </select>
+                        <label>Salary Year</label>
+                        <select name="empsalary_year" >
+                            <option value="{{current_year}}">{{current_year}}</option>
+                            {% for value, label in content.years  %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="input-group-box">
@@ -326,9 +322,9 @@
                                 <th>Designation</th>
                                 <th>Employee Id</th>
                                 <th>Confirmed Salary</th>
-                                <th>Total salary Given</th>
-                                <th>Reg. Status</th>
-                                <th>Salary Status</th>
+                                <th>Current Salary </th>
+                                <th>Paid Amount</th>
+                                <!-- <th>Salary Status</th> --> 
 
                             </tr>
                         </thead>
@@ -344,8 +340,24 @@
                                 <td>{{i.empdesignation}}</td>
                                 <td>{{i.empidreg}}</td>
                                 <td>{{i.empconfirmsalary}}</td>
-                                <td>{{i.emptol_salary}}</td>
-                                <td class="stus">
+                                <td>
+                                 
+                                        {% for j in emp_salary %}
+                                            {% if i.id == j.empreg_id.id %}
+                                                <span style="color: #368f0a; font-weight: 700;">Paid</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                  
+                                </td>
+                                <td>
+                                    
+                                    {% for j in emp_salary %}
+                                    {% if i.id == j.empreg_id.id %}
+                                        <span style="font-weight: 700;">{{j.emppaid_amt}}</span>
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <!-- <td class="stus">
                                     {% if i.emp_status == 1 %}
                                     <a href="#"><span style="color: #061459;font-weight: 600;"> Active </span></a>
                                     {% else %}
@@ -358,7 +370,7 @@
                                     {% else %}
                                     <a href="#"><span style="color: #f02121;font-weight: 600;">De-active </span></a>
                                     {% endif %}
-                                </td>
+                                </td> -->
                                 
                             </tr>
                             {% endfor %}

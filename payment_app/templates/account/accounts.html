@@ -87,6 +87,58 @@
         font-size: 0.83em;
         font-weight: 600;
     }
+    #income-exp-box
+    {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        
+    }
+    .left-side-box
+    {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        justify-content:center;
+        gap:0.60em;
+        margin-top: 2em;
+        padding: 1em;
+    }
+    .left-side-box .card{
+        width: 230px;
+        height: 220px;
+        text-align: center;
+        margin: 0.50em;
+        padding-top: 1em;
+        border: none;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    }
+    .left-side-box .card h4{
+        font-size: 1.2em;
+        font-weight: 600;
+        color: #243062;
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .left-side-box .card h4 span{
+        font-size: 18px;
+        color: #384387;
+    }
+    .loader 
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 120px;
+    }
+    .loader .value
+    {
+        font-size: 2.2em;
+        color: #243062;
+    }
+    .loader .rupe
+    {
+        font-size: 1.7em;
+        color: #243062;
+    }
 </style>
 
 <!--Container Main start-->
@@ -101,43 +153,83 @@
         </div>
     </div>
 </a>
-<a href="{% url 'pyment_form' %}">
+<a href="{% url 'income_expence_form' %}">
     <div class="card">
-        <i class="bi bi-currency-rupee"></i><h5>Income </h5>
+        <i class="bi bi-currency-rupee"></i><h5>Income/Expence </h5>
         <div class="nofication">
-            <span>{{content.pay_pending_count}}</span>
+            <span>{{content.in_ex_count}}</span>
         </div>
     </div>
 </a>
-<a href="{% url 'pyment_form' %}">
-    <div class="card">
-        <i class="bi bi-currency-rupee"></i><h5>Other Income</h5>
-        <div class="nofication">
-            <span>{{content.pay_pending_count}}</span>
-        </div>
-    </div>
-</a>
+
 <a href="{% url 'salary_expence' %}">
     <div class="card">
-        <i class="bi bi-currency-rupee"></i><h5>Salary Expence</h5>
+        <i class="bi bi-currency-rupee"></i><h5>Salary Expence </h5>
         <div class="nofication">
             <span>{{content.emp_salary_count}}</span>
         </div>
     </div>
 </a>
-<a href="{% url 'track_payments' %}">
+<a href="{% url 'fixed_expence' %}">
     <div class="card">
-        <i class="bi bi-search"></i><h5>Other Expence</h5>
+        <i class="bi bi-currency-rupee"></i><h5>Fixed Expence </h5>
         <div class="nofication">
-            <span>{{content.pay_count}}</span>
+            <span>{{content.fixed_ex_count}}</span>
         </div>
     </div>
 </a>
 
 </div>
-<!--Container Main end-->
+
+<div class="container" id="income-exp-box">
+    <div class="left-side-box">
+        <div class="card">
+           <h4>{% now "F" %} Income <span><i class="bi bi-calendar3"></i></span></h4>
+
+            <div class="loader">
+                <span><i class="bi bi-currency-rupee rupe"></i><span class="value" akhi="{{content.income}}">0</span></span>
+            </div>
+        </div>
+        <div class="card">
+            <h4>{% now "F" %} Expence <span><i class="bi bi-calendar3"></i></span></h4>
+            <div class="loader">
+                <span><i class="bi bi-currency-rupee rupe"></i><span class="value" akhi="{{content.expence}}">0</span></span>
+            </div>
+        </div>
+    </div>
+    <div class="right-side-box">
+        
+    </div>
+    
+</div>
+
+<!--script for counter -->
+
+<script>
+    const counters = document.querySelectorAll('.value');
+    const speed = 400;
+    
+    counters.forEach( counter => {
+       const animate = () => {
+          const value = +counter.getAttribute('akhi');
+          const data = +counter.innerText;
+         
+          const time = value / speed;
+         if(data < value) {
+              counter.innerText = Math.ceil(data + time);
+              setTimeout(animate, 1);
+            }else{
+              counter.innerText = value;
+            }
+         
+       }
+       
+       animate();
+    });
+</script>
 
 
 </main>
+<!-- Main end-->
 
 {% endblock %}

@@ -69,3 +69,21 @@ class Expence_Details(models.Model):
     exp_status = models.IntegerField(default=0)
 
 
+
+class FixedExpence(models.Model):
+    fixed_head_name = models.CharField(max_length=255)
+    fixed_date = models.DateField(auto_now_add=False,null=True)
+    fixed_amount = models.IntegerField(default=0)
+    fixed_typ = models.IntegerField(default=0)
+    fixed_dese = models.TextField(default='')
+    fixed_status = models.IntegerField(default=0)
+
+
+class IncomeExpence(models.Model):
+    exin_head_name = models.CharField(max_length=255)
+    exin_date = models.DateField(auto_now_add=False,null=True)
+    exin_amount = models.IntegerField(default=0)
+    exin_typ = models.IntegerField(default=0)
+    exin_dese = models.TextField(default='')
+    exin_status = models.IntegerField(default=0)
+
