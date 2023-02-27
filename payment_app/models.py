@@ -82,7 +82,7 @@ class FixedExpence(models.Model):
 class IncomeExpence(models.Model):
     exin_head_name = models.CharField(max_length=255)
     exin_date = models.DateField(auto_now_add=False,null=True)
-    exin_amount = models.IntegerField(default=0)
+    exin_amount = models.IntegerField(default=0,null=True)
     exin_typ = models.IntegerField(default=0)
     exin_dese = models.TextField(default='')
     exin_status = models.IntegerField(default=0)

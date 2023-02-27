@@ -63,7 +63,75 @@ def login_dashboard(request):
 
                         cur_date=datetime.now().date()
                         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
-                        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date)
+                        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+                        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+                        #Income adding to IncomeExpence Table
+                        if PaymentHistory.objects.exists():
+                            inexpe=IncomeExpence.objects.filter(exin_head_name='TRAINING',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                            payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                            #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
+
+                            if payhis:
+
+                                if inexpe:
+                                    inexpe.exin_head_name='TRAINING'
+                                    inexpe.exin_amount=payhis
+                                    inexpe.exin_typ=1
+                                    inexpe.exin_date=to_date
+                                    inexpe.exin_status=1
+                                    inexpe.save()
+
+                                else:
+
+                                    incexpence=IncomeExpence()
+                                    incexpence.exin_head_name='TRAINING'
+                                    incexpence.exin_amount=payhis
+                                    incexpence.exin_typ=1
+                                    incexpence.exin_date=cur_date
+                                    incexpence.exin_status=1
+                                    incexpence.save()
+                            else:
+                                print('Payment History Is Amount Empty')
+                        else:
+                            print('Payment History Is Empty')
+
+                        # Salay Expence adding to IncomeExpence Table
+
+                        if EmployeeSalary.objects.exists():
+
+                            inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                            sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                            #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
+                            
+                            if sal_exp:
+
+                                if inexp:
+
+                                    inexp.exin_head_name='SALARY'
+                                    inexp.exin_amount=sal_exp
+                                    inexp.exin_typ=2
+                                    inexp.exin_date=to_date
+                                    inexp.exin_status=1
+                                    inexp.save()
+                                
+                                else:
+
+                                    incexp=IncomeExpence()
+                                    incexp.exin_head_name='SALARY'
+                                    incexp.exin_amount=sal_exp
+                                    incexp.exin_typ=2
+                                    incexp.exin_date=cur_date
+                                    incexp.exin_status=1
+                                    incexp.save()
+                            else:
+                                print('Employee Salary Is Amount Empty')
+                        else:
+                            print('Employee Salary Is Empty')
+
+                        # Fixed Expence adding to the IncomeEpence Table
+
+                        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date,fixed_status=1)
                         
                         inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True)).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True))
                         if inex:
@@ -130,7 +198,116 @@ def dashboard(request):
         reg=Register.objects.filter(reg_status=1)
         reg_count=Register.objects.all().count()
         dept_count=Department.objects.all().count()
+
         cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        #Income adding to IncomeExpence Table
+        if PaymentHistory.objects.exists():
+            try:
+                inexpe=IncomeExpence.objects.filter(exin_head_name='TRAINING',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
+                
+                if payhis:
+                                
+                    if inexpe:
+                        inexpe.exin_head_name='TRAINING'
+                        inexpe.exin_amount=payhis
+                        inexpe.exin_typ=1
+                        inexpe.exin_date=to_date
+                        inexpe.exin_status=1
+                        inexpe.save()
+
+                    else:
+
+                        incexpence=IncomeExpence()
+                        incexpence.exin_head_name='TRAINING'
+                        incexpence.exin_amount=payhis
+                        incexpence.exin_typ=1
+                        incexpence.exin_date=cur_date
+                        incexpence.exin_status=1
+                        incexpence.save()
+                else:
+                    print('No Data')
+
+            except PaymentHistory.DoesNotExist:
+                    print('No Data')
+        else:
+            print('No Data')
+     
+
+
+        # Salay Expence adding to IncomeExpence Table
+        if EmployeeSalary.objects.exists():
+            try:
+                inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
+                
+                if sal_exp: 
+
+                    if inexp:
+
+                        inexp.exin_head_name='SALARY'
+                        inexp.exin_amount=sal_exp
+                        inexp.exin_typ=2
+                        inexp.exin_date=to_date
+                        inexp.exin_status=1
+                        inexp.save()
+                                    
+                    else:
+
+                        incexp=IncomeExpence()
+                        incexp.exin_head_name='SALARY'
+                        incexp.exin_amount=sal_exp
+                        incexp.exin_typ=2
+                        incexp.exin_date=cur_date
+                        incexp.exin_status=1
+                        incexp.save()
+                else:
+                    print('No Data')
+
+            except EmployeeSalary.DoesNotExist:
+                    print('No Data')
+                            
+        else:
+            print('No Data')
+            # Fixed Expence adding to the IncomeEpence Table
+
+        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date,fixed_status=1)
+                        
+        inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True)).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True))
+        if inex:
+            print('Data Found')
+
+        else:
+
+            not_in_inex = fixexp.exclude(fixed_date__in=inex.values_list('exin_date', flat=True)).exclude(fixed_head_name__in=inex.values_list('exin_head_name', flat=True)).values_list('id', flat=True)
+            fixexp=FixedExpence.objects.filter(id__in=not_in_inex)
+            for i in fixexp:
+                incomeexp = IncomeExpence()
+                incomeexp.exin_head_name=i.fixed_head_name
+                incomeexp.exin_date=i.fixed_date
+                incomeexp.exin_amount=i.fixed_amount
+                incomeexp.exin_typ=2
+                incomeexp.exin_dese=i.fixed_dese
+                incomeexp.exin_status=1
+                incomeexp.save()
+                exp_date=i.fixed_date
+                today = date.today()
+
+                # Calculate the number of days in the current month
+                days_in_month = (today.replace(month=today.month+1, day=1) - timedelta(days=1)).day
+                            
+                fr_date=exp_date + timedelta(days=days_in_month)
+                i.fixed_date=fr_date
+                i.save()
+
+
+
         pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
     
         pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
@@ -964,13 +1141,31 @@ def accounts(request):
 
         income=IncomeExpence.objects.filter(exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
         expence=IncomeExpence.objects.filter(exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        if not income:
+            income=1
+        if not expence:
+            expence=1
+        balans=int(income) -int(expence)
+        
+        bal_p= income - expence 
+        bal_p= (bal_p/income) * 100
+        exp_pr=100 - bal_p
+        
+        if bal_p < 0:
+            
+            bal_p=-(bal_p)
+        
 
+       
         emp_reg_count=EmployeeRegister.objects.filter(emp_status=1).count()
-        emp_salary_count=EmployeeRegister.objects.filter(emp_salary_status=1).count()
+        emp_salary_count=EmployeeRegister.objects.filter(emp_salary_status=1,empdofj__lt=fr_date).count()
         content={'emp_reg_count':emp_reg_count,
                  'emp_salary_count':emp_salary_count,
                  'income':income,
                  'expence':expence,
+                 'balans':balans,
+                 'bal_p':bal_p,
+                 'exp_pr':exp_pr,
                  'in_ex_count':in_ex_count,
                  'fixed_ex_count':fixed_ex_count
                  
@@ -1112,7 +1307,7 @@ def salary_expence(request):
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
-        emp_salary_tol=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+        emp_salary_tol=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
 
         salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
         salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
@@ -1204,11 +1399,12 @@ def employee_salary_save(request):
         if request.method =='POST':
             emp_reg=EmployeeRegister.objects.get(id=request.POST['Emp_regid'])
             emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(request.POST['empsalary_amt'])
-            
+            emp_reg.emp_salary_status=1
             emp_reg.save()
 
             emp_salary=EmployeeSalary()
             emp_salary.empreg_id=emp_reg
+          
 
             m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
             emp_salary.empsalary_month= str(m)+ ' ' + str(request.POST['empsalary_year']),
@@ -1222,8 +1418,15 @@ def employee_salary_save(request):
             content={'months':months,'years':years} 
 
             current_year = datetime.now().year
+
+            cur_date=datetime.now().date()
+            fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+            last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+            to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+            emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+            
             emp_reg=EmployeeRegister.objects.filter(emp_status=1)
-            return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,'current_year':current_year,'msg':msg,'content':content})
+            return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,'current_year':current_year,'msg':msg,'content':content,'emp_salary':emp_salary})
     else:
         return redirect('/')
 
@@ -1236,7 +1439,24 @@ def remaining_salary_expence(request):
             uid = request.session['uid']
         else:
             return redirect('/')
-        return render(request,'account/salary_expence.html')
+        
+        current_year = datetime.now().year
+
+       
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_reg=EmployeeRegister.objects.exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
+
+    
+        #emp_reg=EmployeeRegister.objects.filter(emp_status=1)
+
+        return render(request,'account/Remaining_salary_Payments.html',{'emp_reg':emp_reg,
+                            'current_year':current_year,'emp_salary':emp_salary})
+        
     else:
         return redirect('/')
 
@@ -1311,6 +1531,8 @@ def employee_register_Details(request):
         months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
         years = [(str(i), str(i)) for i in range(2021, 2031)]
 
+        
+
         if request.method =='POST':
             emp_reg=EmployeeRegister()
             emp_reg.empfullName=request.POST['empname']
@@ -1319,22 +1541,21 @@ def employee_register_Details(request):
             emp_reg.empdesignation=request.POST['empdesig'].upper()
             emp_reg.empidreg=request.POST['empid'].upper()
             emp_reg.empconfirmsalary=int(request.POST['empconf_salary'])
-            emp_reg.empfirst_salry=int(request.POST['empsalary_amt'])
-            emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(request.POST['empsalary_amt'])
+          
             emp_reg.emp_status=1
             emp_reg.emp_salary_status=1
 
             emp_reg.save()
 
-            emp_salary=EmployeeSalary()
-            emp_salary.empreg_id=emp_reg
+            #emp_salary=EmployeeSalary()
+            # emp_salary.empreg_id=emp_reg
           
-            m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
+            # m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
           
-            emp_salary.empsalary_month= str(m)+ ' ' + str(request.POST['empsalary_year']),
-            emp_salary.empslaray_date= request.POST['empsalary_date']
-            emp_salary.emppaid_amt= int(request.POST['empsalary_amt'])
-            emp_salary.emp_paidstatus=1
+            # emp_salary.empsalary_month= str(m)+ ' ' + str(request.POST['empsalary_year']),
+            # emp_salary.empslaray_date= request.POST['empsalary_date']
+            # emp_salary.emppaid_amt= int(request.POST['empsalary_amt'])
+            # emp_salary.emp_paidstatus=1
             #emp_salary.save()
           
             msg=1

@@ -10,17 +10,15 @@
 
     #register-box .contaier-fluid
     {
-        display: grid;
-        grid-template-columns: 0.90fr 2.2fr;
-        padding: 1em;
-        gap: 1em;
+        padding-top: 1em;
+       
         background-color:#fafafa;
        
        
     }
     .register-details
     {
-        height: 80vh;
+      
         background: #ffff;
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
        
@@ -231,83 +229,9 @@
 <main>
     <section id="register-box">
         <div class="contaier-fluid">
-            <div class="register-details">
-                <h4>Employeee Salary Expence Add</h4>
-                <div class="line"></div>
-                {% if msg == 1 %}
-                <div class="message-bx-confirm" id="msgbox">
-                    <p><i class="bi bi-check-all"></i>Employee Salary Added </p>
-                </div>
-                
-                {% endif %}
-
-                <!-- Register Form -->
-
-                <form action="{% url 'employee_salary_save'  %}" method="post">
-                    {% csrf_token %}
-                    <div class="input-group-box" >
-                        <label>Full Name</label>
-                        <input type="text" name="empname" value="{{emp_reg_edit.empfullName}}" required readonly>
-                        <input type="text" name="Emp_regid" value="{{emp_reg_edit.id}}" hidden>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Date Of Joing: </label>
-                        <input type="text" name="empdfj" value="{{emp_reg_edit.empdofj}}" readonly>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Department</label>
-                        <input type="text" name="empname" value="{{emp_reg_edit.empdept_id.department}}" readonly>
-                        
-                    </div>
-                    
-                    <div class="input-group-box">
-                        <label>Designation </label>
-                        <input type="text" name="empdesig" value="{{emp_reg_edit.empdesignation}}" readonly >
-                    </div>
-
-                    <div class="input-group-box">
-                        <label>Employeee id </label>
-                        <input type="text" name="empid" value="{{emp_reg_edit.empidreg}}" readonly>
-                    </div>
-                    
-                    
-                    <div class="input-group-box">
-                        <label>confirmed Salary</label>
-                        <input type="text" name="empconf_salary" value="{{emp_reg_edit.empconfirmsalary}}" readonly >
-                    </div>
-                    <div class="input-group-box">
-                        <label> Salary Amount</label>
-                        <input type="text" name="empsalary_amt" required>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Salary Month</label>
-                        <select name="empsalary_month"  required>
-                            <option >-- Select Salary Month -- </option>
-                            {% for value, label in content.months  %}
-                            <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
-
-                        </select>
-                        <label>Salary Year</label>
-                        <select name="empsalary_year" >
-                            <option value="{{current_year}}">{{current_year}}</option>
-                            {% for value, label in content.years  %}
-                            <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Date Of Salary Given</label>
-                        <input type="date" name="empsalary_date" required>
-                    </div>
-
-                    <div class="submit_button">
-                        <button type="submit">Save</button>
-                    </div>
-                </form>
-            </div>
+            
             <div class="register-details-table">
-                <h4> Employeee  Details</h4>
+                <h4>Salary Pending Employeee </h4>
                 <div class="line"></div>
                 <div class="container">
 
@@ -323,8 +247,7 @@
                                 <th>Employee Id</th>
                                 <th>Confirmed Salary</th>
                                 <th>Current Salary </th>
-                                <th>Paid Amount</th>
-                                <!-- <th>Salary Status</th> --> 
+                               
 
                             </tr>
                         </thead>
@@ -340,43 +263,8 @@
                                 <td>{{i.empdesignation}}</td>
                                 <td>{{i.empidreg}}</td>
                                 <td>{{i.empconfirmsalary}}</td>
-                                <td>
-                                 
-                                        {% for j in emp_salary %}
-                                            {% if i.id == j.empreg_id.id %}
-
-                                                <span style="color: #368f0a; font-weight: 700;">Paid</span> 
-                                               
-
-                                            {% endif %}
-
-                                        {% endfor %}
-                                  
-                                </td>
-                                <td>
-                                    
-                                    {% for j in emp_salary %}
-                                    {% if i.id == j.empreg_id.id %}
-                                        <span style="font-weight: 700;">{{j.emppaid_amt}}</span>
-                                       
-                                    {% endif %}
-                                    {% endfor %}
-                                </td>
-                                <!-- <td class="stus">
-                                    {% if i.emp_status == 1 %}
-                                    <a href="#"><span style="color: #061459;font-weight: 600;"> Active </span></a>
-                                    {% else %}
-                                    <a href="#"><span style="color: #f61212;font-weight: 600;">De-active </span></a>
-                                    {% endif %}
-                                </td>
-                                <td class="stus">
-                                    {% if i.emp_salary_status == 1 %}
-                                    <a href="#"><span style="color: #6bdb33;font-weight: 600;"> Active </span></a>
-                                    {% else %}
-                                    <a href="#"><span style="color: #f02121;font-weight: 600;">De-active </span></a>
-                                    {% endif %}
-                                </td> -->
-                                
+                                <td><span style="color: #e34b14; font-weight: 700;">Not Paid</span> </td>
+                               
                             </tr>
                             {% endfor %}
                           

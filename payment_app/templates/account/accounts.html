@@ -3,6 +3,21 @@
 {% block body %}
 
 <style>
+    .inex-profit
+    {
+        color: #349112;
+        font-weight: 700;
+    }
+    .inex-loss
+    {
+        color: #eb1d1d;
+        font-weight: 700;
+    }
+    .inex-equl
+    {
+        color: #fbfb17;
+        font-weight: 700;
+    }
     /* Login Success Message Box*/
     .welcome_messagebox
     {
@@ -90,7 +105,9 @@
     #income-exp-box
     {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 0.90fr 1.6fr;
+        margin-top: 2em;
+        padding-top: 1em;
         
     }
     .left-side-box
@@ -132,7 +149,7 @@
     .loader .value
     {
         font-size: 2.2em;
-        color: #243062;
+
     }
     .loader .rupe
     {
@@ -147,7 +164,7 @@
 <div class="container-fluid" id="action-box">
 <a href="{% url 'emp_Register_form' %}">
     <div class="card">
-        <i class='bi bi-people-fill nav_icon'></i><h5>Register Employeee</h5>
+        <i class='bi bi-people-fill nav_icon'></i><h5>Employeee Registeration </h5>
         <div class="nofication">
             <span>{{content.emp_reg_count}}</span>
         </div>
@@ -187,17 +204,41 @@
            <h4>{% now "F" %} Income <span><i class="bi bi-calendar3"></i></span></h4>
 
             <div class="loader">
-                <span><i class="bi bi-currency-rupee rupe"></i><span class="value" akhi="{{content.income}}">0</span></span>
+                <span><i class="bi bi-currency-rupee rupe"></i>
+                {% if content.income > content.expence %}
+                    <span class="value inex-profit" akhi="{{content.income}}">0</span>
+                {% elif  content.income < content.expence %}
+                    <span class="value inex-loss" akhi="{{content.income}}">0</span>
+                {% else %}
+                    <span class="value inex-equl" akhi="{{content.income}}">0</span>
+                {% endif %}
+                </span>
             </div>
         </div>
         <div class="card">
             <h4>{% now "F" %} Expence <span><i class="bi bi-calendar3"></i></span></h4>
             <div class="loader">
-                <span><i class="bi bi-currency-rupee rupe"></i><span class="value" akhi="{{content.expence}}">0</span></span>
+                <span><i class="bi bi-currency-rupee rupe"></i>
+                    {% if content.income > content.expence %}
+                    <span class="value inex-loss" akhi="{{content.expence}}">0</span>
+                    {% elif  content.income < content.expence %}
+                    <span class="value inex-profit" akhi="{{content.expence}}">0</span>
+                    {% else %}
+                    <span class="value  inex-equl" akhi="{{content.expence}}">0</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="card">
+            <h4>{% now "F" %} Balance <span><i class="bi bi-calendar3"></i></span></h4>
+            <div class="loader">
+                <span><i class="bi bi-currency-rupee rupe"></i><span class="value" akhi="{{content.balans}}">0</span></span>
             </div>
         </div>
     </div>
     <div class="right-side-box">
+
+        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
         
     </div>
     
@@ -227,6 +268,32 @@
        animate();
     });
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+<script>
+    var xValues = ["Income", "Expence", "Balance"];
+    var yValues = [100,{{ content.exp_pr }},{{ content.bal_p }}, 10];
+    var barColors = ["orange","red","green"];
+    
+    new Chart("myChart", {
+      type: "bar",
+      data: {
+        labels: xValues,
+        datasets: [{
+          backgroundColor: barColors,
+          data: yValues
+        }]
+      },
+      options: {
+        legend: {display: false},
+        title: {
+          display: true,
+          text: "Income Expence Balance Barchart"
+        }
+      }
+    });
+    </script>
 
 
 </main>
