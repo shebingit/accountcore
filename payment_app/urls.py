@@ -23,11 +23,16 @@ urlpatterns = [
 
     # Account Section 
     path('Account',views.accounts,name='accounts'),
-    path('Fixed_Expence',views.fixed_expence,name='fixed_expence'),
-    path('Fixed_Expence-Save',views.fixed_expence_add,name='fixed_expence_add'),
+    path('Fixed-Expence',views.fixed_expence,name='fixed_expence'),
+    path('Fixed-Expence-Save',views.fixed_expence_add,name='fixed_expence_add'),
     path('Fixed-Edit/<int:pk>',views.fixed_edit,name="fixed_edit"),
     path('Fixed-Delete/<int:pk>',views.fixed_delete,name="fixed_delete"),
     path('Fixed-Status-Change/<int:pk>',views.fixed_change_status,name="fixed_change_status"),
+
+    path('Company-Holoidays',views.company_holoidays,name='company_holoidays'),
+    path('Company-Holoidays-Add',views.company_holiday_add,name='company_holiday_add'),
+    
+    
     
     
     
@@ -38,7 +43,10 @@ urlpatterns = [
     
     path('Employee-Register-Form',views.emp_Register_form,name='emp_Register_form'),
     path('Employee-Register',views.employee_register_Details,name='employee_register_Details'),
-    path('Remainig-Salary-Payment',views.remaining_salary_expence,name='remaining_salary_expence'),
+    #path('Remainig-Salary-Payment',views.remaining_salary_expence,name='remaining_salary_expence'),
+    path('All-Salary-Expence',views.all_salary_expence,name='all_salary_expence'),
+    path('Salary-Expence-Search',views.Search_salary_payments,name='Search_salary_payments'),
+    
     path('Salary-Expence-Form',views.salary_expence_form,name='salary_expence_form'),
     path('Salary-Expence-Add/<int:pk>',views.salary_expence_add,name="salary_expence_add"),
     path('Salary-Expence-Save',views.employee_salary_save,name='employee_salary_save'),

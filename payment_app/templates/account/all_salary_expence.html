@@ -435,45 +435,30 @@ h6
         <div class="contaier-fluid">
             
             <div class="register-details-table">
-                <h4>{% now "F" %} Month Salary Expence</h4> <!--<a href="{% url 'pyments_history' %}"><i class="bi bi-arrow-left-square-fill"></i></a> -->
+                <h4>All Month Salary Expence <span style="margin-left: 0.60em;"><a href="{% url 'salary_expence' %}"><i class="bi bi-arrow-left-square-fill"></i></a></span> </h4>
                 <div class="line mb-5"></div>
 
-                
-
-                <div class="top-section container">
-
-                    <div class="notice ">
+                <form action="{% url 'Search_salary_payments' %}" method="post">
+                    {% csrf_token %}
+                    <p class="text-center mb-4 mt-2"><span style="color: #f83b3b;"> Note :</span> Search Payments By Paid Date </p>
+                       
+                    <div class="search-box">
                         
-                        <h3 class="text-start mb-4">{% now "F" %}</h3>
-                        <p  class="text-start"><span>Total&nbsp;Confirmed &nbsp; salary &nbsp;expence&nbsp; From&nbsp; the&nbsp; date  &nbsp;{{content.fr_date}} &nbsp;  to  &nbsp;{{content.to_date}}  
-                            &nbsp; <b> Amount</b> is  &nbsp;<span class="amount">{{content.emp_salary_tol}} /-</span>
-                        </span>
-                        </p>
-                        <p  class="text-start"><span>Total&nbsp; Salary &nbsp;Paid&nbsp; From&nbsp; the&nbsp; date  &nbsp;{{content.fr_date}} &nbsp;  to  &nbsp;{{content.cur_date}}  
-                            &nbsp; <b> Amount</b> is  &nbsp;<span class="amount">{{content.salary_tol}} /-</span>
-                        </span>
-                        </p>
-                        
-                        <div class="addexp">  
-                            <a href="{% url 'salary_expence_form' %}" class="exp_link"> <i class="bi bi-plus-circle-fill"></i> ADD Expence </a>
-                             <!-- <a href="#" class="exp_link" ><i class="bi bi-dash-circle-fill"></i>Remaining Salary Payments </a> --> 
-          
+                        <div class="input-date-box">
+                            <label>From Date :</label>
+                            <input type="date" name="spfr_data">
                         </div>
-                        
+                        <div class="input-date-box">
+                            <label>To Date :</label>
+                            <input type="date" name="spto_date">
+                        </div>
+                        <div class="submit-box">
+                            <button type="submit"><i class="bi bi-search"></i></button>
+                        </div>
                     </div>
-                    <div class="allexp ">  
-                      
-                         <a href="{% url 'all_salary_expence' %}" class="exp_link" ><i class="bi bi-dash-circle-fill"></i>All Salary Payments </a> 
-      
-                    </div>
+                </form>
 
-    
-                </div>
-                
-                <!-- End Form Searching upcoming payments -->
-
-               
-
+        
                 <div class="container">
 
                     <table id="register-details" class="display" >

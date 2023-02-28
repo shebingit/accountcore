@@ -14,6 +14,7 @@ from num2words import num2words
 import calendar
 from django.db.models import Sum
 from django.core.mail import send_mail
+from django.db.models import Q
 
 
 #login Section
@@ -1139,8 +1140,8 @@ def accounts(request):
         fixed_ex_count=FixedExpence.objects.all().count()
         
 
-        income=IncomeExpence.objects.filter(exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
-        expence=IncomeExpence.objects.filter(exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        income=IncomeExpence.objects.filter(exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        expence=IncomeExpence.objects.filter(exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
         if not income:
             income=1
         if not expence:
@@ -1291,6 +1292,41 @@ def fixed_change_status(request,pk):
         
     else:
         return redirect('/')
+    
+
+def company_holoidays(request):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        comp_holidays=Company_Holidays.objects.all()
+        return render(request,'account/company_holidays.html',{'comp_holidays':comp_holidays})
+    else:
+        return redirect('/')
+    
+
+def company_holiday_add(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        if request.method =='POST':
+            comp_holiday=Company_Holidays()
+            comp_holiday.ch_sdate=request.POST['cmphsdate']
+            comp_holiday.ch_edate=request.POST['cmphedate']
+            comp_holiday.ch_no=request.POST['cmphno']
+            comp_holiday.save()
+            msg=1
+            comp_holidays=Company_Holidays.objects.all()
+        return render(request,'account/company_holidays.html',{'comp_holidays':comp_holidays,'msg':msg})
+    else:
+        return redirect('/')
+
+
 
 
  
@@ -1330,24 +1366,21 @@ def salary_expence_form(request):
             uid = request.session['uid']
         else:
             return redirect('/')
-        current_year = datetime.now().year
-
-        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
-        years = [(str(i), str(i)) for i in range(2021, 2031)]
         
+
+       
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        emp_salary_all=EmployeeSalary.objects.filter(emp_paidstatus=1)
+
         emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
 
-        emp_reg_edit=EmployeeRegister.objects.filter(emp_status=1).first()
-        
-        content={'months':months,'years':years}
-
-        emp_reg=EmployeeRegister.objects.filter(emp_status=1)
-        return render(request,'account/salary_expence_form.html',{'emp_reg_edit':emp_reg_edit,'emp_reg':emp_reg,
-                            'current_year':current_year,'emp_salary':emp_salary,'content':content})
+        return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,
+                            'emp_salary':emp_salary,'emp_salary_all':emp_salary_all})
     else:
         return redirect('/')
     
@@ -1377,9 +1410,14 @@ def salary_expence_add(request,pk):
         content={'months':months,'years':years}
 
         emp_reg_edit=EmployeeRegister.objects.get(emp_status=1,id=pk)
-        emp_reg=EmployeeRegister.objects.filter(emp_status=1)
+        emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
+
+        emp_salary_all=EmployeeSalary.objects.filter(emp_paidstatus=1)
+
+
         return render(request,'account/salary_expence_form.html',{'emp_reg_edit':emp_reg_edit,
-                                'emp_reg':emp_reg,'current_year':current_year,'emp_salary':emp_salary,'content':content})
+                                'emp_reg':emp_reg,'current_year':current_year,'emp_salary':emp_salary,'content':content,'emp_salary_all':emp_salary_all})
     else:
         return redirect('/')
     
@@ -1394,71 +1432,158 @@ def employee_salary_save(request):
         
         months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
         years = [(str(i), str(i)) for i in range(2021, 2031)]
+
+        current_year = datetime.now().year
+
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
         
         
         if request.method =='POST':
-            emp_reg=EmployeeRegister.objects.get(id=request.POST['Emp_regid'])
-            emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(request.POST['empsalary_amt'])
+
+            emp_reg=EmployeeRegister.objects.get(id=request.POST['Emp_regid']) # Get the employee details
+
+            # Here calculating the working days of selected month
+
+            mon =int(request.POST['empsalary_month'])
+            ye = int(request.POST['empsalary_year'])
+           
+            startdate = date(ye, mon, 1)
+            last_day_of_month = startdate.replace(day=28) + timedelta(days=4)
+            enddate = last_day_of_month - timedelta(days=last_day_of_month.day)
+            month_days = (enddate - startdate).days + 1
+
+
+            # Salary Calculations  
+            
+
+            comp_holiday=Company_Holidays.objects.get(ch_sdate__gte=fr_date,ch_edate__lte=to_date)
+            work_days=int(month_days) - int(comp_holiday.ch_no) 
+            leavefull=int(request.POST['leave_full'])
+            leavehalf=int(request.POST['leave_half'])
+            w_delay=int(request.POST['work_delay'])
+            any_other=int(request.POST['work_delay'])
+
+            if not request.POST['leave_full']:
+                leavefull=0
+            if not request.POST['leave_half']:
+                leavehalf=0
+            if not request.POST['work_delay']:
+                w_delay=0
+            if not request.POST['other_amt']:
+                any_other=0
+
+            conf_salary=emp_reg.empconfirmsalary
+            one_day_salary=int(conf_salary / work_days)
+
+            full_day_leave_amt=int(one_day_salary) * int(leavefull)
+            half_day_leave_amt=int(one_day_salary / 2) * int(leavehalf)
+            w_delay_amt=int(one_day_salary) * int(w_delay)
+            net_salary=int(conf_salary) - int(full_day_leave_amt + half_day_leave_amt + w_delay_amt + any_other)
+
+
+            # print('oneday',one_day_salary)
+            # print('full leave',full_day_leave_amt)
+            # print('half leave',half_day_leave_amt)
+            # print('delay',w_delay_amt)
+            # print('net salary',net_salary)
+
+
+          
+            emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(net_salary)
             emp_reg.emp_salary_status=1
             emp_reg.save()
 
             emp_salary=EmployeeSalary()
             emp_salary.empreg_id=emp_reg
           
-
             m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
-            emp_salary.empsalary_month= str(m)+ ' ' + str(request.POST['empsalary_year']),
+            
+            emp_salary.empsalary_month= m + ' ' + request.POST['empsalary_year']
 
             emp_salary.empslaray_date=request.POST['empsalary_date']
-            emp_salary.emppaid_amt= int(request.POST['empsalary_amt'])
+            emp_salary.emppaid_amt= int(net_salary)
             emp_salary.emp_paidstatus=1
             emp_salary.save()
-          
             msg=1
+    
+            emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+
+            
+
             content={'months':months,'years':years} 
 
-            current_year = datetime.now().year
-
-            cur_date=datetime.now().date()
-            fr_date=datetime(cur_date.year, cur_date.month, 1).date()
-            last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
-            to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
             emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+            emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
             
-            emp_reg=EmployeeRegister.objects.filter(emp_status=1)
-            return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,'current_year':current_year,'msg':msg,'content':content,'emp_salary':emp_salary})
+            emp_salary_all=EmployeeSalary.objects.filter(emp_paidstatus=1)
+
+            return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,'current_year':current_year,
+                                'msg':msg,'content':content,'emp_salary':emp_salary,'emp_salary_all':emp_salary_all})
     else:
         return redirect('/')
-
     
+    
+def all_salary_expence(request):
 
-def remaining_salary_expence(request):
-     
     if 'uid' in request.session:
         if request.session.has_key('uid'):
-            uid = request.session['uid']
+           uid = request.session['uid']
         else:
-            return redirect('/')
-        
-        current_year = datetime.now().year
+             return redirect('/')
+        salary=EmployeeSalary.objects.filter(emp_paidstatus=1).order_by('empslaray_date')
+        return render(request,'account/all_salary_expence.html',{'salary':salary})
 
-       
-        cur_date=datetime.now().date()
-        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
-        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
-        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
-
-        emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
-        emp_reg=EmployeeRegister.objects.exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
-
-    
-        #emp_reg=EmployeeRegister.objects.filter(emp_status=1)
-
-        return render(request,'account/Remaining_salary_Payments.html',{'emp_reg':emp_reg,
-                            'current_year':current_year,'emp_salary':emp_salary})
-        
     else:
         return redirect('/')
+    
+    
+def Search_salary_payments(request):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+           uid = request.session['uid']
+        else:
+             return redirect('/')
+        
+        if request.method =='POST':
+            salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=request.POST['spfr_data'],empslaray_date__lte=request.POST['spto_date']).order_by('empslaray_date')
+        return render(request,'account/all_salary_expence.html',{'salary':salary})
+
+    else:
+        return redirect('/')
+
+# def remaining_salary_expence(request):
+     
+#     if 'uid' in request.session:
+#         if request.session.has_key('uid'):
+#             uid = request.session['uid']
+#         else:
+#             return redirect('/')
+        
+#         current_year = datetime.now().year
+
+       
+#         cur_date=datetime.now().date()
+#         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+#         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+#         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        
+#         emp_salary=EmployeeSalary.objects.filter( Q(empslaray_date__lt=fr_date) | Q(empslaray_date__gte=fr_date,empslaray_date__lte=to_date))
+#         print(emp_salary)
+#         emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
+#         print(emp_reg)
+    
+#         #emp_reg=EmployeeRegister.objects.filter(emp_status=1)
+
+#         return render(request,'account/Remaining_salary_Payments.html',{'emp_reg':emp_reg,
+#                             'current_year':current_year,'emp_salary':emp_salary})
+        
+#     else:
+#         return redirect('/')
 
 
 def income_expence_form(request):

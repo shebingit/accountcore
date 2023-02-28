@@ -11,18 +11,24 @@
     #register-box .contaier-fluid
     {
         display: grid;
-        grid-template-columns: 0.90fr 2.2fr;
+        grid-template-columns: 1fr 2.2fr;
         padding: 1em;
         gap: 1em;
         background-color:#fafafa;
        
        
     }
+    #register-details thead,  #register-details tbody
+    {
+        font-size: 0.91em;
+    }
+  
     .register-details
     {
-        height: 80vh;
+       
         background: #ffff;
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+      
        
     }
 
@@ -37,6 +43,26 @@
         color:rgb(38, 17, 63);
        
         
+    }
+    #emp_details
+    {
+        padding:1.5em 1em;
+        font-size: 0.92em;
+        line-height: 2.5em;
+        margin-top: 1.3em;
+        border: none;
+        text-align: center;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    }
+    #emp_details h5
+    {
+        color: #060654;
+        font-weight: 600;
+    }
+    #emp_details span
+    {
+        margin-left: 0.20em;
+        font-weight: 600;
     }
     .register-details .line,  .register-details-table .line
     {
@@ -92,7 +118,7 @@
     .input-group-box label
     {
         width: 35%;
-        font-size: 0.90em;
+        font-size: 0.86em;
         font-weight: 600;
         padding: 0.40em;
     }
@@ -245,44 +271,36 @@
 
                 <form action="{% url 'employee_salary_save'  %}" method="post">
                     {% csrf_token %}
-                    <div class="input-group-box" >
-                        <label>Full Name</label>
-                        <input type="text" name="empname" value="{{emp_reg_edit.empfullName}}" required readonly>
-                        <input type="text" name="Emp_regid" value="{{emp_reg_edit.id}}" hidden>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Date Of Joing: </label>
-                        <input type="text" name="empdfj" value="{{emp_reg_edit.empdofj}}" readonly>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Department</label>
-                        <input type="text" name="empname" value="{{emp_reg_edit.empdept_id.department}}" readonly>
+                        {% if emp_reg_edit %}
+                        <div class="card" id="emp_details">
+                            <span><h5>{{emp_reg_edit.empfullName}}</h5></span>
+                                <b>ID: {{emp_reg_edit.empidreg}}</b>
+                            <span ><b>Date Of Joing:</b> {{emp_reg_edit.empdofj}}
                         
-                    </div>
+                            <b style="margin-left: 0.50em;">Confirmed Salary:</b>   {{emp_reg_edit.empconfirmsalary}}</span>
+                        </div>
+                        <input type="text" name="Emp_regid" value="{{emp_reg_edit.id}}" required hidden>
+                        {% endif %}
                     
+                    <div class="line mt-4"></div>
                     <div class="input-group-box">
-                        <label>Designation </label>
-                        <input type="text" name="empdesig" value="{{emp_reg_edit.empdesignation}}" readonly >
-                    </div>
-
-                    <div class="input-group-box">
-                        <label>Employeee id </label>
-                        <input type="text" name="empid" value="{{emp_reg_edit.empidreg}}" readonly>
-                    </div>
-                    
-                    
-                    <div class="input-group-box">
-                        <label>confirmed Salary</label>
-                        <input type="text" name="empconf_salary" value="{{emp_reg_edit.empconfirmsalary}}" readonly >
+                        <label>Leaves</label>
+                        <input type="number" name="leave_full" style="width: 28%;" value="0" min="0" placeholder="Full day" >
+                      
+                        <input type="number"  name="leave_half" style="width: 26%;" value="0" min="0" placeholder="Half day" >
                     </div>
                     <div class="input-group-box">
-                        <label> Salary Amount</label>
-                        <input type="text" name="empsalary_amt" required>
+                        <label>Work Delay</label>
+                        <input type="number" name="work_delay" min="0" value="0" placeholder="Work delay count" >
+                    </div>
+                    <div class="input-group-box">
+                        <label>Any Other Amount</label>
+                        <input type="number" name="other_amt" min="0" value="0"  >
                     </div>
                     <div class="input-group-box">
                         <label>Salary Month</label>
                         <select name="empsalary_month"  required>
-                            <option >-- Select Salary Month -- </option>
+                           
                             {% for value, label in content.months  %}
                             <option value="{{ value }}">{{ label }}</option>
                             {% endfor %}
@@ -306,6 +324,7 @@
                     </div>
                 </form>
             </div>
+
             <div class="register-details-table">
                 <h4> Employeee  Details</h4>
                 <div class="line"></div>
@@ -323,7 +342,9 @@
                                 <th>Employee Id</th>
                                 <th>Confirmed Salary</th>
                                 <th>Current Salary </th>
-                                <th>Paid Amount</th>
+                                <th>Last Paid Month</th>
+                                <th>Last Paid Date</th>
+                                <th>Last Paid Amount</th>
                                 <!-- <th>Salary Status</th> --> 
 
                             </tr>
@@ -341,42 +362,35 @@
                                 <td>{{i.empidreg}}</td>
                                 <td>{{i.empconfirmsalary}}</td>
                                 <td>
-                                 
-                                        {% for j in emp_salary %}
-                                            {% if i.id == j.empreg_id.id %}
-
-                                                <span style="color: #368f0a; font-weight: 700;">Paid</span> 
-                                               
-
-                                            {% endif %}
-
-                                        {% endfor %}
-                                  
+                                 <span style="color: #f72824; font-weight: 700;">Not Paid</span> 
                                 </td>
                                 <td>
                                     
-                                    {% for j in emp_salary %}
+                                    {% for j in emp_salary_all %}
+                                    {% if i.id == j.empreg_id.id %}
+                                        <span style="font-weight: 700;">{{j.empsalary_month}}</span>
+                                       
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    
+                                    {% for j in emp_salary_all %}
+                                    {% if i.id == j.empreg_id.id %}
+                                        <span style="font-weight: 700;">{{j.empslaray_date}}</span>
+                                       
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    
+                                    {% for j in emp_salary_all %}
                                     {% if i.id == j.empreg_id.id %}
                                         <span style="font-weight: 700;">{{j.emppaid_amt}}</span>
                                        
                                     {% endif %}
                                     {% endfor %}
                                 </td>
-                                <!-- <td class="stus">
-                                    {% if i.emp_status == 1 %}
-                                    <a href="#"><span style="color: #061459;font-weight: 600;"> Active </span></a>
-                                    {% else %}
-                                    <a href="#"><span style="color: #f61212;font-weight: 600;">De-active </span></a>
-                                    {% endif %}
-                                </td>
-                                <td class="stus">
-                                    {% if i.emp_salary_status == 1 %}
-                                    <a href="#"><span style="color: #6bdb33;font-weight: 600;"> Active </span></a>
-                                    {% else %}
-                                    <a href="#"><span style="color: #f02121;font-weight: 600;">De-active </span></a>
-                                    {% endif %}
-                                </td> -->
-                                
                             </tr>
                             {% endfor %}
                           
@@ -387,7 +401,9 @@
                 </div>
             </div>
            
+           
         </div>
+        
     </section>
 
     <!-- Meaage Box fead Out -->
