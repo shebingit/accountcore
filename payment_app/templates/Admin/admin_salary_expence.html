@@ -1,7 +1,6 @@
-{% extends 'account/account_base.html' %}
+{% extends 'Admin/adminbase.html' %}
 {% load static %}
 {% block body %}
-
 
 
 <style>
@@ -435,30 +434,41 @@ h6
         <div class="contaier-fluid">
             
             <div class="register-details-table">
-                <h4>All Month Salary Expence <span style="margin-left: 0.60em;"><a href="{% url 'salary_expence' %}"><i class="bi bi-arrow-left-square-fill"></i></a></span> </h4>
+                <h4>{% now "F" %} Month Salary Expence</h4> <!--<a href="{% url 'pyments_history' %}"><i class="bi bi-arrow-left-square-fill"></i></a> -->
                 <div class="line mb-5"></div>
 
-                <form action="{% url 'Search_salary_payments' %}" method="post">
-                    {% csrf_token %}
-                    <p class="text-center mb-4 mt-2"><span style="color: #f83b3b;"> Note :</span> Search Payments By Paid Date </p>
-                       
-                    <div class="search-box">
-                        
-                        <div class="input-date-box">
-                            <label>From Date :</label>
-                            <input type="date" name="spfr_data">
-                        </div>
-                        <div class="input-date-box">
-                            <label>To Date :</label>
-                            <input type="date" name="spto_date">
-                        </div>
-                        <div class="submit-box">
-                            <button type="submit"><i class="bi bi-search"></i></button>
-                        </div>
-                    </div>
-                </form>
+                
 
-        
+                <div class="top-section container">
+
+                    <div class="notice ">
+                        
+                        <h3 class="text-start mb-4">{% now "F" %}</h3>
+                        <p  class="text-start"><span>Total&nbsp;Confirmed &nbsp; salary &nbsp;expence&nbsp; From&nbsp; the&nbsp; date  &nbsp;{{content.fr_date}} &nbsp;  to  &nbsp;{{content.to_date}}  
+                            &nbsp; <b> Amount</b> is  &nbsp;<span class="amount">{{content.emp_salary_tol}} /-</span>
+                        </span>
+                        </p>
+                        <p  class="text-start"><span>Total&nbsp; Salary &nbsp;Paid&nbsp; From&nbsp; the&nbsp; date  &nbsp;{{content.fr_date}} &nbsp;  to  &nbsp;{{content.cur_date}}  
+                            &nbsp; <b> Amount</b> is  &nbsp;<span class="amount">{{content.salary_tol}} /-</span>
+                        </span>
+                        </p>
+                        
+                       
+                        
+                    </div>
+                    <div class="allexp ">  
+                      
+                         <a href="{% url 'admin_all_salary_expence' %}" class="exp_link" ><i class="bi bi-dash-circle-fill"></i>All Salary Payments </a> 
+      
+                    </div>
+
+    
+                </div>
+                
+                <!-- End Form Searching upcoming payments -->
+
+               
+
                 <div class="container">
 
                     <table id="register-details" class="display" >
@@ -483,7 +493,7 @@ h6
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
                                         <td>{{i.empreg_id.empdofj}}</td>
-                                        <td><a href="{% url 'employee_salary_details' i.empreg_id.id %}" style="font-size: 0.93em;">{{i.empreg_id.empfullName}}</a></td>
+                                        <td><a href="{% url 'admin_employee_salary_details' i.empreg_id.id %}" style="font-size: 0.91em;">{{i.empreg_id.empfullName}}</a></td>
                                         <td>{{i.empreg_id.empdept_id.department}}</td>
                                         <td>{{i.empreg_id.empdesignation}}</td>
                                         <td>{{i.empreg_id.empconfirmsalary}}</td>
@@ -514,12 +524,6 @@ h6
     </section>
 
     <!-- Meaage Box fead Out -->
-
-    <script>
-        function goBack() {
-          history.go(-1); // Go back one page in the browser history
-        }
-    </script>
 
 
 </main>

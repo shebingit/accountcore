@@ -1,4 +1,4 @@
-{% extends 'Admin/adminbase.html' %}
+{% extends 'account/account_base.html' %}
 {% load static %}
 {% block body %}
 
@@ -231,7 +231,7 @@
         <section id="register-box">
             <div class="contaier-fluid">
                 <div class="register-details">
-                    <h4>Profile Update Form</h4>
+                    <h4>Password Update Form</h4>
                     <div class="line"></div>
                     {% if msg == 1 %}
                     <div class="message-bx-confirm" id="msgbox">
@@ -249,7 +249,7 @@
     
                     <!-- Register Form -->
     
-                    <form action="{% url 'admin_password_changeing' %}" method="post">
+                    <form action="{% url 'account_password_change' %}" method="post">
                         {% csrf_token %}
                         <!-- <div class="input-group-box" >
                             <label>First Name</label>
@@ -265,11 +265,11 @@
                         </div> -->
                         <div class="input-group-box" >
                             <label>User Name</label>
-                            <input type="text" name="adurname" value="{{user.username}}" >
+                            <input type="email" name="urname" value="{{user.username}}" >
                         </div>
                         <div class="input-group-box" >
                             <label>Password</label>
-                            <input type="Password" name="adpsw" required>
+                            <input type="Password" name="pws" required>
                         </div>
                         
                         <div class="submit_button">

@@ -11,6 +11,12 @@ urlpatterns = [
     path('Admin-Dashboard',views.admin_dashboard,name='admin_dashboard'),
 
     #account
+    
+    path('Account-Profile',views.account_profile,name='account_profile'),
+    path('Account-Password-Change',views.account_password_change,name='account_password_change'),
+    
+
+
     path('Account-Dashboard',views.dashboard,name='dashboard'),
     path('All-Payments',views.allpayments,name='allpayments'),
     path('Pending-Payments',views.pending_payments,name='pending_payments'),
@@ -43,6 +49,18 @@ urlpatterns = [
     
     path('Employee-Register-Form',views.emp_Register_form,name='emp_Register_form'),
     path('Employee-Register',views.employee_register_Details,name='employee_register_Details'),
+    path('Employee-Register-Search',views.register_search,name='register_search'),
+
+    path('Employee-Deactive/<int:pk>',views.emp_reg_deactive,name="emp_reg_deactive"),
+    path('Employee-Active/<int:pk>',views.emp_reg_reactive,name="emp_reg_reactive"),
+    path('Employee-Salary-Active/<int:pk>',views.emp_salary_active,name="emp_salary_active"),
+    path('Employee-Salary-Deactive/<int:pk>',views.emp_salary_deactive,name="emp_salary_deactive"),
+    path('Employee-Delete/<int:pk>',views.emp_reg_delete,name="emp_reg_delete"),
+    
+    
+    
+    
+    
     #path('Remainig-Salary-Payment',views.remaining_salary_expence,name='remaining_salary_expence'),
     path('All-Salary-Expence',views.all_salary_expence,name='all_salary_expence'),
     path('Salary-Expence-Search',views.Search_salary_payments,name='Search_salary_payments'),
@@ -51,6 +69,8 @@ urlpatterns = [
     path('Salary-Expence-Add/<int:pk>',views.salary_expence_add,name="salary_expence_add"),
     path('Salary-Expence-Save',views.employee_salary_save,name='employee_salary_save'),
     
+    path('Employee-Salary-Details/<int:pk>',views.employee_salary_details,name="employee_salary_details"),
+    path('Employee-Salary-Details-Search/<int:pk>',views.employee_salary_payments_search,name="employee_salary_payments_search"),
     
 
     
@@ -113,6 +133,8 @@ urlpatterns = [
     #========================== Admin ==============================================
     
     path('Admin-Profile',views.admin_account,name='admin_account'),
+    path('Admin-Password-Save',views.admin_password_changeing,name='admin_password_changeing'),
+    
 
     path('New-Payments-List',views.newpay_confirm_list,name='newpay_confirm_list'),
     path('Payment-Track',views.admin_trackPayments,name='admin_trackPayments'),
@@ -137,6 +159,30 @@ urlpatterns = [
     path('View-Register/<int:pk>',views.view_details,name="view_details"),
     path('Approve-Payment/<int:pk>',views.admin_approve,name="admin_approve"),
     path('Confirm-Payment/<int:pk>',views.admin_confirm,name="admin_confirm"),
+
+
+# Admin Accounts Section 
+
+    path('Admin-Accounts',views.admin_accounts,name='admin_accounts'),
+    path('Admin-Employee-View',views.admin_emp_Register_view,name='admin_emp_Register_view'),
+    path('Admin-Employee-Search',views.admin_register_search,name='admin_register_search'),
+    path('Admin-Income-Expence',views.admin_income_expence,name='admin_income_expence'),
+    path('Admin-Income-Expence-Add',views.admin_income_expence_add,name='admin_income_expence_add'),
+    
+    path('Admin-Income-Expence-Search',views.admin_income_expence_search,name='admin_income_expence_search'),
+    path('Admin-Salary-Expence',views.admin_salary_expence,name='admin_salary_expence'),
+    path('Admin-AllSalary-Expence',views.admin_all_salary_expence,name='admin_all_salary_expence'),
+    path('Admin-AllSalary-Expence-Search',views.admin_search_salary_payments,name='admin_search_salary_payments'),
+    
+    path('Admin-Employee-Salary_Details/<int:pk>',views.admin_employee_salary_details,name="admin_employee_salary_details"),
+    path('Admin-Employee-Salary-Payments-Search/<int:pk>',views.admin_employee_salary_payments_search,name="admin_employee_salary_payments_search"),
+
+    
+    
+    
+    
+    
+    
     
     
     path('LogOut',views.logout_page,name='logout_page'),

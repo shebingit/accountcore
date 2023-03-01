@@ -23,6 +23,49 @@ def login_page(request):
 
 
 
+def account_profile(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        user=User.objects.get(id=uid)
+        
+        return render(request,'account/account_profile.html',{'user':user})
+
+    else:
+            return redirect('/')
+
+def account_password_change(request):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        if request.method=='POST':
+            username=request.POST['urname']
+            password=request.POST['pws']
+
+            user=User.objects.get(id=uid)
+            if username:
+                user.username=username
+            else:
+                user.username= user.username
+            user.set_password(password)
+            user.save()
+            msg=1
+        return render(request,'account/account_profile.html',{'user':user,'msg':msg})
+
+    else:
+        return redirect('/')
+    
+
+
+
 
 #login Authentication
 def login_dashboard(request):
@@ -41,6 +84,108 @@ def login_dashboard(request):
                             admid = request.session['admid']
                         else:
                             return redirect('/')
+                        
+                        cur_date=datetime.now().date()
+                        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+                        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+                        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+                        #Income adding to IncomeExpence Table
+                        if PaymentHistory.objects.exists():
+                            inexpe=IncomeExpence.objects.filter(exin_head_name='TRAINING',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                            payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                            #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
+
+                            if payhis:
+
+                                if inexpe:
+                                    inexpe.exin_head_name='TRAINING'
+                                    inexpe.exin_amount=payhis
+                                    inexpe.exin_typ=1
+                                    inexpe.exin_date=to_date
+                                    inexpe.exin_status=1
+                                    inexpe.save()
+
+                                else:
+
+                                    incexpence=IncomeExpence()
+                                    incexpence.exin_head_name='TRAINING'
+                                    incexpence.exin_amount=payhis
+                                    incexpence.exin_typ=1
+                                    incexpence.exin_date=cur_date
+                                    incexpence.exin_status=1
+                                    incexpence.save()
+                            else:
+                                print('Payment History Is Amount Empty')
+                        else:
+                            print('Payment History Is Empty')
+
+                        # Salay Expence adding to IncomeExpence Table
+
+                        if EmployeeSalary.objects.exists():
+
+                            inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                            sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                            #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
+                            
+                            if sal_exp:
+
+                                if inexp:
+
+                                    inexp.exin_head_name='SALARY'
+                                    inexp.exin_amount=sal_exp
+                                    inexp.exin_typ=2
+                                    inexp.exin_date=to_date
+                                    inexp.exin_status=1
+                                    inexp.save()
+                                
+                                else:
+
+                                    incexp=IncomeExpence()
+                                    incexp.exin_head_name='SALARY'
+                                    incexp.exin_amount=sal_exp
+                                    incexp.exin_typ=2
+                                    incexp.exin_date=cur_date
+                                    incexp.exin_status=1
+                                    incexp.save()
+                            else:
+                                print('Employee Salary Is Amount Empty')
+                        else:
+                            print('Employee Salary Is Empty')
+
+                        # Fixed Expence adding to the IncomeEpence Table
+
+                        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date,fixed_status=1)
+                        
+                        inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True)).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True))
+                        if inex:
+                            print('Data Found')
+
+                        else:
+                            not_in_inex = fixexp.exclude(fixed_date__in=inex.values_list('exin_date', flat=True)).exclude(fixed_head_name__in=inex.values_list('exin_head_name', flat=True)).values_list('id', flat=True)
+                            fixexp=FixedExpence.objects.filter(id__in=not_in_inex)
+                            for i in fixexp:
+                                incomeexp = IncomeExpence()
+                                incomeexp.exin_head_name=i.fixed_head_name
+                                incomeexp.exin_date=i.fixed_date
+                                incomeexp.exin_amount=i.fixed_amount
+                                incomeexp.exin_typ=2
+                                incomeexp.exin_dese=i.fixed_dese
+                                incomeexp.exin_status=1
+                                incomeexp.save()
+                                exp_date=i.fixed_date
+                                today = date.today()
+
+                                # Calculate the number of days in the current month
+                                days_in_month = (today.replace(month=today.month+1, day=1) - timedelta(days=1)).day
+                            
+                                fr_date=exp_date + timedelta(days=days_in_month)
+                                i.fixed_date=fr_date
+                                i.save()
+
+                        
+
+
                         reg=Register.objects.filter(reg_status=0)
                         payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).count
                         reg1=Register.objects.filter(reg_status=1)
@@ -1152,14 +1297,14 @@ def accounts(request):
         bal_p= (bal_p/income) * 100
         exp_pr=100 - bal_p
         
-        if bal_p < 0:
+        # if bal_p < 0:
             
-            bal_p=-(bal_p)
+        #     bal_p=-(bal_p)
         
 
        
         emp_reg_count=EmployeeRegister.objects.filter(emp_status=1).count()
-        emp_salary_count=EmployeeRegister.objects.filter(emp_salary_status=1,empdofj__lt=fr_date).count()
+        emp_salary_count=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).count()
         content={'emp_reg_count':emp_reg_count,
                  'emp_salary_count':emp_salary_count,
                  'income':income,
@@ -1377,7 +1522,7 @@ def salary_expence_form(request):
         emp_salary_all=EmployeeSalary.objects.filter(emp_paidstatus=1)
 
         emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
-        emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
+        emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
 
         return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,
                             'emp_salary':emp_salary,'emp_salary_all':emp_salary_all})
@@ -1696,6 +1841,142 @@ def employee_register_Details(request):
             return redirect('emp_Register_form')
     else:
         return redirect('/')
+    
+
+def register_search(request):
+        
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        if request.method == 'POST':
+        
+            current_year = datetime.now().year
+        
+            months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+            years = [(str(i), str(i)) for i in range(2021, 2031)]
+            
+            dept=Department.objects.filter(dpt_Status=1)
+        
+            emp_reg=EmployeeRegister.objects.filter(empdofj__gte=request.POST['regfr_data'],empdofj__lte=request.POST['regto_date'])
+            return render(request,'account/Employee_Register.html',{'current_year':current_year,'dept':dept,'emp_reg':emp_reg,'months':months,'years':years})
+        else:
+            return redirect('emp_Register_form')
+        
+    else:
+        return redirect('/')
+    
+
+def emp_reg_deactive(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        emp_reg.emp_status=0
+        emp_reg.save()
+        messages.info(request, emp_reg.empfullName + ' Registration status deactivate')
+        return redirect('emp_Register_form')
+    else:
+        return redirect('/')
+    
+
+def emp_reg_reactive(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        emp_reg.emp_status=1
+        emp_reg.save()
+        messages.info(request, emp_reg.empfullName + ' Registration status activate')
+        return redirect('emp_Register_form')
+    else:
+        return redirect('/')
+    
+
+def emp_salary_active(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        emp_reg.emp_salary_status=1
+        emp_reg.save()
+        messages.info(request, emp_reg.empfullName + ' Salary status activate')
+        return redirect('emp_Register_form')
+    else:
+        return redirect('/')
+    
+
+def emp_salary_deactive(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        emp_reg.emp_salary_status=0
+        emp_reg.save()
+        messages.info(request, emp_reg.empfullName + ' Salary status deactivate')
+        return redirect('emp_Register_form')
+    else:
+        return redirect('/')
+    
+
+def emp_reg_delete(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        name=emp_reg.empfullName
+        emp_reg.delete()
+        messages.info(request, name + ' All Details Permanently')
+        return redirect('emp_Register_form')
+    else:
+        return redirect('/')
+    
+
+    
+
+
+    
+
+def employee_salary_details(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        emp_reg_edit=EmployeeRegister.objects.get(id=pk)
+        salary=EmployeeSalary.objects.filter(empreg_id=pk)
+        return render(request,'account/employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit})
+    else:
+        return redirect('/')
+    
+
+def employee_salary_payments_search(request,pk):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        if request.method =='POST':
+            emp_reg_edit=EmployeeRegister.objects.get(id=pk)
+            salary=EmployeeSalary.objects.filter(empreg_id=pk,empslaray_date__gte=request.POST['empfr_data'],empslaray_date__lte=request.POST['empto_date'])
+
+        return render(request,'account/employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit})
+    else:
+        return redirect('/')
 
 
 
@@ -1723,11 +2004,38 @@ def admin_account(request):
             admid = request.session['admid']
         else:
             return redirect('/')
+        user=User.objects.get(id=admid)
         
-        return render(request,'Admin/Admin_Account.html')
+        return render(request,'Admin/Admin_Account.html',{'user':user})
 
     else:
             return redirect('/')
+    
+
+def admin_password_changeing(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        if request.method=='POST':
+            username=request.POST['adurname']
+            password=request.POST['adpsw']
+
+            user=User.objects.get(id=admid)
+            if username:
+                user.username=username
+            else:
+                user.username= user.username
+            user.set_password(password)
+            user.save()
+            msg=1
+        return render(request,'Admin/Admin_Account.html',{'user':user,'msg':msg})
+
+    else:
+        return redirect('/')
+
 
 
 
@@ -1737,10 +2045,120 @@ def admin_dashboard(request):
             admid = request.session['admid']
         else:
             return redirect('/')
+        
         reg=Register.objects.filter(reg_status=0)
         payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).count
         reg1=Register.objects.filter(reg_status=1)
         payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+
+
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        #Income adding to IncomeExpence Table
+        if PaymentHistory.objects.exists():
+            try:
+                inexpe=IncomeExpence.objects.filter(exin_head_name='TRAINING',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                payhist=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
+                
+                if payhist:
+                                
+                    if inexpe:
+                        inexpe.exin_head_name='TRAINING'
+                        inexpe.exin_amount=payhis
+                        inexpe.exin_typ=1
+                        inexpe.exin_date=to_date
+                        inexpe.exin_status=1
+                        inexpe.save()
+
+                    else:
+
+                        incexpence=IncomeExpence()
+                        incexpence.exin_head_name='TRAINING'
+                        incexpence.exin_amount=payhis
+                        incexpence.exin_typ=1
+                        incexpence.exin_date=cur_date
+                        incexpence.exin_status=1
+                        incexpence.save()
+                else:
+                    print('No Data')
+
+            except PaymentHistory.DoesNotExist:
+                    print('No Data')
+        else:
+            print('No Data')
+     
+
+
+        # Salay Expence adding to IncomeExpence Table
+        if EmployeeSalary.objects.exists():
+            try:
+                inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
+                
+                if sal_exp: 
+
+                    if inexp:
+
+                        inexp.exin_head_name='SALARY'
+                        inexp.exin_amount=sal_exp
+                        inexp.exin_typ=2
+                        inexp.exin_date=to_date
+                        inexp.exin_status=1
+                        inexp.save()
+                                    
+                    else:
+
+                        incexp=IncomeExpence()
+                        incexp.exin_head_name='SALARY'
+                        incexp.exin_amount=sal_exp
+                        incexp.exin_typ=2
+                        incexp.exin_date=cur_date
+                        incexp.exin_status=1
+                        incexp.save()
+                else:
+                    print('No Data')
+
+            except EmployeeSalary.DoesNotExist:
+                    print('No Data')
+                            
+        else:
+            print('No Data')
+            # Fixed Expence adding to the IncomeEpence Table
+
+        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date,fixed_status=1)
+                        
+        inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True)).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True))
+        if inex:
+            print('Data Found')
+
+        else:
+
+            not_in_inex = fixexp.exclude(fixed_date__in=inex.values_list('exin_date', flat=True)).exclude(fixed_head_name__in=inex.values_list('exin_head_name', flat=True)).values_list('id', flat=True)
+            fixexp=FixedExpence.objects.filter(id__in=not_in_inex)
+            for i in fixexp:
+                incomeexp = IncomeExpence()
+                incomeexp.exin_head_name=i.fixed_head_name
+                incomeexp.exin_date=i.fixed_date
+                incomeexp.exin_amount=i.fixed_amount
+                incomeexp.exin_typ=2
+                incomeexp.exin_dese=i.fixed_dese
+                incomeexp.exin_status=1
+                incomeexp.save()
+                exp_date=i.fixed_date
+                today = date.today()
+
+                # Calculate the number of days in the current month
+                days_in_month = (today.replace(month=today.month+1, day=1) - timedelta(days=1)).day
+                            
+                fr_date=exp_date + timedelta(days=days_in_month)
+                i.fixed_date=fr_date
+                i.save()
+
         return render(request,'Admin/Admin_dashboard.html',{'payhis':payhis,'payhis_list':payhis_list})
     
     else:
@@ -2258,6 +2676,276 @@ def adminpaysearch(request):
         
     else:
         return redirect('/')
+    
+
+
+# Admin Accounts Section 
+
+def admin_accounts(request):
+    
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        in_ex_count=IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date).count()
+        fixed_ex_count=FixedExpence.objects.all().count()
+        
+
+        income=IncomeExpence.objects.filter(exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        expence=IncomeExpence.objects.filter(exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        if not income:
+            income=1
+        if not expence:
+            expence=1
+        balans=int(income) -int(expence)
+        
+        bal_p= income - expence 
+        bal_p= (bal_p/income) * 100
+        exp_pr=100 - bal_p
+        
+        # if bal_p < 0:
+            
+        #     bal_p=-(bal_p)
+        
+
+       
+        emp_reg_count=EmployeeRegister.objects.filter(emp_status=1).count()
+        emp_salary_count=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).count()
+        content={'emp_reg_count':emp_reg_count,
+                 'emp_salary_count':emp_salary_count,
+                 'income':income,
+                 'expence':expence,
+                 'balans':balans,
+                 'bal_p':bal_p,
+                 'exp_pr':exp_pr,
+                 'in_ex_count':in_ex_count,
+                 'fixed_ex_count':fixed_ex_count
+                 
+                 }
+        return render(request,'Admin/admin_accounts.html',{'content':content})
+        
+    else:
+            return redirect('/')
+    
+
+def admin_emp_Register_view(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        dept=Department.objects.filter(dpt_Status=1)
+       
+        emp_reg=EmployeeRegister.objects.all()
+        return render(request,'Admin/admin_Employee_view.html',{'dept':dept,'emp_reg':emp_reg})
+        
+    else:
+            return redirect('/')
+    
+
+def admin_register_search(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        if request.method == 'POST':
+        
+            emp_reg=EmployeeRegister.objects.filter(empdofj__gte=request.POST['adregfr_data'],empdofj__lte=request.POST['adregto_date'])
+            return render(request,'Admin/admin_Employee_view.html',{'emp_reg':emp_reg})
+        else:
+            return redirect('admin_emp_Register_view')
+        
+    else:
+            return redirect('/')
+    
+
+def admin_income_expence(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        exp_income=IncomeExpence.objects.filter(exin_status=1,).order_by('-exin_date')
+        inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1).aggregate(intol=Sum('exin_amount'))['intol']
+        expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2).aggregate(exptol=Sum('exin_amount'))['exptol']
+       
+        content={'inco':inco,'expe':expe}
+        return render(request,'Admin/admin_income_expence.html',{'exp_income':exp_income,'content':content})
+    else:
+        return redirect('/')
+    
+
+def admin_income_expence_add(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        if request.method =='POST':
+            ex_in=IncomeExpence()
+            ex_in.exin_head_name=request.POST['adexin_head_name'].upper()
+            ex_in.exin_date=request.POST['adexin_date']
+            ex_in.exin_amount=request.POST['adexin_amt']
+            ex_in.exin_dese=request.POST['adexin_dese']
+            ex_in.exin_typ=request.POST['adexin_type']
+            ex_in.exin_status=1
+            ex_in.save()
+            msg=1
+        exp_income=IncomeExpence.objects.filter(exin_status=1,).order_by('-exin_date')
+        inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1).aggregate(intol=Sum('exin_amount'))['intol']
+        expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2).aggregate(exptol=Sum('exin_amount'))['exptol']
+       
+        content={'inco':inco,'expe':expe}
+        return render(request,'Admin/admin_income_expence.html',{'exp_income':exp_income,'content':content,'msg':msg})
+    else:
+        return redirect('/')
+
+    
+
+def admin_income_expence_search(request):
+
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        if request.method == 'POST':
+        
+            exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=request.POST['admininexfr_data'],exin_date__lte=request.POST['adinexto_date']).order_by('-exin_date')
+            inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_date__gte=request.POST['admininexfr_data'],exin_date__lte=request.POST['adinexto_date']).aggregate(intol=Sum('exin_amount'))['intol']
+            expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_date__gte=request.POST['admininexfr_data'],exin_date__lte=request.POST['adinexto_date']).aggregate(exptol=Sum('exin_amount'))['exptol']
+        
+            content={'inco':inco,'expe':expe}
+            return render(request,'Admin/admin_income_expence.html',{'exp_income':exp_income,'content':content})
+        else:
+            return redirect('admin_income_expence')
+    
+    else:
+        return redirect('/')
+    
+
+
+    
+
+
+def admin_salary_expence(request):
+    
+   
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        emp_salary_tol=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+        salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        content={'emp_salary_tol':emp_salary_tol,
+                 'to_date':to_date,
+                 'fr_date':fr_date,
+                 'cur_date':cur_date,
+                 'salary_tol':salary_tol,
+                 }
+        
+        return render(request,'Admin/admin_salary_expence.html',{'content':content,'salary':salary,})
+    else:
+        return redirect('/')
+    
+
+def admin_all_salary_expence(request):
+
+     
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+     
+        
+        salary=EmployeeSalary.objects.filter(emp_paidstatus=1).order_by('empslaray_date')
+        salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
+        return render(request,'Admin/admin_all_salary_expence.html',{'salary':salary,'salary_tol':salary_tol})
+
+    else:
+        return redirect('/')
+    
+
+    
+def admin_search_salary_payments(request):
+
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+           
+        if request.method == 'POST':
+        
+            salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=request.POST['adfullfr_data'],empslaray_date__lte=request.POST['adfullpto_date']).order_by('empslaray_date')
+            salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=request.POST['adfullfr_data'],empslaray_date__lte=request.POST['adfullpto_date']).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
+            return render(request,'Admin/admin_all_salary_expence.html',{'salary':salary,'salary_tol':salary_tol})
+
+    else:
+        return redirect('/')
+    
+
+def admin_employee_salary_details(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        emp_reg_edit=EmployeeRegister.objects.get(id=pk)
+        salary=EmployeeSalary.objects.filter(empreg_id=pk)
+        salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id=pk).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
+        return render(request,'Admin/admin_employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit,'salary_tol':salary_tol})
+    else:
+        return redirect('/')
+    
+
+def admin_employee_salary_payments_search(request,pk):
+
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        if request.method =='POST':
+
+            emp_reg_edit=EmployeeRegister.objects.get(id=pk)
+            salary=EmployeeSalary.objects.filter(empreg_id=pk,empslaray_date__gte=request.POST['adempfr_data'],empslaray_date__lte=request.POST['adempto_date'])
+            salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id=pk,empslaray_date__gte=request.POST['adempfr_data'],empslaray_date__lte=request.POST['adempto_date']).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
+            return render(request,'Admin/admin_employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit,'salary_tol':salary_tol})
+
+        return render(request,'account/employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit})
+    else:
+        return redirect('/')
+    
+
+
+
+
 
 
 # =========================== End Admin Module Section ======================================

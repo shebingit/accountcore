@@ -1,4 +1,4 @@
-{% extends 'account/account_base.html' %}
+{% extends 'Admin/adminbase.html' %}
 {% load static %}
 {% block body %}
 
@@ -163,7 +163,7 @@
 <main>
 
 <div class="container-fluid" id="action-box">
-<a href="{% url 'emp_Register_form' %}">
+<a href="{% url 'admin_emp_Register_view' %}">
     <div class="card">
         <i class='bi bi-people-fill nav_icon'></i><h5>Employeee Registeration </h5>
         <div class="nofication">
@@ -171,7 +171,7 @@
         </div>
     </div>
 </a>
-<a href="{% url 'income_expence_form' %}">
+<a href="{% url 'admin_income_expence' %}">
     <div class="card">
         <i class="bi bi-currency-rupee"></i><h5>Income/Expence </h5>
         <div class="nofication">
@@ -180,7 +180,7 @@
     </div>
 </a>
 
-<a href="{% url 'salary_expence' %}">
+<a href="{% url 'admin_salary_expence' %}">
     <div class="card">
         <i class="bi bi-currency-rupee"></i><h5>Salary Expence </h5>
         <div class="nofication">

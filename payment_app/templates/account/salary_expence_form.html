@@ -342,9 +342,7 @@
                                 <th>Employee Id</th>
                                 <th>Confirmed Salary</th>
                                 <th>Current Salary </th>
-                                <th>Last Paid Month</th>
-                                <th>Last Paid Date</th>
-                                <th>Last Paid Amount</th>
+                               
                                 <!-- <th>Salary Status</th> --> 
 
                             </tr>
@@ -354,7 +352,7 @@
                             <tr>
                                 <td>{{forloop.counter}} </td>
                                 <td> <a href="{% url 'salary_expence_add' i.id %}" class="#"> <i class="bi bi-pen-fill"></i>  </a></td>
-                                <td>{{i.empfullName}}</td>
+                                <td><a href="{% url 'employee_salary_details' i.id %}">{{i.empfullName}}</a></td>
                                 <td>{{i.empdofj}}</td>
                                 
                                 <td>{{i.empdept_id.department}}</td>
@@ -364,33 +362,7 @@
                                 <td>
                                  <span style="color: #f72824; font-weight: 700;">Not Paid</span> 
                                 </td>
-                                <td>
-                                    
-                                    {% for j in emp_salary_all %}
-                                    {% if i.id == j.empreg_id.id %}
-                                        <span style="font-weight: 700;">{{j.empsalary_month}}</span>
-                                       
-                                    {% endif %}
-                                    {% endfor %}
-                                </td>
-                                <td>
-                                    
-                                    {% for j in emp_salary_all %}
-                                    {% if i.id == j.empreg_id.id %}
-                                        <span style="font-weight: 700;">{{j.empslaray_date}}</span>
-                                       
-                                    {% endif %}
-                                    {% endfor %}
-                                </td>
-                                <td>
-                                    
-                                    {% for j in emp_salary_all %}
-                                    {% if i.id == j.empreg_id.id %}
-                                        <span style="font-weight: 700;">{{j.emppaid_amt}}</span>
-                                       
-                                    {% endif %}
-                                    {% endfor %}
-                                </td>
+                               
                             </tr>
                             {% endfor %}
                           

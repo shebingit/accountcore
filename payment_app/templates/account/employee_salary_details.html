@@ -17,20 +17,50 @@ h6
     font-weight: 600;
     margin-bottom: 1em;
 }
+#emp_details
+{
+    padding:1.5em 1em;
+    font-size: 0.92em;
+    line-height: 2.5em;
+    margin-top: 1.3em;
+    border: none;
+    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+#emp_details h5
+{
+    color: #060654;
+    font-weight: 600;
+}
+#emp_details span
+{
+    margin-left: 0.20em;
+    font-weight: 600;
+}
 
     #register-box .contaier-fluid
     {
         display: grid;
-        grid-template-columns:2.2fr;
+        grid-template-columns: 2.2fr;
+        padding: 1em;
+        gap: 1em;
+        background-color:#fafafa;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    
+    }
+    
+    #register-box .contaier
+    {
+        display: grid;
+        grid-template-columns:1fr 2.2fr;
         padding: 1em;
         gap: 1em;
         background-color:#fafafa;
        
-       
     }
     .register-details
     {
-        height: 80vh;
+        
         background: #ffff;
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
        
@@ -426,6 +456,10 @@ h6
                 gap: 1em;
                
             }
+            #register-box .contaier
+            {
+                grid-template-columns: repeat(1,1fr);
+            }
        }
 </style>
 
@@ -435,10 +469,10 @@ h6
         <div class="contaier-fluid">
             
             <div class="register-details-table">
-                <h4>All Month Salary Expence <span style="margin-left: 0.60em;"><a href="{% url 'salary_expence' %}"><i class="bi bi-arrow-left-square-fill"></i></a></span> </h4>
+                <h4>All  Salary Payments <span style="margin-left: 0.60em;"><a href="#"  onclick="goBack()"><i class="bi bi-arrow-left-square-fill"></i></a></span> </h4>
                 <div class="line mb-5"></div>
 
-                <form action="{% url 'Search_salary_payments' %}" method="post">
+                <form action="{% url 'employee_salary_payments_search' emp_reg_edit.id %}" method="post">
                     {% csrf_token %}
                     <p class="text-center mb-4 mt-2"><span style="color: #f83b3b;"> Note :</span> Search Payments By Paid Date </p>
                        
@@ -446,11 +480,11 @@ h6
                         
                         <div class="input-date-box">
                             <label>From Date :</label>
-                            <input type="date" name="spfr_data">
+                            <input type="date" name="empfr_data" required>
                         </div>
                         <div class="input-date-box">
                             <label>To Date :</label>
-                            <input type="date" name="spto_date">
+                            <input type="date" name="empto_date" required>
                         </div>
                         <div class="submit-box">
                             <button type="submit"><i class="bi bi-search"></i></button>
@@ -459,17 +493,23 @@ h6
                 </form>
 
         
-                <div class="container">
+                <div class="contaier">
+
+                    <div class="employee_details">
+                        <div class="card" id="emp_details">
+                            <span><h5>{{emp_reg_edit.empfullName}}</h5></span>
+                                <b>ID: {{emp_reg_edit.empidreg}}</b>
+                            <span ><b>Date Of Joing:</b> {{emp_reg_edit.empdofj}}</span>
+                        
+                            <span><b style="margin-left: 0.50em;">Confirmed Salary:</b>   {{emp_reg_edit.empconfirmsalary}}</span>
+                        </div>
+                    </div>
 
                     <table id="register-details" class="display" >
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Date of Joing</th>
-                                <th>Full Name</th>
-                                <th>Department</th>
-                                <th>Designation</th>
-                                <th>Confirmed Salary</th>
+                                
                                 <th>Salary Month</th>
                                 <th>Paid Date</th>
                                 <th>Paid Amount</th>
@@ -482,11 +522,7 @@ h6
                                
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
-                                        <td>{{i.empreg_id.empdofj}}</td>
-                                        <td><a href="{% url 'employee_salary_details' i.empreg_id.id %}" style="font-size: 0.93em;">{{i.empreg_id.empfullName}}</a></td>
-                                        <td>{{i.empreg_id.empdept_id.department}}</td>
-                                        <td>{{i.empreg_id.empdesignation}}</td>
-                                        <td>{{i.empreg_id.empconfirmsalary}}</td>
+                                       
                                         <td>{{i.empsalary_month}}</td>
                                         <td>{{i.empslaray_date}}</td>
                                         <td>{{i.emppaid_amt}}</td>
@@ -520,6 +556,7 @@ h6
           history.go(-1); // Go back one page in the browser history
         }
     </script>
+
 
 
 </main>
