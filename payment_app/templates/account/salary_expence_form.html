@@ -88,7 +88,9 @@
     }
     .register-details .message-bx
     {
-        background: #e8e340;
+        background: #f0ea4a;
+        height: 8vh;
+        color: #2c2a2a;
     }
     .register-details .message-bx-confirm
     {
@@ -147,6 +149,7 @@
         height: 15vh;
         background: #fafafa;
         margin-top: 1em;
+        
     }
     .submit_button button
     {
@@ -157,6 +160,7 @@
         margin:none ;
         border: none;
         letter-spacing: 0.04em;
+        margin-right: 0.50em;
     }
     #register-details a
     {
@@ -264,6 +268,10 @@
                 <div class="message-bx-confirm" id="msgbox">
                     <p><i class="bi bi-check-all"></i>Employee Salary Added </p>
                 </div>
+                {% elif msg == 2 %}
+                <div class="message-bx" id="msgbox">
+                    <p><i class="bi bi-exclamation-triangle-fill"></i> Company Holidays are not added.  Please add at least one holiday  </p>
+                </div>
                 
                 {% endif %}
 
@@ -279,27 +287,27 @@
                         
                             <b style="margin-left: 0.50em;">Confirmed Salary:</b>   {{emp_reg_edit.empconfirmsalary}}</span>
                         </div>
-                        <input type="text" name="Emp_regid" value="{{emp_reg_edit.id}}" required hidden>
+                        <input type="text" name="Emp_regid" id="emp_regid" value="{{emp_reg_edit.id}}" required hidden>
                         {% endif %}
                     
                     <div class="line mt-4"></div>
                     <div class="input-group-box">
                         <label>Leaves</label>
-                        <input type="number" name="leave_full" style="width: 28%;" value="0" min="0" placeholder="Full day" >
+                        <input type="number" name="leave_full" id="lf" style="width: 28%;" value="0" min="0" placeholder="Full day" >
                       
-                        <input type="number"  name="leave_half" style="width: 26%;" value="0" min="0" placeholder="Half day" >
+                        <input type="number"  name="leave_half" id="lh" style="width: 26%;" value="0" min="0" placeholder="Half day" >
                     </div>
                     <div class="input-group-box">
                         <label>Work Delay</label>
-                        <input type="number" name="work_delay" min="0" value="0" placeholder="Work delay count" >
+                        <input type="number" name="work_delay" id="wd" min="0" value="0" placeholder="Work delay count" >
                     </div>
                     <div class="input-group-box">
                         <label>Any Other Amount</label>
-                        <input type="number" name="other_amt" min="0" value="0"  >
+                        <input type="number" name="other_amt" id="otamt" min="0" value="0"  >
                     </div>
                     <div class="input-group-box">
                         <label>Salary Month</label>
-                        <select name="empsalary_month"  required>
+                        <select name="empsalary_month" id="sm" required>
                            
                             {% for value, label in content.months  %}
                             <option value="{{ value }}">{{ label }}</option>
@@ -307,7 +315,7 @@
 
                         </select>
                         <label>Salary Year</label>
-                        <select name="empsalary_year" >
+                        <select name="empsalary_year" id="sy" >
                             <option value="{{current_year}}">{{current_year}}</option>
                             {% for value, label in content.years  %}
                             <option value="{{ value }}">{{ label }}</option>
@@ -318,10 +326,14 @@
                         <label>Date Of Salary Given</label>
                         <input type="date" name="empsalary_date" required>
                     </div>
-
+                    <div class="input-group-box" id="results">
+                       
+                    </div>
                     <div class="submit_button">
+                        <button type="button" id="salcal">Calculate Salary</button>
                         <button type="submit">Save</button>
                     </div>
+                    
                 </form>
             </div>
 
@@ -379,6 +391,45 @@
     </section>
 
     <!-- Meaage Box fead Out -->
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+          $('#salcal').click(function() {
+            const persid = $('#emp_regid').val();
+            const lf = $('#lf').val();
+            const lh = $('#lh').val();
+            const wd = $('#wd').val();
+            const otamt = $('#otamt').val();
+            const sm = $('#sm').val();
+            const sy = $('#sy').val();
+            console.log(persid);
+            console.log(lf); console.log(lh); console.log(wd); console.log(otamt); console.log(sm); console.log(sy);
+            $.ajax({
+                url: '{% url "salary_calculate" %}',
+                data: {
+                    'persid': persid,
+                    'lf':lf,
+                    'lh':lh,
+                    'wd':wd,
+                    'otamt':otamt,
+                    'sm':sm,
+                    'sy':sy
+                },
+              success: function(data) {
+                  $('#results').html(data);
+                
+              },
+              error: function(xhr, status, error) {
+                // Handle error response
+              }
+            });
+          });
+        });
+      </script>
+      
+
 
 
 </main>

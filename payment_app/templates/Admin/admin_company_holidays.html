@@ -1,7 +1,6 @@
-{% extends 'account/account_base.html' %}
+{% extends 'Admin/adminbase.html' %}
 {% load static %}
 {% block body %}
-
 
 
 <style>
@@ -210,7 +209,7 @@
                 {% endif %}
 
 
-                <form action="{% url 'company_holiday_add'  %}" method="post">
+                <form action="{% url 'admin_company_holiday_add'  %}" method="post">
                     {% csrf_token %}
                     <div class="input-group-box">
                         <label>Month Start date: <br>{{comp_holidays_edit.ch_sdate}}</label>
@@ -251,7 +250,7 @@
                         <tbody>
                             {% for i in comp_holidays %}
                             <tr>
-                                <td><a href="{% url 'company_holidy_edit' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a></td>
+                                <td><a href="{% url 'admin_company_holidy_edit' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a></td>
                                 <td>{{i.ch_sdate}}</td>
                                 <td>{{i.ch_edate}}</td>
                                 <td>{{i.ch_sdate|date:"F" }}</td>

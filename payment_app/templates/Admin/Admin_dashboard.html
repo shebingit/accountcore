@@ -41,7 +41,9 @@
         justify-content: center;
         flex-wrap: wrap;
         gap: 1em;
-        height: 30vh;
+        padding: 1.2em;
+       margin-bottom: 1em;
+       margin-top: 1em;
        
     }
     #action-box .card
@@ -109,7 +111,14 @@
 </div>
 {% endif %}
 
-<div class="height-100 container-fluid" id="action-box">
+<div class=" container-fluid" id="action-box">
+    <a href="{% url 'admin_analysis' %}">
+        <div class="card">
+            
+            <i class="bi bi-graph-up-arrow"></i><h5>Analysis</h5>
+            
+        </div>
+    </a>
 <a href="{% url 'newpay_confirm_list' %}">
     <div class="card">
         

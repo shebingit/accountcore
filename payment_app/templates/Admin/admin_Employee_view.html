@@ -302,6 +302,16 @@
     <section id="register-box">
          <!-- Message Infomation Display-->
 
+         <div class="message-information"  id="msgbox">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+
        
         <div class="contaier-fluid">
             
@@ -353,12 +363,12 @@
                             {% for i in emp_reg %}
                             <tr>
                                 <td class="actionbtns">
-                                    <a href="{% url 'emp_reg_delete' i.id  %}"><i class="bi bi-x-circle-fill"></i></a>
-                                    <a href="#"><i class="bi bi-pen-fill"></i></a>
+                                    <a href="{% url 'admin_emp_reg_delete' i.id  %}"><i class="bi bi-x-circle-fill"></i></a>
+                                  
 
                                 </td>
                                 <td>{{forloop.counter}} </td>
-                                <td><a href="{% url 'employee_salary_details' i.id %}" style="font-size: 0.91em;">{{i.empfullName}}</a></td>
+                                <td><a href="{% url 'admin_employee_salary_details' i.id %}" style="font-size: 0.91em;">{{i.empfullName}}</a></td>
                                 <td>{{i.empdofj}}</td>
                                 
                                 <td>{{i.empdept_id.department}}</td>
@@ -368,16 +378,16 @@
                                 <td>{{i.emptol_salary}}</td>
                                 <td class="stus">
                                     {% if i.emp_status == 1 %}
-                                    <a href="{% url 'emp_reg_deactive' i.id %}"><span style="color: #061459;font-weight: 600;">Reg-active </span></a>
+                                    <a href="{% url 'admin_emp_reg_deactive' i.id %}"><span style="color: #061459;font-weight: 600;">Reg-active </span></a>
                                     {% else %}
-                                    <a href="{% url 'emp_reg_reactive' i.id %}"><span style="color: #f61212;font-weight: 600;">De-active </span></a>
+                                    <a href="{% url 'admin_emp_reg_reactive' i.id %}"><span style="color: #f61212;font-weight: 600;">De-active </span></a>
                                     {% endif %}
                                 </td>
                                 <td class="stus">
                                     {% if i.emp_salary_status == 1 %}
-                                    <a href="{% url 'emp_salary_deactive' i.id %}"><span style="color: #6bdb33;font-weight: 600;"> Salary-active </span></a>
+                                    <a href="{% url 'admin_emp_salary_deactive' i.id %}"><span style="color: #6bdb33;font-weight: 600;"> Salary-active </span></a>
                                     {% else %}
-                                    <a href="{% url 'emp_salary_active' i.id %}"><span style="color: #f02121;font-weight: 600;">De-active </span></a>
+                                    <a href="{% url 'admin_emp_salary_active' i.id %}"><span style="color: #f02121;font-weight: 600;">De-active </span></a>
                                     {% endif %}
                                 </td>
                                 

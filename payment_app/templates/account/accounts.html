@@ -165,7 +165,7 @@
 <div class="container-fluid" id="action-box">
 <a href="{% url 'emp_Register_form' %}">
     <div class="card">
-        <i class='bi bi-people-fill nav_icon'></i><h5>Employeee Registeration </h5>
+        <i class='bi bi-people-fill nav_icon'></i><h5>Employee Registeration </h5>
         <div class="nofication">
             <span>{{content.emp_reg_count}}</span>
         </div>
@@ -214,16 +214,9 @@
 
             <div class="loader">
                 <span><i class="bi bi-currency-rupee rupe"></i>
-                {% if content.income > content.expence %}
-                    <span class="value inex-profit" akhi="{{content.income}}">0</span>
+              
+                    <span class="value " akhi="{{content.income}}">0</span>
                    
-                {% elif  content.income < content.expence %}
-                    <span class="value inex-loss" akhi="{{content.income}}">0</span>
-                  
-                {% else %}
-                    <span class="value inex-equl" akhi="{{content.income}}">0</span>
-                    
-                {% endif %}
                 </span>
             </div>
         </div>
@@ -231,30 +224,28 @@
             <h4>{% now "F" %} Expence <span><i class="bi bi-calendar3"></i></span></h4>
             <div class="loader">
                 <span><i class="bi bi-currency-rupee rupe"></i>
-                    {% if content.income > content.expence %}
-                    <span class="value inex-loss" akhi="{{content.expence}}">0</span>
+                  
+                    <span class="value " akhi="{{content.expence}}">0</span>
                    
-                    {% elif  content.income < content.expence %}
-                    <span class="value inex-profit" akhi="{{content.expence}}">0</span>
-                    {% else %}
-                    <span class="value  inex-equl" akhi="{{content.expence}}">0</span>
-                    {% endif %}
+                   
                 </span>
             </div>
         </div>
         <div class="card">
             <h4>{% now "F" %} Balance <span><i class="bi bi-calendar3"></i></span></h4>
             <div class="loader">
-                <span><i class="bi bi-currency-rupee rupe"></i><span class="value" akhi="{{content.balans}}">0</span></span>
+                
               
                 {% if content.income > content.expence %}
+                <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-profit" akhi="{{content.balans}}">0</span></span>
                 
                 <h5 class="inex-profit mt-3"> Profit</h5>
                 {% elif  content.income < content.expence %}
+                <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-loss" akhi="{{content.balans}}">0</span></span>
                 
                 <h5 class="inex-loss mt-3"> Loss</h5>
                 {% else %}
-                    
+                <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-equl" akhi="{{content.balans}}">0</span></span>
                 <h5 class="inex-equl mt-3"> No Profit No Loss</h5>
                 {% endif %}
            
@@ -294,34 +285,40 @@
     });
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
-<script>
-    var xValues = ["Income", "Expence", "Balance"];
-    var yValues = [100,{{ content.exp_pr }},{{ content.bal_p }}, 10];
-    var barColors = ["orange","red","green"];
-    
-    new Chart("myChart", {
-      type: "bar",
-      data: {
-        labels: xValues,
-        datasets: [{
-          backgroundColor: barColors,
-          data: yValues
-        }]
-      },
-      options: {
-        legend: {display: false},
-        title: {
-          display: true,
-          text: "Income Expence Balance Barchart"
-        }
-      }
-    });
-    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+    <script>
+        var xValues = ["Income", "Expence", "Profit/Loss"];
+        var yValues = [{{content.inc_pr}}, {{content.exp_pr}}, {{content.bal_pr}}];
+        var barColors = [
+          "#51e109",
+          "#eb1d1d",
+          "#ffdf28",
+          
+        ];
+        
+        new Chart("myChart", {
+          type: "doughnut",
+          data: {
+            labels: xValues,
+            datasets: [{
+              backgroundColor: barColors,
+              data: yValues
+            }]
+          },
+          options: {
+            title: {
+              display: true,
+              text: "Company Income Expence "
+            }
+          }
+        });
+        </script>
 
 
 </main>
 <!-- Main end-->
 
 {% endblock %}
+

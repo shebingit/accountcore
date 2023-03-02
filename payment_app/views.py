@@ -1294,12 +1294,14 @@ def accounts(request):
         balans=int(income) -int(expence)
         
         bal_p= income - expence 
-        bal_p= (bal_p/income) * 100
-        exp_pr=100 - bal_p
-        
-        # if bal_p < 0:
+        if bal_p < 0:
             
-        #     bal_p=-(bal_p)
+            bal_p=-(bal_p)
+        
+        exp_pr=int(expence) / int(bal_p + income + expence)
+        inc_pr=int(income) / int(bal_p + income + expence)
+        bal_pr=int(bal_p) / int(bal_p + income + expence)
+        
         
 
        
@@ -1310,10 +1312,10 @@ def accounts(request):
                  'income':income,
                  'expence':expence,
                  'balans':balans,
-                 'bal_p':bal_p,
+                 'bal_pr':bal_pr,
                  'exp_pr':exp_pr,
                  'in_ex_count':in_ex_count,
-                 'fixed_ex_count':fixed_ex_count
+                 'fixed_ex_count':fixed_ex_count,'inc_pr':inc_pr
                  
                  }
         
@@ -1460,17 +1462,56 @@ def company_holiday_add(request):
         else:
             return redirect('/')
         if request.method =='POST':
-            comp_holiday=Company_Holidays()
-            comp_holiday.ch_sdate=request.POST['cmphsdate']
-            comp_holiday.ch_edate=request.POST['cmphedate']
-            comp_holiday.ch_no=request.POST['cmphno']
-            comp_holiday.save()
-            msg=1
+            
+            
+            if request.POST.get('cmphid'):
+                comp_holidays_edit=Company_Holidays.objects.get(id=int(request.POST['cmphid']))
+                comp_holidays_edit.ch_sdate=request.POST['cmphsdate']
+                comp_holidays_edit.ch_edate=request.POST['cmphedate']
+                comp_holidays_edit.ch_no=request.POST['cmphno']
+
+                e = datetime.strptime(request.POST['cmphedate'], '%Y-%m-%d')
+                s = datetime.strptime(request.POST['cmphsdate'], '%Y-%m-%d')
+
+                month_days = (e - s).days + 1
+                comp_holidays_edit.ch_workno=int(month_days) - int(request.POST['cmphno'])
+               
+                comp_holidays_edit.save()
+                msg=3
+
+            else:
+            
+                comp_holiday=Company_Holidays()
+                comp_holiday.ch_sdate=request.POST['cmphsdate']
+                comp_holiday.ch_edate=request.POST['cmphedate']
+                comp_holiday.ch_no=request.POST['cmphno']
+
+                #company workdays Calculations
+                e = datetime.strptime(request.POST['cmphedate'], '%Y-%m-%d')
+                s = datetime.strptime(request.POST['cmphsdate'], '%Y-%m-%d')
+
+                month_days = (e - s).days + 1
+                comp_holiday.ch_workno=int(month_days) - int(request.POST['cmphno'])
+            
+                comp_holiday.save()
+                msg=1
             comp_holidays=Company_Holidays.objects.all()
         return render(request,'account/company_holidays.html',{'comp_holidays':comp_holidays,'msg':msg})
     else:
         return redirect('/')
 
+
+def company_holidy_edit(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        comp_holidays=Company_Holidays.objects.all()
+        comp_holidays_edit=Company_Holidays.objects.get(id=pk)
+        return render(request,'account/company_holidays.html',{'comp_holidays':comp_holidays,'comp_holidays_edit':comp_holidays_edit})
+    else:
+        return redirect('/')
 
 
 
@@ -1603,57 +1644,56 @@ def employee_salary_save(request):
 
             # Salary Calculations  
             
+           
 
-            comp_holiday=Company_Holidays.objects.get(ch_sdate__gte=fr_date,ch_edate__lte=to_date)
-            work_days=int(month_days) - int(comp_holiday.ch_no) 
-            leavefull=int(request.POST['leave_full'])
-            leavehalf=int(request.POST['leave_half'])
-            w_delay=int(request.POST['work_delay'])
-            any_other=int(request.POST['work_delay'])
+            try:
 
-            if not request.POST['leave_full']:
-                leavefull=0
-            if not request.POST['leave_half']:
-                leavehalf=0
-            if not request.POST['work_delay']:
-                w_delay=0
-            if not request.POST['other_amt']:
-                any_other=0
+                comp_holiday=Company_Holidays.objects.get(ch_sdate__gte=startdate,ch_edate__lte=enddate)
+                work_days=int(month_days) - int(comp_holiday.ch_no) 
+                leavefull=int(request.POST['leave_full'])
+                leavehalf=int(request.POST['leave_half'])
+                w_delay=int(request.POST['work_delay'])
+                any_other=int(request.POST['work_delay'])
 
-            conf_salary=emp_reg.empconfirmsalary
-            one_day_salary=int(conf_salary / work_days)
+                if not request.POST['leave_full']:
+                    leavefull=0
+                if not request.POST['leave_half']:
+                    leavehalf=0
+                if not request.POST['work_delay']:
+                    w_delay=0
+                if not request.POST['other_amt']:
+                    any_other=0
 
-            full_day_leave_amt=int(one_day_salary) * int(leavefull)
-            half_day_leave_amt=int(one_day_salary / 2) * int(leavehalf)
-            w_delay_amt=int(one_day_salary) * int(w_delay)
-            net_salary=int(conf_salary) - int(full_day_leave_amt + half_day_leave_amt + w_delay_amt + any_other)
+                conf_salary=emp_reg.empconfirmsalary
+                one_day_salary=int(conf_salary / work_days)
 
+                full_day_leave_amt=int(one_day_salary) * int(leavefull)
+                half_day_leave_amt=int(one_day_salary / 2) * int(leavehalf)
+                w_delay_amt=int(one_day_salary) * int(w_delay)
+                net_salary=int(conf_salary) - int(full_day_leave_amt + half_day_leave_amt + w_delay_amt)
+                net_salary=int(net_salary) + int(any_other)
 
-            # print('oneday',one_day_salary)
-            # print('full leave',full_day_leave_amt)
-            # print('half leave',half_day_leave_amt)
-            # print('delay',w_delay_amt)
-            # print('net salary',net_salary)
-
-
-          
-            emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(net_salary)
-            emp_reg.emp_salary_status=1
-            emp_reg.save()
-
-            emp_salary=EmployeeSalary()
-            emp_salary.empreg_id=emp_reg
-          
-            m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
             
-            emp_salary.empsalary_month= m + ' ' + request.POST['empsalary_year']
+                emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(net_salary)
+                emp_reg.emp_salary_status=1
+                emp_reg.save()
 
-            emp_salary.empslaray_date=request.POST['empsalary_date']
-            emp_salary.emppaid_amt= int(net_salary)
-            emp_salary.emp_paidstatus=1
-            emp_salary.save()
-            msg=1
-    
+                emp_salary=EmployeeSalary()
+                emp_salary.empreg_id=emp_reg
+            
+                m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
+                
+                emp_salary.empsalary_month= m + ' ' + request.POST['empsalary_year']
+
+                emp_salary.empslaray_date=request.POST['empsalary_date']
+                emp_salary.emppaid_amt= int(net_salary)
+                emp_salary.emp_paidstatus=1
+                emp_salary.save()
+                msg=1
+
+            except Company_Holidays.DoesNotExist:
+                msg=2
+
             emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
 
             
@@ -1669,6 +1709,72 @@ def employee_salary_save(request):
                                 'msg':msg,'content':content,'emp_salary':emp_salary,'emp_salary_all':emp_salary_all})
     else:
         return redirect('/')
+    
+
+def salary_calculate(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+           uid = request.session['uid']
+        else:
+             return redirect('/')
+        
+        emp_reg=EmployeeRegister.objects.get(id=int(request.GET.get('persid'))) # Get the employee details
+
+            # Here calculating the working days of selected month
+
+        mon =int(request.GET.get('sm'))
+        ye = int(request.GET.get('sy'))
+           
+        startdate = date(ye, mon, 1)
+        last_day_of_month = startdate.replace(day=28) + timedelta(days=4)
+        enddate = last_day_of_month - timedelta(days=last_day_of_month.day)
+        month_days = (enddate - startdate).days + 1
+
+
+            # Salary Calculations  
+            
+           
+
+        try:
+
+                comp_holiday=Company_Holidays.objects.get(ch_sdate__gte=startdate,ch_edate__lte=enddate)
+                work_days=int(month_days) - int(comp_holiday.ch_no) 
+                leavefull=int(request.GET.get('lf'))
+                leavehalf=int(request.GET.get('lh'))
+                w_delay=int(request.GET.get('wd'))
+                any_other=int(request.GET.get('otamt'))
+
+                if not leavefull:
+                    leavefull=0
+                if not leavehalf:
+                    leavehalf=0
+                if not w_delay:
+                    w_delay=0
+                if not any_other:
+                    any_other=0
+
+                conf_salary=emp_reg.empconfirmsalary
+                one_day_salary=int(conf_salary / work_days)
+
+                full_day_leave_amt=int(one_day_salary) * int(leavefull)
+                half_day_leave_amt=int(one_day_salary / 2) * int(leavehalf)
+                w_delay_amt=int(one_day_salary) * int(w_delay)
+                net_salary=int(conf_salary) - int(full_day_leave_amt + half_day_leave_amt + w_delay_amt)
+                net_salary=int(net_salary) + int(any_other)
+                print(net_salary)
+                calc=1
+                return render(request,'account/result.html',{'net_salary':net_salary,'calc':calc})
+            
+                
+                
+        except Company_Holidays.DoesNotExist:
+                msg=2
+
+        
+
+    else:
+        return redirect('/')
+
     
     
 def all_salary_expence(request):
@@ -2707,12 +2813,14 @@ def admin_accounts(request):
         balans=int(income) -int(expence)
         
         bal_p= income - expence 
-        bal_p= (bal_p/income) * 100
-        exp_pr=100 - bal_p
-        
-        # if bal_p < 0:
+        if bal_p < 0:
             
-        #     bal_p=-(bal_p)
+            bal_p=-(bal_p)
+        
+        exp_pr=int(expence) / int(bal_p + income + expence)
+        inc_pr=int(income) / int(bal_p + income + expence)
+        bal_pr=int(bal_p) / int(bal_p + income + expence)
+        
         
 
        
@@ -2723,10 +2831,10 @@ def admin_accounts(request):
                  'income':income,
                  'expence':expence,
                  'balans':balans,
-                 'bal_p':bal_p,
+                 'inc_pr':inc_pr,
                  'exp_pr':exp_pr,
                  'in_ex_count':in_ex_count,
-                 'fixed_ex_count':fixed_ex_count
+                 'fixed_ex_count':fixed_ex_count,'bal_pr':bal_pr
                  
                  }
         return render(request,'Admin/admin_accounts.html',{'content':content})
@@ -2942,6 +3050,336 @@ def admin_employee_salary_payments_search(request,pk):
     else:
         return redirect('/')
     
+
+
+    
+
+def admin_emp_reg_deactive(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        emp_reg.emp_status=0
+        emp_reg.save()
+        messages.info(request, emp_reg.empfullName + ' Registration status deactivate')
+        return redirect('admin_emp_Register_view')
+    else:
+        return redirect('/')
+    
+
+def admin_emp_reg_reactive(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        emp_reg.emp_status=1
+        emp_reg.save()
+        messages.info(request, emp_reg.empfullName + ' Registration status activate')
+        return redirect('admin_emp_Register_view')
+    else:
+        return redirect('/')
+    
+
+def admin_emp_salary_active(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        emp_reg.emp_salary_status=1
+        emp_reg.save()
+        messages.info(request, emp_reg.empfullName + ' Salary status activate')
+        return redirect('admin_emp_Register_view')
+    else:
+        return redirect('/')
+    
+
+def admin_emp_salary_deactive(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        emp_reg.emp_salary_status=0
+        emp_reg.save()
+        messages.info(request, emp_reg.empfullName + ' Salary status deactivate')
+        return redirect('admin_emp_Register_view')
+    else:
+        return redirect('/')
+    
+
+def admin_emp_reg_delete(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+        name=emp_reg.empfullName
+        emp_reg.delete()
+        messages.info(request, name + ' All Details Permanently')
+        return redirect('admin_emp_Register_view')
+    else:
+        return redirect('/')
+    
+
+def admin_fixed_expence(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        fixededit=FixedExpence.objects.all()
+
+        if fixededit:
+
+            fixededit=None   
+
+        fixedexp=FixedExpence.objects.all()
+        content=''
+        return render(request,'Admin/admin_fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+    else:
+        return redirect('/')
+    
+def admin_fixed_expence_add(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        if request.POST['fixed_id']:
+
+            fixededit=FixedExpence.objects.get(fixed_status=1,id=int(request.POST['fixed_id']))
+            fixededit.fixed_head_name=request.POST.get('fixed_head_name').upper()
+
+            if request.POST.get('fixed_date'):
+                fixededit.fixed_date=request.POST.get('fixed_date')
+            else:
+                fixededit.fixed_date= fixededit.fixed_date
+
+            fixededit.fixed_amount=request.POST.get('fixed_amt')
+            fixededit.fixed_dese=request.POST.get('fixed_dese')
+            msg=3
+            fixededit.save()
+
+        else:
+        
+            if request.method =='POST':
+                fixedexp_reg=FixedExpence()
+                fixedexp_reg.fixed_head_name=request.POST['fixed_head_name'].upper()
+                fixedexp_reg.fixed_date=request.POST['fixed_date']
+                fixedexp_reg.fixed_amount=request.POST['fixed_amt']
+                fixedexp_reg.fixed_dese=request.POST['fixed_dese']
+                fixedexp_reg.fixed_status=1
+                fixedexp_reg.save()
+                msg=1
+
+        fixededit=''
+       
+        fixedexp=FixedExpence.objects.all()
+        content={'msg':msg}
+        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+    else:
+        return redirect('/')
+    
+
+def admin_fixed_edit(request,pk):
+    
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        fixededit=FixedExpence.objects.get(id=pk)
+        fixedexp=FixedExpence.objects.all()
+        content=''
+        return render(request,'Admin/admin_fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+    
+    else:
+        return redirect('/')
+    
+
+   
+def admin_fixed_change_status(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        fixededit=FixedExpence.objects.get(id=pk)
+        if fixededit.fixed_status == 1:
+            fixededit.fixed_status=0
+        else:
+             fixededit.fixed_status=1
+        fixededit.save()
+        fixedexp=FixedExpence.objects.all()
+        content=''
+        fixededit=''
+        return render(request,'Admin/admin_fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+        
+    else:
+        return redirect('/')
+
+def admin_fixed_delete(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        fixededit=FixedExpence.objects.get(fixed_status=1,id=pk)
+        fixededit.delete()
+        fixedexp=FixedExpence.objects.all()
+        fixededit=''
+        msg=2
+        content={'msg':msg}
+        return render(request,'Admin/admin_fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+        
+    else:
+        return redirect('/')
+
+
+
+def admin_company_holoidays(request):
+
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        comp_holidays=Company_Holidays.objects.all()
+        return render(request,'Admin/admin_company_holidays.html',{'comp_holidays':comp_holidays})
+    else:
+        return redirect('/')
+    
+
+def admin_company_holiday_add(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        if request.method =='POST':
+            
+            
+            if request.POST.get('cmphid'):
+                comp_holidays_edit=Company_Holidays.objects.get(id=int(request.POST['cmphid']))
+                comp_holidays_edit.ch_sdate=request.POST['cmphsdate']
+                comp_holidays_edit.ch_edate=request.POST['cmphedate']
+                comp_holidays_edit.ch_no=request.POST['cmphno']
+
+                e = datetime.strptime(request.POST['cmphedate'], '%Y-%m-%d')
+                s = datetime.strptime(request.POST['cmphsdate'], '%Y-%m-%d')
+
+                month_days = (e - s).days + 1
+                comp_holidays_edit.ch_workno=int(month_days) - int(request.POST['cmphno'])
+               
+                comp_holidays_edit.save()
+                msg=3
+
+            else:
+            
+                comp_holiday=Company_Holidays()
+                comp_holiday.ch_sdate=request.POST['cmphsdate']
+                comp_holiday.ch_edate=request.POST['cmphedate']
+                comp_holiday.ch_no=request.POST['cmphno']
+
+                #company workdays Calculations
+                e = datetime.strptime(request.POST['cmphedate'], '%Y-%m-%d')
+                s = datetime.strptime(request.POST['cmphsdate'], '%Y-%m-%d')
+
+                month_days = (e - s).days + 1
+                comp_holiday.ch_workno=int(month_days) - int(request.POST['cmphno'])
+            
+                comp_holiday.save()
+                msg=1
+            comp_holidays=Company_Holidays.objects.all()
+        return render(request,'Admin/admin_company_holidays.html',{'comp_holidays':comp_holidays,'msg':msg})
+    else:
+        return redirect('/')
+
+
+def admin_company_holidy_edit(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        comp_holidays=Company_Holidays.objects.all()
+        comp_holidays_edit=Company_Holidays.objects.get(id=pk)
+        return render(request,'Admin/admin_company_holidays.html',{'comp_holidays':comp_holidays,'comp_holidays_edit':comp_holidays_edit})
+    else:
+        return redirect('/')
+    
+
+
+# Analysi Section 
+
+def admin_analysis(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        # in_ex_count=IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date).count()
+        # fixed_ex_count=FixedExpence.objects.all().count()
+        
+
+        income=IncomeExpence.objects.filter(exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        expence=IncomeExpence.objects.filter(exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        if not income:
+            income=1
+        if not expence:
+            expence=1
+        balans=int(income) -int(expence)
+        
+        bal_p= income - expence 
+        if bal_p < 0:
+            
+            bal_p=-(bal_p)
+        
+        exp_pr=int(expence) / int(bal_p + income + expence)
+        inc_pr=int(income) / int(bal_p + income + expence)
+        bal_pr=int(bal_p) / int(bal_p + income + expence)
+        
+        
+
+       
+        #=EmployeeRegister.objects.filter(emp_status=1).count()
+        #emp_salary_count=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).count()
+        content={
+                 
+                 'income':income,
+                 'expence':expence,
+                 'balans':balans,
+                 'bal_pr':bal_pr,
+                 'exp_pr':exp_pr,
+                 'cur_date':cur_date,
+                 'inc_pr':inc_pr
+                 
+                 }
+       
+        return render(request,'Admin/admin_analysis.html',{'content':content})
+    else:
+        return redirect('/')
+    
+
+
 
 
 

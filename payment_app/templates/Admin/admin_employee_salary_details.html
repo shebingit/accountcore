@@ -341,6 +341,11 @@ h6
         padding: 1.3em;
        
      }
+     .card p{
+        font-size: 1.5em;
+        font-weight: 700;
+        text-align: center;
+     }
      .register-details-table  .search-box .input-date-box
      {
          padding: 0.80em .50em;
@@ -488,7 +493,12 @@ h6
                     <div class="search-box">
                         <div class="card">
                             <h6>Total Paid Salary </h6>
-                            <p>{{salary_tol}}</p>
+                            <p>{% if salary_tol %}
+                                {{salary_tol}} /-
+                                {% else %}
+                                0 /-
+                                {% endif %}
+                            </p>
                         </div>
                         
                         <div class="input-date-box">

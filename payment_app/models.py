@@ -91,4 +91,5 @@ class Company_Holidays(models.Model):
     ch_sdate = models.DateField(auto_now_add=False,null=True)
     ch_edate = models.DateField(auto_now_add=False,null=True)
     ch_no = models.IntegerField(default=0,null=True)
+    ch_workno = models.IntegerField(default=0,null=True)
 

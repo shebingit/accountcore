@@ -37,6 +37,8 @@ urlpatterns = [
 
     path('Company-Holoidays',views.company_holoidays,name='company_holoidays'),
     path('Company-Holoidays-Add',views.company_holiday_add,name='company_holiday_add'),
+    path('Company-Holoidays-Edit/<int:pk>',views.company_holidy_edit,name="company_holidy_edit"),
+    
     
     
     
@@ -68,6 +70,8 @@ urlpatterns = [
     path('Salary-Expence-Form',views.salary_expence_form,name='salary_expence_form'),
     path('Salary-Expence-Add/<int:pk>',views.salary_expence_add,name="salary_expence_add"),
     path('Salary-Expence-Save',views.employee_salary_save,name='employee_salary_save'),
+    path('Salary-Expence-Calculate',views.salary_calculate,name='salary_calculate'),
+    
     
     path('Employee-Salary-Details/<int:pk>',views.employee_salary_details,name="employee_salary_details"),
     path('Employee-Salary-Details-Search/<int:pk>',views.employee_salary_payments_search,name="employee_salary_payments_search"),
@@ -177,6 +181,31 @@ urlpatterns = [
     path('Admin-Employee-Salary_Details/<int:pk>',views.admin_employee_salary_details,name="admin_employee_salary_details"),
     path('Admin-Employee-Salary-Payments-Search/<int:pk>',views.admin_employee_salary_payments_search,name="admin_employee_salary_payments_search"),
 
+    path('Admin-Employee-Reg-deactive/<int:pk>',views.admin_emp_reg_deactive,name="admin_emp_reg_deactive"),
+    path('Admin-Employee-Reg-active/<int:pk>',views.admin_emp_reg_reactive,name="admin_emp_reg_reactive"),
+    path('Admin-Employee-Salary-active/<int:pk>',views.admin_emp_salary_active,name="admin_emp_salary_active"),
+    path('Admin-Employee-Salary-deactive/<int:pk>',views.admin_emp_salary_deactive,name="admin_emp_salary_deactive"),
+    path('Admin-Employee-Reg-delete/<int:pk>',views.admin_emp_reg_delete,name="admin_emp_reg_delete"),
+    path('Admin-Fixed-Expence',views.admin_fixed_expence,name='admin_fixed_expence'),
+    path('Admin-Fixed-Expence-Add',views.admin_fixed_expence_add,name='admin_fixed_expence_add'),
+    path('Admin-Fixed-Edit/<int:pk>',views.admin_fixed_edit,name="admin_fixed_edit"),
+    path('Admin-Fixed-Status/<int:pk>',views.admin_fixed_change_status,name="admin_fixed_change_status"),
+    path('Admin-Fixed-Delete/<int:pk>',views.admin_fixed_delete,name="admin_fixed_delete"),
+
+    path('Admin-Holidays',views.admin_company_holoidays,name='admin_company_holoidays'),
+    path('Admin-Holiday-Add',views.admin_company_holiday_add,name='admin_company_holiday_add'),
+    path('Admin-Holiday-Edit/<int:pk>',views.admin_company_holidy_edit,name="admin_company_holidy_edit"),
+
+
+    # Admin Analysis section 
+    
+    path('Admin-Analysis',views.admin_analysis,name='admin_analysis'),
+    
+
+
+
+    
+    
     
     
     

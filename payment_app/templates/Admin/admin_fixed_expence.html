@@ -1,4 +1,4 @@
-{% extends 'account/account_base.html' %}
+{% extends 'Admin/adminbase.html' %}
 {% load static %}
 {% block body %}
 
@@ -86,14 +86,14 @@
         font-weight: 600;
         padding: 0.40em;
     }
-    .input-group-box input, select{
+    .input-group-box input, select, textarea{
       width: 55%;
       padding: 0.20em;
       border: 1px solid #828181;
       font-size: 0.90em;
      
     }
-    .input-group-box input:focus, select:focus
+    .input-group-box input:focus, select:focus, textarea:focus
     {
         border:0.01rem solid #111158;
         outline: none;
@@ -137,7 +137,7 @@
       
         color: #1b126f; 
     }
-    #department a:nth-child(1)
+    #department .delete
     {
       
         color: #ec0909;
@@ -197,66 +197,82 @@
     <section id="register-box">
         <div class="contaier-fluid">
             <div class="register-details">
-                <h4>Company Holidays Add </h4>
+                <h4>Fixed Expence Add </h4>
                 <div class="line"></div>
-                {% if msg == 1 %}
+                {% if content.msg == 1 %}
                 <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-check-all"></i> Successfull!   Added  </p>
+                    <p><i class="bi bi-check-all"></i> Successfull!  Expence Added  </p>
                 </div>
-                {% elif msg == 2 %}
+                {% elif content.msg == 2 %}
                 <div class="message-bx-delete" id="msgbox-delete">
-                    <p><i class="bi bi-x"></i> Successfull!   Deleted  </p>
+                    <p><i class="bi bi-x"></i> Successfull!  Expence Deleted  </p>
+                </div>
+                {% elif content.msg == 3  %}
+                <div class="message-bx" id="msgbox">
+                    <p><i class="bi bi-check-all"></i> Successfull!  Edited   </p>
                 </div>
                 {% endif %}
-
-
-                <form action="{% url 'company_holiday_add'  %}" method="post">
+                <form action="{% url 'admin_fixed_expence_add'  %}" method="post">
                     {% csrf_token %}
-                    <div class="input-group-box">
-                        <label>Month Start date: <br>{{comp_holidays_edit.ch_sdate}}</label>
-                        <input type="date" name="cmphsdate"  required>
-                        <input type="text" name="cmphid" value="{{comp_holidays_edit.id}}"hidden >
+                    <div class="input-group-box" >
+                        <label>Head Name</label>
+                        <input type="text" name="fixed_head_name" value="{{fixededit.fixed_head_name}}" style="text-transform:uppercase" required>
+                        <input type="text" name="fixed_id" value="{{fixededit.id}}"  hidden>
                     </div>
-                    <div class="input-group-box">
-                        <label>Month End Date: <br> {{comp_holidays_edit.ch_edate}}</label>
-                        <input type="date" name="cmphedate" required>
+                    <div class="input-group-box" >
+                        <label>Date: {{fixededit.fixed_date}} </label>
+                        <input type="date" name="fixed_date"  >
                     </div>
-                    <div class="input-group-box">
-                        <label>No of Days</label>
-                        <input type="text" name="cmphno" value="{{comp_holidays_edit.ch_no}}" required>
+                    <div class="input-group-box" >
+                        <label>Amount </label>
+                        <input type="text" name="fixed_amt" value="{{fixededit.fixed_amount}}"  required>
+                    </div>
+                    <div class="input-group-box" >
+                        <label>Note </label>
+                        <textarea  name="fixed_dese" >{{fixededit.fixed_dese}}</textarea>
                     </div>
                     
                     <div class="submit_button">
                         <button type="submit">Save</button>
                     </div>
                 </form>
-
             </div>
             <div class="register-details-table">
-                <h4>Company Holidays</h4>
+                <h4>Fixed Expence Details</h4>
                 <div class="line"></div>
                 <div class="container">
 
                     <table id="department" class="display" >
                         <thead>
                             <tr>
-                                <th>Edit</th>
-                                <th>Start Date </th>
-                                <th>End Date</th>
-                                <th>Month</th>
-                                <th>Company Work Days</th>
-                                <th>No of Holidays</th>
+                                <th>Action</th>
+                                <th>Date</th>
+                                <th>Head Name</th>
+                                <th>Amount</th>
+                                <th>Note</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for i in comp_holidays %}
+                            {% for i in fixedexp %}
                             <tr>
-                                <td><a href="{% url 'company_holidy_edit' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a></td>
-                                <td>{{i.ch_sdate}}</td>
-                                <td>{{i.ch_edate}}</td>
-                                <td>{{i.ch_sdate|date:"F" }}</td>
-                                <td>{{i.ch_workno}}</td>
-                                <td>{{i.ch_no}}</td>
+                                <td>
+                                    <a href="{% url 'admin_fixed_delete' i.id %}" class="delete"><i class="bi bi-x-circle-fill"></i></a>
+                                    <a href="{% url 'admin_fixed_edit' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a>
+                                   
+                                </td>
+                                <td>{{i.fixed_date}}</td>
+                                <td>{{i.fixed_head_name}}</td>
+                                <td>{{i.fixed_amount}}</td>
+                                <td>{{i.fixed_dese}}</td>
+                                <td>
+                                    {% if i.fixed_status == 1 %}
+                                    <a href="{% url 'admin_fixed_change_status' i.id %}"><span style="color: #201a56;">Active</span></a>
+                                    {% else %}
+                                    <a href="{% url 'admin_fixed_change_status' i.id %}"><span style="color: #ea1b1b;">Re-active</span></a>
+                                    {% endif %}
+                                </td>
+                                
                             </tr>
                             {% endfor %}
                           
