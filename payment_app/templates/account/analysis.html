@@ -1,4 +1,4 @@
-{% extends 'Admin/adminbase.html' %}
+{% extends 'account/account_base.html' %}
 {% load static %}
 {% block body %}
 
@@ -253,7 +253,7 @@
             <div class="line"></div>
         </div>
         <div>
-            <a href="{% url 'admin_analysis_months' %}"><i class="bi bi-calendar-week"></i>  &nbsp;Analysis Based On  Month</a>
+            <a href="{% url 'analysis_months' %}"><i class="bi bi-calendar-week"></i>  &nbsp;Analysis Based On  Month</a>
         </div>
        
     </div>
@@ -623,4 +623,3 @@
 </main>
 
 {% endblock %}
-

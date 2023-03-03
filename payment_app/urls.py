@@ -102,6 +102,7 @@ urlpatterns = [
     
     path('Department-Form',views.department_form,name='department_form'),
     path('Add-Department',views.department_add,name='department_add'),
+    path('Edit-Department/<int:pk>',views.edit_dept,name="edit_dept"),
     path('Remove-Department/<int:pk>',views.remove_dept,name="remove_dept"),
 
     # Payments History section
@@ -122,15 +123,20 @@ urlpatterns = [
     path('Full-Payment-Recipt/<int:pk>',views.singelUserfull_receipt,name="singelUserfull_receipt"),
     
 
-    
-
-    
-
     path('Register-Form',views.Register_form,name='Register_form'),
     path('Register-Save',views.register_Details,name='register_Details'),
     #path('Confirm/<int:pk>',views.confirm,name="confirm"),
     path('Remove/<int:pk>',views.remove,name="remove"),
     #path('Payment-Completed/<int:pk>',views.payment_completed,name="payment_completed"),
+
+
+    # Analyis section 
+    path('Analysis',views.analysis,name='analysis'),
+    path('Analysis-on-Month',views.analysis_months,name='analysis_months'),
+    path('Analysis-Search',views.analysis_search,name='analysis_search'),
+    
+    
+    
     
     
 
@@ -158,6 +164,10 @@ urlpatterns = [
     path('Admin-Quick-Search/<int:pk>',views.adminquick_search,name="adminquick_search"),
     
     
+    path('Admin-Department-Form',views.admin_department_form,name='admin_department_form'),
+    path('Admin-Add-Department',views.admin_department_add,name='admin_department_add'),
+    path('Admin-Edit-Department/<int:pk>',views.admin_edit_dept,name="admin_edit_dept"),
+    path('Admin-Remove-Department/<int:pk>',views.admin_remove_dept,name="admin_remove_dept"),
     
     path('Admin-Remove/<int:pk>',views.admin_remove,name="admin_remove"),
     path('View-Register/<int:pk>',views.view_details,name="view_details"),
@@ -200,6 +210,10 @@ urlpatterns = [
     # Admin Analysis section 
     
     path('Admin-Analysis',views.admin_analysis,name='admin_analysis'),
+    path('Admin-Analysis-On_Months',views.admin_analysis_months,name='admin_analysis_months'),
+    path('Admin-Analysis-On_Months-Search',views.admin_analysis_search,name='admin_analysis_search'),
+    
+    
     
 
 

@@ -92,14 +92,14 @@ def login_dashboard(request):
 
                         #Income adding to IncomeExpence Table
                         if PaymentHistory.objects.exists():
-                            inexpe=IncomeExpence.objects.filter(exin_head_name='TRAINING',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                            inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
                             payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
                             #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
 
                             if payhis:
 
                                 if inexpe:
-                                    inexpe.exin_head_name='TRAINING'
+                                    inexpe.exin_head_name='OJT'
                                     inexpe.exin_amount=payhis
                                     inexpe.exin_typ=1
                                     inexpe.exin_date=to_date
@@ -109,7 +109,7 @@ def login_dashboard(request):
                                 else:
 
                                     incexpence=IncomeExpence()
-                                    incexpence.exin_head_name='TRAINING'
+                                    incexpence.exin_head_name='OJT'
                                     incexpence.exin_amount=payhis
                                     incexpence.exin_typ=1
                                     incexpence.exin_date=cur_date
@@ -214,14 +214,14 @@ def login_dashboard(request):
 
                         #Income adding to IncomeExpence Table
                         if PaymentHistory.objects.exists():
-                            inexpe=IncomeExpence.objects.filter(exin_head_name='TRAINING',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                            inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
                             payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
                             #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
 
                             if payhis:
 
                                 if inexpe:
-                                    inexpe.exin_head_name='TRAINING'
+                                    inexpe.exin_head_name='OJT'
                                     inexpe.exin_amount=payhis
                                     inexpe.exin_typ=1
                                     inexpe.exin_date=to_date
@@ -231,7 +231,7 @@ def login_dashboard(request):
                                 else:
 
                                     incexpence=IncomeExpence()
-                                    incexpence.exin_head_name='TRAINING'
+                                    incexpence.exin_head_name='OJT'
                                     incexpence.exin_amount=payhis
                                     incexpence.exin_typ=1
                                     incexpence.exin_date=cur_date
@@ -353,14 +353,14 @@ def dashboard(request):
         #Income adding to IncomeExpence Table
         if PaymentHistory.objects.exists():
             try:
-                inexpe=IncomeExpence.objects.filter(exin_head_name='TRAINING',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
                 payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
                 #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
                 
                 if payhis:
                                 
                     if inexpe:
-                        inexpe.exin_head_name='TRAINING'
+                        inexpe.exin_head_name='OJT'
                         inexpe.exin_amount=payhis
                         inexpe.exin_typ=1
                         inexpe.exin_date=to_date
@@ -370,7 +370,7 @@ def dashboard(request):
                     else:
 
                         incexpence=IncomeExpence()
-                        incexpence.exin_head_name='TRAINING'
+                        incexpence.exin_head_name='OJT'
                         incexpence.exin_amount=payhis
                         incexpence.exin_typ=1
                         incexpence.exin_date=cur_date
@@ -743,16 +743,58 @@ def department_add(request):
             return redirect('/')
         
         if request.method =='POST':
-            dept=Department()
-            dept.department=request.POST['dept_name'].upper()
-            dept.dpt_Status=1
-            dept.save()
-            msg=1
+            
+            if request.POST['dept_id']:
+                dept=Department.objects.get(id=int( request.POST['dept_id']))
+                dept.department=request.POST['dept_name'].upper()
+                dept.save()
+                msg=3
+            else:
+                dept=Department()
+                dept.department=request.POST['dept_name'].upper()
+                dept.dpt_Status=1
+                dept.save()
+                msg=1
             dept=Department.objects.all()
             return render(request,'account/Department_form.html',{'msg':msg,'dept':dept})
         else:
             return redirect('department_form')
         
+    else:
+        return redirect('/')   
+    
+def edit_dept(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+          
+        else:
+            return redirect('/')
+        
+        dept_edit=Department.objects.get(id=pk)
+
+        dept=Department.objects.all()
+        return render(request,'account/Department_form.html',{'dept_edit':dept_edit,'dept':dept})
+    
+    else:
+        return redirect('/')
+    
+
+    
+def remove_dept(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+          
+        else:
+            return redirect('/')
+        
+        dept=Department.objects.get(id=pk)
+        dept.delete()
+        msg=2
+        dept=Department.objects.all()
+        return render(request,'account/Department_form.html',{'msg':msg,'dept':dept})
+    
     else:
         return redirect('/')
     
@@ -855,23 +897,7 @@ def payment_details(request,pk):
     else:
         return redirect('/')
     
-    
-def remove_dept(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-          
-        else:
-            return redirect('/')
-        
-        dept=Department.objects.get(id=pk)
-        dept.delete()
-        msg=2
-        dept=Department.objects.all()
-        return render(request,'account/Department_form.html',{'msg':msg,'dept':dept})
-    
-    else:
-        return redirect('/')
+
         
      
 
@@ -2083,7 +2109,305 @@ def employee_salary_payments_search(request,pk):
         return render(request,'account/employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit})
     else:
         return redirect('/')
+    
 
+
+# Analysis Section 
+
+
+def analysis(request):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+
+      
+        next_month = cur_date.replace(day=28) + timedelta(days=4)  # get the next month by adding 4 days to the 28th day
+        next_month_start = next_month.replace(day=1)  # get the first day of the next month
+        next_month_end = next_month_start.replace(day=28) - timedelta(days=1)  # get the last day of the next month by subtracting 1 day from the 28th day
+      
+        income=IncomeExpence.objects.filter(exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        expence=IncomeExpence.objects.filter(exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        if not income:
+            income=1
+        if not expence:
+            expence=1
+        balans=int(income) -int(expence)
+        
+        bal_p= income - expence 
+        if bal_p < 0:
+            
+            bal_p=-(bal_p)
+        
+        exp_pr=int(expence) / int(bal_p + income + expence)
+        inc_pr=int(income) / int(bal_p + income + expence)
+        bal_pr=int(bal_p) / int(bal_p + income + expence)
+
+
+        # Next Month Income And Expence 
+        next_month_income=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        next_month_exp=FixedExpence.objects.filter(fixed_status=1,fixed_date__gte=next_month_start,fixed_date__lte=next_month_end).aggregate(Sum('fixed_amount'))['fixed_amount__sum']
+
+        if not next_month_income:
+            next_month_income=0
+
+        if not next_month_exp:
+            next_month_exp=1
+
+        next_balans=int(next_month_income) - int(next_month_exp)
+        
+        
+        
+        # ========================= income expence section  End =========================
+
+
+        # ==============================OJT section Start =============================
+
+       
+
+        reg=Register.objects.filter(reg_status=1).count()
+        reg_c=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date).count()
+        reg_c_amt=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date,).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        reg_ojt_amt=Register.objects.filter(reg_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+
+        reg_pending=Register.objects.filter(reg_status=1,payment_status=0).count()
+        reg_complete=Register.objects.filter(reg_status=1,payment_status=1).count()
+        reg_incomplete=Register.objects.filter(reg_status=1,payment_status=2).count()
+        reg_p_amt=Register.objects.filter(reg_status=1,payment_status=0).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        reg_c_amt=Register.objects.filter(reg_status=1,payment_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        reg_in_amt=Register.objects.filter(reg_status=1,payment_status=2).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+
+        after_6_days = fr_date + timedelta(days=6)  
+        after_8_days = fr_date + timedelta(days=7)  
+        after_15days = fr_date + timedelta(days=14) 
+
+        payhistory1=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+        payhistory8=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+        payhistory15=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+        payhistory1_c=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).count()
+        payhistory8_c=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).count()
+        payhistory15_c=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).count()
+      
+        unpaidhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1)
+        reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).count()
+        reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        next_reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).count()
+        next_reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+
+       
+
+
+        # ==============================End OJT section  =============================
+
+
+        # ============================== Employee section Start =============================
+
+        emp_reg=EmployeeRegister.objects.all().count()
+       
+        emp_reg_act=EmployeeRegister.objects.filter(emp_status=1).count()
+        emp_reg_sal=EmployeeRegister.objects.filter(emp_salary_status=0).count()
+        emp_reg_actsal=EmployeeRegister.objects.filter(emp_salary_status=1).count()
+        emp_reg_tsal=EmployeeRegister.objects.all().aggregate(Sum('emptol_salary'))['emptol_salary__sum']
+
+        emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
+        emp_sal=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        
+        emp_con_sal=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1).count()
+        emp_con_sal_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+        emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+        emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+        after_14_days = fr_date + timedelta(days=14)  
+        after_15_days = fr_date + timedelta(days=15)  
+       
+
+        empsalc_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).count()
+        empsal_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        empsalc_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).count()
+        empsal_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+
+        
+        
+
+        # ==============================End Employee section  =============================
+
+        #=EmployeeRegister.objects.filter(emp_status=1).count()
+        #emp_salary_count=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).count()
+
+
+        content={
+           
+                 'next_month_income':next_month_income,'next_month_exp':next_month_exp,'next_balans':next_balans,
+                 'income':income,
+                 'expence':expence,
+                 'balans':balans,
+                 'bal_pr':bal_pr,
+                 'exp_pr':exp_pr,
+                 'cur_date':cur_date,
+                 'inc_pr':inc_pr,
+                 'reg':reg,'reg_c':reg_c,'reg_c_amt':reg_c_amt,
+                 'reg_ojt_amt':reg_ojt_amt,'reg_pending':reg_pending,'reg_complete':reg_complete,
+                 'reg_p_amt':reg_p_amt,'reg_c_amt':reg_c_amt,'reg_in_amt':reg_in_amt,'reg_incomplete':reg_incomplete,'reg_upaid_c':reg_upaid_c,'reg_upaid':reg_upaid,
+                 'emp_reg_tsal':emp_reg_tsal,'emp_reg':emp_reg,'emp_reg_act':emp_reg_act,'emp_reg_sal':emp_reg_sal,'emp_reg_actsal':emp_reg_actsal,
+                 'emp_sal':emp_sal,'emp_sal_count':emp_sal_count,'emp_unpaid':emp_unpaid,'emp_unp_amt':emp_unp_amt,'emp_con_sal':emp_con_sal,'emp_con_sal_amt':emp_con_sal_amt,
+                 'empsalc_1to7':empsalc_1to7,'empsal_1to7':empsal_1to7,'empsalc_15to':empsalc_15to,'empsal_15to':empsal_15to,
+                 'payhistory1':payhistory1,'payhistory8':payhistory8,'payhistory15':payhistory15,'payhistory1_c':payhistory1_c,'payhistory8_c':payhistory8_c,'payhistory15_c':payhistory15_c,
+                 'next_reg_upaid_c':next_reg_upaid_c,'next_reg_upaid':next_reg_upaid,
+                 }
+       
+        return render(request,'account/analysis.html',{'content':content})
+    else:
+        return redirect('/')
+    
+
+def analysis_months(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+        current_year = datetime.now().year
+
+        content={
+            'months':months,'years':years,'current_year':current_year,}
+        return render(request,'account/analysis_on_months.html',{'content':content})
+    else:
+        return redirect('/')
+    
+
+def analysis_search(request):
+    
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+        current_year = datetime.now().year
+        cur_date=datetime.now().date()
+
+
+        if request.method == 'POST':
+
+            check_month=int(request.POST['admin_ana_month'])
+            check_year=int(request.POST['admin_ana_year'])
+            month_name = calendar.month_name[check_month]
+
+            # Finding the start date and end date of searched month
+
+            d = datetime(check_year, check_month, 1)
+            fr_date = d.replace(day=1).date()
+            _, num_days =calendar.monthrange(check_year, check_month)
+            to_date = d.replace(day=num_days).date()
+
+
+            income=IncomeExpence.objects.filter(exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+            expence=IncomeExpence.objects.filter(exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+
+            
+            if not income:
+                income=1
+            if not expence:
+                expence=1
+
+            if cur_date < fr_date:
+
+                # Next Month Income And Expence 
+                next_month_income=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+                next_month_exp=FixedExpence.objects.filter(fixed_status=1,fixed_date__gte=fr_date,fixed_date__lte=to_date).aggregate(Sum('fixed_amount'))['fixed_amount__sum']
+                print(next_month_exp)
+
+                if next_month_income:
+                   income = int(income) + int(next_month_income)
+                if next_month_exp:
+                   expence = int(expence) + int(next_month_exp)
+
+
+            balans=int(income) -int(expence)
+            
+            bal_p= income - expence 
+            if bal_p < 0:
+                
+                bal_p=-(bal_p)
+            
+            exp_pr=int(expence) / int(bal_p + income + expence)
+            inc_pr=int(income) / int(bal_p + income + expence)
+            bal_pr=int(bal_p) / int(bal_p + income + expence)
+
+
+            # OJT details Section 
+            
+            reg_c=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date).count()
+            reg_c_amt=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date,).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+
+            # OJT payments  
+
+            after_6_days = fr_date + timedelta(days=6)  
+            after_8_days = fr_date + timedelta(days=7)  
+            after_15days = fr_date + timedelta(days=14) 
+
+            payhistory1=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            payhistory8=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            payhistory15=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            payhistory1_c=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).count()
+            payhistory8_c=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).count()
+            payhistory15_c=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).count()
+
+
+            # Employeee Registraion an salary section
+
+            emp_reg=EmployeeRegister.objects.filter(empdofj__gte=fr_date,empdofj__lte=to_date).count()
+            emp_con_sal_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+            emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
+            emp_sal=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        
+            # Salary Payments 
+
+            after_14_days = fr_date + timedelta(days=14)  
+            after_15_days = fr_date + timedelta(days=15)  
+        
+
+            empsalc_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).count()
+            empsal_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+            empsalc_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).count()
+            empsal_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+
+        else:
+            return redirect('analysis_search')
+      
+
+
+        content={
+            'month_name':month_name,'months':months,'years':years,'current_year':current_year,'fr_date':fr_date,'to_date':to_date,
+            'income':income,'expence':expence,'balans':balans,'exp_pr':exp_pr,'inc_pr':inc_pr,'bal_pr':bal_pr,
+            'reg_c':reg_c,'reg_c_amt':reg_c_amt,
+            'payhistory1':payhistory1,'payhistory8':payhistory8,'payhistory15':payhistory15,'payhistory1_c':payhistory1_c,'payhistory8_c':payhistory8_c,'payhistory15_c':payhistory15_c,
+            'emp_reg':emp_reg,'emp_con_sal_amt':emp_con_sal_amt,'emp_sal_count':emp_sal_count,'emp_sal':emp_sal,
+            'empsalc_1to7':empsalc_1to7,'empsal_1to7':empsal_1to7,'empsalc_15to':empsalc_15to,'empsal_15to':empsal_15to,
+            }
+        return render(request,'account/analysis_on_months.html',{'content':content})
+        
+    else:
+        return redirect('/')
+
+
+    
 
 
 
@@ -2166,14 +2490,14 @@ def admin_dashboard(request):
         #Income adding to IncomeExpence Table
         if PaymentHistory.objects.exists():
             try:
-                inexpe=IncomeExpence.objects.filter(exin_head_name='TRAINING',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
                 payhist=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
                 #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
                 
                 if payhist:
                                 
                     if inexpe:
-                        inexpe.exin_head_name='TRAINING'
+                        inexpe.exin_head_name='OJT'
                         inexpe.exin_amount=payhis
                         inexpe.exin_typ=1
                         inexpe.exin_date=to_date
@@ -2183,7 +2507,7 @@ def admin_dashboard(request):
                     else:
 
                         incexpence=IncomeExpence()
-                        incexpence.exin_head_name='TRAINING'
+                        incexpence.exin_head_name='OJT'
                         incexpence.exin_amount=payhis
                         incexpence.exin_typ=1
                         incexpence.exin_date=cur_date
@@ -2784,6 +3108,86 @@ def adminpaysearch(request):
         return redirect('/')
     
 
+def admin_department_form(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        dept=Department.objects.all()
+        
+        return render(request,'Admin/admin_department_form.html',{'dept':dept})
+        
+    else:
+        return redirect('/')
+    
+
+def admin_department_add(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        if request.method =='POST':
+
+            if request.POST['dept_id']:
+                dept=Department.objects.get(id=int( request.POST['dept_id']))
+                dept.department=request.POST['dept_name'].upper()
+                dept.save()
+                msg=3
+            else:
+
+                dept=Department()
+                dept.department=request.POST['dept_name'].upper()
+                dept.dpt_Status=1
+                dept.save()
+                msg=1
+
+            dept=Department.objects.all()
+        
+        return render(request,'Admin/admin_department_form.html',{'dept':dept,'msg':msg})
+        
+    else:
+        return redirect('/')
+    
+def admin_edit_dept(request,pk):
+
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+          
+        dept_edit=Department.objects.get(id=pk)
+      
+        dept=Department.objects.all()
+        return render(request,'Admin/admin_department_form.html',{'dept':dept,'dept_edit':dept_edit})
+    
+    else:
+        return redirect('/')
+          
+    
+    
+def admin_remove_dept(request,pk):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+          
+        dept=Department.objects.get(id=pk)
+        dept.delete()
+        msg=2
+        dept=Department.objects.all()
+        
+        return render(request,'Admin/admin_department_form.html',{'dept':dept,'msg':msg})
+        
+    else:
+        return redirect('/')
+
+
+    
+
 
 # Admin Accounts Section 
 
@@ -3179,6 +3583,7 @@ def admin_fixed_expence_add(request):
                 fixedexp_reg.fixed_amount=request.POST['fixed_amt']
                 fixedexp_reg.fixed_dese=request.POST['fixed_dese']
                 fixedexp_reg.fixed_status=1
+              
                 fixedexp_reg.save()
                 msg=1
 
@@ -3336,10 +3741,12 @@ def admin_analysis(request):
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
-        # in_ex_count=IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date).count()
-        # fixed_ex_count=FixedExpence.objects.all().count()
-        
 
+      
+        next_month = cur_date.replace(day=28) + timedelta(days=4)  # get the next month by adding 4 days to the 28th day
+        next_month_start = next_month.replace(day=1)  # get the first day of the next month
+        next_month_end = next_month_start.replace(day=28) - timedelta(days=1)  # get the last day of the next month by subtracting 1 day from the 28th day
+      
         income=IncomeExpence.objects.filter(exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
         expence=IncomeExpence.objects.filter(exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
         if not income:
@@ -3356,27 +3763,261 @@ def admin_analysis(request):
         exp_pr=int(expence) / int(bal_p + income + expence)
         inc_pr=int(income) / int(bal_p + income + expence)
         bal_pr=int(bal_p) / int(bal_p + income + expence)
+
+
+        # Next Month Income And Expence 
+        next_month_income=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        next_month_exp=FixedExpence.objects.filter(fixed_status=1,fixed_date__gte=next_month_start,fixed_date__lte=next_month_end).aggregate(Sum('fixed_amount'))['fixed_amount__sum']
+
+        if not next_month_income:
+            next_month_income=0
+
+        if not next_month_exp:
+            next_month_exp=1
+
+        next_balans=int(next_month_income) - int(next_month_exp)
+        
+        
+        
+        # ========================= income expence section  End =========================
+
+
+        # ==============================OJT section Start =============================
+
+       
+
+        reg=Register.objects.filter(reg_status=1).count()
+        reg_c=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date).count()
+        reg_c_amt=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date,).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        reg_ojt_amt=Register.objects.filter(reg_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+
+        reg_pending=Register.objects.filter(reg_status=1,payment_status=0).count()
+        reg_complete=Register.objects.filter(reg_status=1,payment_status=1).count()
+        reg_incomplete=Register.objects.filter(reg_status=1,payment_status=2).count()
+        reg_p_amt=Register.objects.filter(reg_status=1,payment_status=0).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        reg_c_amt=Register.objects.filter(reg_status=1,payment_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        reg_in_amt=Register.objects.filter(reg_status=1,payment_status=2).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+
+        after_6_days = fr_date + timedelta(days=6)  
+        after_8_days = fr_date + timedelta(days=7)  
+        after_15days = fr_date + timedelta(days=14) 
+
+        payhistory1=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+        payhistory8=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+        payhistory15=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+        payhistory1_c=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).count()
+        payhistory8_c=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).count()
+        payhistory15_c=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).count()
+      
+        unpaidhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1)
+        reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).count()
+        reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        next_reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).count()
+        next_reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+
+       
+
+
+        # ==============================End OJT section  =============================
+
+
+        # ============================== Employee section Start =============================
+
+        emp_reg=EmployeeRegister.objects.all().count()
+       
+        emp_reg_act=EmployeeRegister.objects.filter(emp_status=1).count()
+        emp_reg_sal=EmployeeRegister.objects.filter(emp_salary_status=0).count()
+        emp_reg_actsal=EmployeeRegister.objects.filter(emp_salary_status=1).count()
+        emp_reg_tsal=EmployeeRegister.objects.all().aggregate(Sum('emptol_salary'))['emptol_salary__sum']
+
+        emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
+        emp_sal=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        
+        emp_con_sal=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1).count()
+        emp_con_sal_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+        emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+        emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+        after_14_days = fr_date + timedelta(days=14)  
+        after_15_days = fr_date + timedelta(days=15)  
+       
+
+        empsalc_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).count()
+        empsal_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        empsalc_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).count()
+        empsal_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+
         
         
 
-       
+        # ==============================End Employee section  =============================
+
         #=EmployeeRegister.objects.filter(emp_status=1).count()
         #emp_salary_count=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).count()
+
+
         content={
-                 
+           
+                 'next_month_income':next_month_income,'next_month_exp':next_month_exp,'next_balans':next_balans,
                  'income':income,
                  'expence':expence,
                  'balans':balans,
                  'bal_pr':bal_pr,
                  'exp_pr':exp_pr,
                  'cur_date':cur_date,
-                 'inc_pr':inc_pr
-                 
+                 'inc_pr':inc_pr,
+                 'reg':reg,'reg_c':reg_c,'reg_c_amt':reg_c_amt,
+                 'reg_ojt_amt':reg_ojt_amt,'reg_pending':reg_pending,'reg_complete':reg_complete,
+                 'reg_p_amt':reg_p_amt,'reg_c_amt':reg_c_amt,'reg_in_amt':reg_in_amt,'reg_incomplete':reg_incomplete,'reg_upaid_c':reg_upaid_c,'reg_upaid':reg_upaid,
+                 'emp_reg_tsal':emp_reg_tsal,'emp_reg':emp_reg,'emp_reg_act':emp_reg_act,'emp_reg_sal':emp_reg_sal,'emp_reg_actsal':emp_reg_actsal,
+                 'emp_sal':emp_sal,'emp_sal_count':emp_sal_count,'emp_unpaid':emp_unpaid,'emp_unp_amt':emp_unp_amt,'emp_con_sal':emp_con_sal,'emp_con_sal_amt':emp_con_sal_amt,
+                 'empsalc_1to7':empsalc_1to7,'empsal_1to7':empsal_1to7,'empsalc_15to':empsalc_15to,'empsal_15to':empsal_15to,
+                 'payhistory1':payhistory1,'payhistory8':payhistory8,'payhistory15':payhistory15,'payhistory1_c':payhistory1_c,'payhistory8_c':payhistory8_c,'payhistory15_c':payhistory15_c,
+                 'next_reg_upaid_c':next_reg_upaid_c,'next_reg_upaid':next_reg_upaid,
                  }
        
         return render(request,'Admin/admin_analysis.html',{'content':content})
     else:
         return redirect('/')
+    
+
+def admin_analysis_months(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+        current_year = datetime.now().year
+
+        content={
+            'months':months,'years':years,'current_year':current_year,}
+        return render(request,'Admin/admin_analysis_on_months.html',{'content':content})
+    else:
+        return redirect('/')
+    
+
+def admin_analysis_search(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+        current_year = datetime.now().year
+        cur_date=datetime.now().date()
+
+
+        if request.method == 'POST':
+
+            check_month=int(request.POST['admin_ana_month'])
+            check_year=int(request.POST['admin_ana_year'])
+            month_name = calendar.month_name[check_month]
+
+            # Finding the start date and end date of searched month
+
+            d = datetime(check_year, check_month, 1)
+            fr_date = d.replace(day=1).date()
+            _, num_days =calendar.monthrange(check_year, check_month)
+            to_date = d.replace(day=num_days).date()
+
+
+            income=IncomeExpence.objects.filter(exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+            expence=IncomeExpence.objects.filter(exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+
+            
+            if not income:
+                income=1
+            if not expence:
+                expence=1
+
+            if cur_date < fr_date:
+
+                # Next Month Income And Expence 
+                next_month_income=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+                next_month_exp=FixedExpence.objects.filter(fixed_status=1,fixed_date__gte=fr_date,fixed_date__lte=to_date).aggregate(Sum('fixed_amount'))['fixed_amount__sum']
+                print(next_month_exp)
+
+                if next_month_income:
+                   income = int(income) + int(next_month_income)
+                if next_month_exp:
+                   expence = int(expence) + int(next_month_exp)
+
+
+            balans=int(income) -int(expence)
+            
+            bal_p= income - expence 
+            if bal_p < 0:
+                
+                bal_p=-(bal_p)
+            
+            exp_pr=int(expence) / int(bal_p + income + expence)
+            inc_pr=int(income) / int(bal_p + income + expence)
+            bal_pr=int(bal_p) / int(bal_p + income + expence)
+
+
+            # OJT details Section 
+            
+            reg_c=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date).count()
+            reg_c_amt=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date,).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+
+            # OJT payments  
+
+            after_6_days = fr_date + timedelta(days=6)  
+            after_8_days = fr_date + timedelta(days=7)  
+            after_15days = fr_date + timedelta(days=14) 
+
+            payhistory1=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            payhistory8=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            payhistory15=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            payhistory1_c=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).count()
+            payhistory8_c=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).count()
+            payhistory15_c=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).count()
+
+
+            # Employeee Registraion an salary section
+
+            emp_reg=EmployeeRegister.objects.filter(empdofj__gte=fr_date,empdofj__lte=to_date).count()
+            emp_con_sal_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+            emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
+            emp_sal=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        
+            # Salary Payments 
+
+            after_14_days = fr_date + timedelta(days=14)  
+            after_15_days = fr_date + timedelta(days=15)  
+        
+
+            empsalc_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).count()
+            empsal_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+            empsalc_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).count()
+            empsal_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+
+        else:
+            return redirect('admin_analysis_search')
+      
+
+
+        content={
+            'month_name':month_name,'months':months,'years':years,'current_year':current_year,'fr_date':fr_date,'to_date':to_date,
+            'income':income,'expence':expence,'balans':balans,'exp_pr':exp_pr,'inc_pr':inc_pr,'bal_pr':bal_pr,
+            'reg_c':reg_c,'reg_c_amt':reg_c_amt,
+            'payhistory1':payhistory1,'payhistory8':payhistory8,'payhistory15':payhistory15,'payhistory1_c':payhistory1_c,'payhistory8_c':payhistory8_c,'payhistory15_c':payhistory15_c,
+            'emp_reg':emp_reg,'emp_con_sal_amt':emp_con_sal_amt,'emp_sal_count':emp_sal_count,'emp_sal':emp_sal,
+            'empsalc_1to7':empsalc_1to7,'empsal_1to7':empsal_1to7,'empsalc_15to':empsalc_15to,'empsal_15to':empsal_15to,
+            }
+        return render(request,'Admin/admin_analysis_on_months.html',{'content':content})
+        
+    else:
+        return redirect('/')
+
+
     
 
 

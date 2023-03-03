@@ -1,4 +1,4 @@
-{% extends 'account/account_base.html' %}
+{% extends 'Admin/adminbase.html' %}
 {% load static %}
 {% block body %}
 
@@ -212,11 +212,10 @@
                     <p><i class="bi bi-check-all"></i> Successfull!  Department Edited  </p>
                 </div>
                 {% endif %}
-                <form action="{% url 'department_add'  %}" method="post">
+                <form action="{% url 'admin_department_add'  %}" method="post">
                     {% csrf_token %}
                     <div class="input-group-box" >
                         <label>Department Name</label>
-                       
                         <input type="text" name="dept_name" value="{{dept_edit.department}}" style="text-transform:uppercase" required>
                         <input type="text" name="dept_id" value="{{dept_edit.id}}"  hidden>
                     </div>
@@ -243,7 +242,7 @@
                         <tbody>
                             {% for i in dept %}
                             <tr>
-                                <td><a href="{% url 'edit_dept' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a></td>
+                                <td><a href="{% url 'admin_edit_dept' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a></td>
                                 <td>{{i.department}}</td>
                                 <td>
                                     {% if i.dpt_Status == 1 %}
@@ -253,7 +252,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a href="{% url 'remove_dept' i.id %}"><i class="bi bi-x-circle-fill"></i></a>
+                                    <a href="{% url 'admin_remove_dept' i.id %}"><i class="bi bi-x-circle-fill"></i></a>
                                 </td>
                             </tr>
                             {% endfor %}

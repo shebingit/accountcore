@@ -71,11 +71,11 @@
         background: #11083efe;
         color: #fff;
         cursor: pointer;
-        padding: 0.10em;
+        padding: 0.30em 1em;
     }
     .submit-box button i{
         font-size: 16px;
-        padding: 0.30em;
+        padding: 0.30em 1em;
     }
     .inex-loss
     {
@@ -244,38 +244,74 @@
     }
 </style>
 
-
-
 <main>
+
     <div class="container" id="head-sction">
         <div>
-            <h2>Analysis On   {% now "F" %}</h2>
-            <div class="line"></div>
+            <h2>Analysis Based On  Month</h2>
+        <div class="line"></div>
         </div>
+        
         <div>
-            <a href="{% url 'admin_analysis_months' %}"><i class="bi bi-calendar-week"></i>  &nbsp;Analysis Based On  Month</a>
+            <a href="{% url 'admin_analysis' %}"><i class="bi bi-calendar-week"></i>  &nbsp;Analysis Of {% now "F" %}</a>
         </div>
-       
     </div>
 
+    <div class="container">
+        <div class="search">
+            <h5 class="mt-3">Search Section</h5>
+        
+            <form action="{% url 'admin_analysis_search' %}" method="post">
+                {% csrf_token %}
+                
+                <div class="input-date-box">
+                    <label>Choose Month :</label>
+                    <select name="admin_ana_month" required>
+                     
+                        {% for value, label in content.months  %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                </div>
+                <div class="input-date-box">
+                    <label>Choose Year :</label>
+                    <select name="admin_ana_year" required>
+                        <option value="{{content.current_year}}">{{content.current_year}}</option>
+                        {% for value, label in content.years  %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="submit-box">
+                    <button type="submit"> Search </button>
+                </div>
+               
+            </form>
+        
+        
+        </div>
+    
+    </div>
+    
     <div class="container" id="income-exp-box">
 
         <div class="income_expence_box">
             <h5>Income And Expence</h5>
 
             <div class="card">
-                <span>{{content.cur_date}}</span>
+                <span>{{content.fr_date}}&nbsp; To &nbsp;{{content.to_date}}</span>
             </div>
 
             <div class="chart-box">
     
-                <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+                <canvas id="myChart2" style="width:100%;max-width:600px"></canvas>
                 
             </div>
 
             <div class="details-box">
                 <div class="card">
-                    <h6>{% now "F" %} Income <span><i class="bi bi-calendar3"></i></span></h6>
+                    <h6>month Income <span><i class="bi bi-calendar3"></i></span></h6>
          
                      <div class="loader">
                          <span><i class="bi bi-currency-rupee rupe"></i>
@@ -320,56 +356,7 @@
 
             </div>
 
-            <h5 class="mt-4">Next Month</h5>
-            <p style="font-size: 0.80em;">Income Taken From O J T & Expenxe taken  From Fixed Expence</p>
-
-            <div class="details-box">
-                <div class="card">
-                    <h6>Next Month Income <span><i class="bi bi-calendar3"></i></span></h6>
-         
-                     <div class="loader">
-                         <span><i class="bi bi-currency-rupee rupe"></i>
-                       
-                             <span class="">{{content.next_month_income}}</span>
-                            
-                         </span>
-                     </div>
-                 </div>
-                 <div class="card">
-                     <h6>Next Month Expence <span><i class="bi bi-calendar3"></i></span></h6>
-                     <div class="loader">
-                         <span><i class="bi bi-currency-rupee rupe"></i>
-                           
-                             <span class="">{{content.next_month_exp}}</span>
-                            
-                            
-                         </span>
-                     </div>
-                 </div>
-                 <div class="card">
-                     <h6>Next Month Balance <span><i class="bi bi-calendar3"></i></span></h6>
-                     <div class="loader">
-                         
-                       
-                         {% if content.next_month_income > content.next_month_exp %}
-                         <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-profit">{{content.next_balans}}</span></span>
-                         
-                         <h5 class="inex-profit"> Profit</h5>
-                         {% elif  content.next_month_income < content.next_month_exp %}
-                         <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-loss">{{content.next_balans}}</span></span>
-                         
-                         <h5 class="inex-loss"> Loss</h5>
-                         {% else %}
-                         <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-equl" >{{content.next_balans}}</span></span>
-                         <h5 class="inex-equl "> No Profit No Loss</h5>
-                         {% endif %}
-                    
-                     </div>
-                 </div>
-                
-
-            </div>
-
+           
            
            
         </div>
@@ -379,20 +366,10 @@
             <h5>Onthe Job Training</h5>
 
             <div class="counts">
+                
                 <div class="card">
                     <i class="bi bi-people"></i>
-                    <p>Registration</p>
-                    <span class="count_no" style="font-size:0.94em;">{{content.reg}}</span>
-                    
-                </div>
-                <div class="card">
-                    <i class="bi bi-cash"></i>
-                    <p>Total Cash</p>
-                    <span style="font-size:0.92em;">{{content.reg_ojt_amt}} /-</span>
-                </div>
-                <div class="card">
-                    <i class="bi bi-people"></i>
-                    <p>Reg. {% now "F" %}</p>
+                    <p>Reg. {{content.month_name}}</p>
                     <span class="count_no" style="font-size:0.94em;">{{content.reg_c}}</span>
                     
                 </div>
@@ -406,9 +383,9 @@
             </div>
 
             
-            <h6>O T J  &nbsp; On &nbsp;{% now "F" %} </h6>
+            <h6>O T J  &nbsp; On &nbsp;{{content.month_name}} </h6>
 
-            <div class="pre_counts" id="perdition">
+            <div class="counts" id="">
                 <div class="card">
                     <span>Paid <i class="bi bi-calendar-week"></i></span>
                     <p>1 To 7</p>
@@ -429,42 +406,11 @@
                     <span class="count_no">{{content.payhistory15_c}}</span>
                     <span>{{content.payhistory15}} /-</span>
                 </div>
-                <div class="card">
-                    <span>UnPaid <i class="bi bi-calendar-week"></i></span>
-                    <p> {% now "F" %}</p>
-                    <span class="count_no">{{content.reg_upaid_c}}</span>
-                    <span>{{content.reg_upaid}} /-</span>
-                </div>
-                <div class="card">
-                    <i class="bi bi-calendar3"></i>
-                    <p>Next Month</p>
-                    <span class="count_no">{{content.next_reg_upaid_c}}</span>
-                    <span>{{content.next_reg_upaid}} /-</span>
-                </div>
+                
             </div>
 
             
-            <h6>Payments</h6>
-            <div class="counts">
-                <div class="card">
-                    <i class="bi bi-exclamation-circle-fill"></i>
-                    <p>Pending</p>
-                    <span class="count_no">{{content.reg_pending}}</span>
-                    <span>{{content.reg_p_amt}} /-</span>
-                </div>
-                <div class="card">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <p>Completed</p>
-                    <span class="count_no">{{content.reg_complete}}</span>
-                    <span>{{content.reg_c_amt}} /-</span>
-                </div>
-                <div class="card">
-                    <i class="bi bi-x-circle-fill"></i>
-                    <p>Incomplete</p>
-                    <span class="count_no">{{content.reg_incomplete}}</span>
-                    <span>{{content.reg_in_amt}} /-</span>
-                </div>
-            </div>
+            
 
         </div>
         
@@ -478,15 +424,11 @@
                     <p>Emp.Reg</p>
                     <span class="count_no" style="font-size:0.94em;">{{content.emp_reg}}</span>
                 </div>
-                <div class="card">
-                    <i class="bi bi-cash"></i>
-                    <p>Total Paid Salary</p>
-                    <span>{{content.emp_reg_tsal}} /-</span>
-                </div>
+                
                 
             </div>
 
-            <h6>Payments On &nbsp;{% now "F" %}</h6>
+            <h6>Payments On &nbsp;{{content.month_name}}</h6>
             <div class="counts">
                 <div class="card">
                     <i class="bi bi-check-circle-fill"></i>
@@ -501,15 +443,10 @@
                     <span class="count_no">{{content.emp_sal_count}}</span>
                     <span>{{content.emp_sal}} /-</span>
                 </div>
-                <div class="card">
-                    <i class="bi bi-x-circle-fill"></i>
-                    <p>Salary Unpaid</p>
-                    <span class="count_no">{{content.emp_unpaid}}</span>
-                    <span>{{content.emp_unp_amt}} /-</span>
-                </div>
+                
             </div>
 
-            <h6>Salary Payments On  &nbsp;{% now "F" %}</h6>
+            <h6>Salary Payments On &nbsp;{{content.month_name}}</h6>
             <div class="emp_sal_section" id="#">
                
                
@@ -537,90 +474,63 @@
 
 
 
+
     
-<script>
-    const counters = document.querySelectorAll('.value');
-    const speed = 400;
-    
-    counters.forEach( counter => {
-       const animate = () => {
-          const value = +counter.getAttribute('akhi');
-          const data = +counter.innerText;
-         
-          const time = value / speed;
-         if(data < value) {
-              counter.innerText = Math.ceil(data + time);
-              setTimeout(animate, 1);
-            }else{
-              counter.innerText = value;
-            }
-         
-       }
-       
-       animate();
-    });
-</script>
-
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-
     <script>
-        var xValues = ["Income", "Expence", "Profit/Loss"];
-        var yValues = [{{content.inc_pr}}, {{content.exp_pr}}, {{content.bal_pr}}];
-        var barColors = [
-          "#51e109",
-          "#eb1d1d",
-          "#ffdf28",
-          
-        ];
+        const counters = document.querySelectorAll('.value');
+        const speed = 400;
         
-        new Chart("myChart", {
-          type: "doughnut",
-          data: {
-            labels: xValues,
-            datasets: [{
-              backgroundColor: barColors,
-              data: yValues
-            }]
-          },
-          options: {
-            title: {
-              display: true,
-              text: "Company Income Expence "
-            }
-          }
-        });
-        </script>
-
-        <script>
-            var xValues = ["Income", "Expence", "Profit/Loss"];
-            var yValues = [{{content.inc_pr}}, {{content.exp_pr}}, {{content.bal_pr}}];
-            var barColors = [
-              "#51e109",
-              "#eb1d1d",
-              "#ffdf28",
-              
-            ];
-            
-            new Chart("myChart2", {
-              type: "doughnut",
-              data: {
-                labels: xValues,
-                datasets: [{
-                  backgroundColor: barColors,
-                  data: yValues
-                }]
-              },
-              options: {
-                title: {
-                  display: true,
-                  text: "Company Income Expence "
+        counters.forEach( counter => {
+           const animate = () => {
+              const value = +counter.getAttribute('akhi');
+              const data = +counter.innerText;
+             
+              const time = value / speed;
+             if(data < value) {
+                  counter.innerText = Math.ceil(data + time);
+                  setTimeout(animate, 1);
+                }else{
+                  counter.innerText = value;
                 }
-              }
-            });
-            </script>
-</main>
-
-{% endblock %}
-
+             
+           }
+           
+           animate();
+        });
+    </script>
+    
+    
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    
+    
+            <script>
+                var xValues = ["Income", "Expence", "Profit/Loss"];
+                var yValues = [{{content.inc_pr}}, {{content.exp_pr}}, {{content.bal_pr}}];
+                var barColors = [
+                  "#51e109",
+                  "#eb1d1d",
+                  "#ffdf28",
+                  
+                ];
+                
+                new Chart("myChart2", {
+                  type: "doughnut",
+                  data: {
+                    labels: xValues,
+                    datasets: [{
+                      backgroundColor: barColors,
+                      data: yValues
+                    }]
+                  },
+                  options: {
+                    title: {
+                      display: true,
+                      text: "Company Income Expence "
+                    }
+                  }
+                });
+                </script>
+    </main>
+    
+    {% endblock %}

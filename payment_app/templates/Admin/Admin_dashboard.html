@@ -122,12 +122,13 @@
 <a href="{% url 'newpay_confirm_list' %}">
     <div class="card">
         
-        <i class='bi bi-currency-rupee nav_icon'></i><h5>New Registration Payments</h5>
+        <i class='bi bi-currency-rupee nav_icon'></i><h5>OJT New Registration</h5>
         <div class="nofication">
             <span>{{payhis}}</span>
         </div>
     </div>
 </a>
+
 <a href="{% url 'admin_paymentsview' %}">
     <div class="card">
         
@@ -149,7 +150,7 @@
        
     </div>
 </a>
-<a href="#">
+<a href="{% url 'admin_department_form' %}">
     <div class="card">
         <i class="bi bi-box-fill"></i><h5>Department</h5>
     </div>
