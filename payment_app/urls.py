@@ -92,6 +92,8 @@ urlpatterns = [
     path('Add-Pay-Details/<int:pk>',views.addpayment_details,name="addpayment_details"),
     path('Pay-Details/<int:pk>',views.payment_details,name="payment_details"),
     path('Payment-Save',views.save_payment,name='save_payment'),
+    path('Pay-Details-Remove/<int:pk>',views.payhis_remove,name="payhis_remove"),
+    
 
     #Search Data based on Date
     

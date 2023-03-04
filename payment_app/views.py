@@ -897,7 +897,25 @@ def payment_details(request,pk):
     else:
         return redirect('/')
     
+    
+def payhis_remove(request,pk):
 
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+          
+        else:
+            return redirect('/')
+        
+        payhis=PaymentHistory.objects.get(id=pk)
+
+        if payhis.admin_payconfirm == 0:
+            payhis.delete()
+
+        return redirect('pyment_form')
+    
+    else:
+        return redirect('/')
         
      
 
@@ -2062,6 +2080,7 @@ def emp_salary_deactive(request,pk):
     
 
 def emp_reg_delete(request,pk):
+
     if 'uid' in request.session:
         if request.session.has_key('uid'):
             uid = request.session['uid']
@@ -2076,6 +2095,59 @@ def emp_reg_delete(request,pk):
         return redirect('/')
     
 
+#Search Data using From Date and To Date 
+
+def Search_data(request):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        if request.method =='POST':
+            
+            payhis=PaymentHistory.objects.filter(paydofj__gte=request.POST['fr_data'],paydofj__lte=request.POST['to_date']).values_list('reg_id').distinct()
+            cur_date=datetime.now().date()
+        
+            reg=Register.objects.filter(id__in=payhis)
+        
+            reg_count=Register.objects.all().count()
+            dept_count=Department.objects.all().count()
+            cur_date=datetime.now().date()
+            pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
+        
+            pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
+            content={'dept_count':dept_count,
+                    'reg_count':reg_count,
+                    'pay_count':pay_count,
+                    'pay_pending_count':pay_pending_count}
+            return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content})
+        
+        else:
+            return redirect('dashboard')
+                
+    else:
+        return redirect('/')
+        
+
+    
+def Search_data_full(request):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+            
+        if request.method =='POST':
+            payhis=PaymentHistory.objects.filter(paydofj__gte=request.POST['fr_data'],paydofj__lte=request.POST['to_date'])
+            return render(request,'account/paymentsfull_View.html',{'payhis':payhis})
+        else:
+            return redirect('paymentfull_view')
+            
+    else:
+        return redirect('/')
     
 
 
@@ -2190,12 +2262,12 @@ def analysis(request):
         after_8_days = fr_date + timedelta(days=7)  
         after_15days = fr_date + timedelta(days=14) 
 
-        payhistory1=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-        payhistory8=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-        payhistory15=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-        payhistory1_c=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).count()
-        payhistory8_c=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).count()
-        payhistory15_c=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).count()
+        payhistory1=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        payhistory8=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        payhistory15=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        payhistory1_c=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).count()
+        payhistory8_c=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).count()
+        payhistory15_c=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).count()
       
         unpaidhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1)
         reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).count()
@@ -2361,13 +2433,12 @@ def analysis_search(request):
             after_8_days = fr_date + timedelta(days=7)  
             after_15days = fr_date + timedelta(days=14) 
 
-            payhistory1=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-            payhistory8=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-            payhistory15=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-            payhistory1_c=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).count()
-            payhistory8_c=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).count()
-            payhistory15_c=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).count()
-
+            payhistory1=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+            payhistory8=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+            payhistory15=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+            payhistory1_c=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).count()
+            payhistory8_c=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).count()
+            payhistory15_c=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).count()
 
             # Employeee Registraion an salary section
 
@@ -2941,60 +3012,7 @@ def admin_remove(request,pk):
         return redirect('/')
 
 
-#Search Data using From Date and To Date 
 
-def Search_data(request):
-
-    if 'admid' in request.session:
-        if request.session.has_key('admid'):
-            admid = request.session['admid']
-        else:
-            return redirect('/')
-        
-        if request.method =='POST':
-            
-            payhis=PaymentHistory.objects.filter(paydofj__gte=request.POST['fr_data'],paydofj__lte=request.POST['to_date']).values_list('reg_id').distinct()
-            cur_date=datetime.now().date()
-        
-            reg=Register.objects.filter(id__in=payhis)
-        
-            reg_count=Register.objects.all().count()
-            dept_count=Department.objects.all().count()
-            cur_date=datetime.now().date()
-            pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
-        
-            pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
-            content={'dept_count':dept_count,
-                    'reg_count':reg_count,
-                    'pay_count':pay_count,
-                    'pay_pending_count':pay_pending_count}
-            return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content})
-        
-        else:
-            return redirect('dashboard')
-                
-    else:
-        return redirect('/')
-        
-
-    
-def Search_data_full(request):
-
-    if 'admid' in request.session:
-        if request.session.has_key('admid'):
-            admid = request.session['admid']
-        else:
-            return redirect('/')
-            
-        if request.method =='POST':
-            payhis=PaymentHistory.objects.filter(paydofj__gte=request.POST['fr_data'],paydofj__lte=request.POST['to_date'])
-            return render(request,'account/paymentsfull_View.html',{'payhis':payhis})
-        else:
-            return redirect('paymentfull_view')
-            
-    else:
-        return redirect('/')
-    
 
 def admin_user_list(request):
 
@@ -3730,6 +3748,7 @@ def admin_company_holidy_edit(request,pk):
 # Analysi Section 
 
 def admin_analysis(request):
+
     if 'admid' in request.session:
         if request.session.has_key('admid'):
             admid = request.session['admid']
@@ -3802,12 +3821,12 @@ def admin_analysis(request):
         after_8_days = fr_date + timedelta(days=7)  
         after_15days = fr_date + timedelta(days=14) 
 
-        payhistory1=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-        payhistory8=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-        payhistory15=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-        payhistory1_c=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).count()
-        payhistory8_c=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).count()
-        payhistory15_c=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).count()
+        payhistory1=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        payhistory8=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        payhistory15=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        payhistory1_c=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).count()
+        payhistory8_c=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).count()
+        payhistory15_c=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).count()
       
         unpaidhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1)
         reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).count()
@@ -3972,12 +3991,12 @@ def admin_analysis_search(request):
             after_8_days = fr_date + timedelta(days=7)  
             after_15days = fr_date + timedelta(days=14) 
 
-            payhistory1=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-            payhistory8=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-            payhistory15=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-            payhistory1_c=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=after_6_days,).count()
-            payhistory8_c=PaymentHistory.objects.filter(paydofj__gte=after_8_days,paydofj__lte=after_15days,).count()
-            payhistory15_c=PaymentHistory.objects.filter(paydofj__gt=after_15days,paydofj__lte=to_date,).count()
+            payhistory1=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+            payhistory8=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+            payhistory15=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+            payhistory1_c=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).count()
+            payhistory8_c=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).count()
+            payhistory15_c=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).count()
 
 
             # Employeee Registraion an salary section

@@ -4,6 +4,10 @@
 
 
 <style>
+    .tump
+    {
+        color: #26a905;
+    }
 
 /*Register Box Register-details  Style */
 
@@ -364,7 +368,7 @@
                     <table id="payment-details" class="display" >
                         <thead>
                             <tr>
-                               
+                                <th></th>
                                 <th> Payment Head</th>
                                 <th>Pyment Date</th>
                                 <th>Amount</th>
@@ -375,7 +379,12 @@
                             {% for i in pay_dt %}
                             {% if i.reg_id.payprogress >= 10 and i.reg_id.payment_status == 0 %}
                             <tr>
-                               
+                                {% if i.admin_payconfirm == 1 %}
+                                        <td class="tump"><i class="bi bi-hand-thumbs-up-fill"></i></td>
+                                    {% else %}
+                                    <td class="progressing"> <a href="{% url 'payhis_remove' i.id %}"><i class="bi bi-eraser-fill"></i></a></td>
+                                {% endif %}  
+                              
                                 <td class="progressing"> {{i.head_name}}</td>
                                 <td class="progressing">{{i.paydofj}}</td> 
                                 <td class="progressing">{{i.payintial_amt}}</td> 
@@ -390,7 +399,7 @@
                             </tr>
                             {% elif  i.reg_id.payprogress == 100 or i.reg_id.payment_status == 1  %}
                             <tr>
-                               
+                               <td></td>
                                 <td class="completed"> {{i.head_name}}</td>
                                 <td class="completed">{{i.paydofj}}</td> 
                                 <td class="completed">{{i.payintial_amt}}</td> 
@@ -406,7 +415,7 @@
                             {% else %}
                                 {% if  i.reg_id.payment_status == 2 or i.reg_id.reg_status == 2  %}
                                 <tr>
-                               
+                                    <td></td>
                                     <td class="incompleted"> {{i.head_name}}</td>
                                     <td class="incompleted">{{i.paydofj}}</td> 
                                     <td class="incompleted">{{i.payintial_amt}}</td> 
