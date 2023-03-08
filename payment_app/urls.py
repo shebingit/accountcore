@@ -52,6 +52,8 @@ urlpatterns = [
     path('Employee-Register-Form',views.emp_Register_form,name='emp_Register_form'),
     path('Employee-Register',views.employee_register_Details,name='employee_register_Details'),
     path('Employee-Register-Search',views.register_search,name='register_search'),
+    path('Employee-Edit/<int:pk>',views.emp_reg_edit,name="emp_reg_edit"),
+    path('Employee-Edit-Save/<int:pk>',views.employee_register_Details_edit,name="employee_register_Details_edit"),
 
     path('Employee-Deactive/<int:pk>',views.emp_reg_deactive,name="emp_reg_deactive"),
     path('Employee-Active/<int:pk>',views.emp_reg_reactive,name="emp_reg_reactive"),
@@ -68,7 +70,13 @@ urlpatterns = [
     path('Salary-Expence-Search',views.Search_salary_payments,name='Search_salary_payments'),
     
     path('Salary-Expence-Form',views.salary_expence_form,name='salary_expence_form'),
+    path('Salary-Pending',views.employee_pending_salary,name='employee_pending_salary'),
+    
     path('Salary-Expence-Add/<int:pk>',views.salary_expence_add,name="salary_expence_add"),
+    path('Salary-Expence-Edit/<int:pk>',views.salary_expence_edit,name="salary_expence_edit"),
+    path('Salary-Expence-Edit-Save',views.salary_edit_save,name="salary_edit_save"),
+    
+    
     path('Salary-Expence-Save',views.employee_salary_save,name='employee_salary_save'),
     path('Salary-Expence-Calculate',views.salary_calculate,name='salary_calculate'),
     

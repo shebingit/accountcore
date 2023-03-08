@@ -57,6 +57,15 @@ class EmployeeSalary(models.Model):
     empsalary_month=models.CharField(max_length=55,default='')
     empslaray_date = models.DateField(auto_now_add=False,null=True)
     emppaid_amt =models.IntegerField(default=0)
+    empfull_leave =models.IntegerField(default=0)
+    emphalf_leave =models.IntegerField(default=0)
+    empfull_leave_amt =models.IntegerField(default=0)
+    emphalf_leave_amt =models.IntegerField(default=0)
+    emp_delay =models.IntegerField(default=0)
+    emp_delay_amt =models.IntegerField(default=0)
+    emp_othe_head=models.CharField(max_length=100,default='')
+    emp_other_amt =models.IntegerField(default=0)
+    emp_other_damt=models.IntegerField(default=0)
     emp_paidstatus = models.IntegerField(default=0)
 
 

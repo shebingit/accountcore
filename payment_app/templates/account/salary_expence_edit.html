@@ -268,41 +268,11 @@
 
 
 <main>
-    <div class="container-fulid" id="search-box">
-        <form action="{% url 'employee_pending_salary'  %}" method="post">
-            {% csrf_token %}
-            <h5>Pendind Salary Payments</h5>
-            <div class="input-group-box">
-                <label>Salary Month</label>
-                <select name="empsalary_month" id="sm" required>
-                                
-                    {% for value, label in content.months  %}
-                    <option value="{{ value }}">{{ label }}</option>
-                    {% endfor %}
-
-                </select>
-            </div>
-        
-            <div class="input-group-box mt-2">
-                <label>Salary Year</label>
-                <select name="empsalary_year" id="sy" >
-                    <option value="{{current_year}}">{{current_year}}</option>
-                    {% for value, label in content.years  %}
-                    <option value="{{ value }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="submit_button">
-               
-                <button type="submit">Search</button>
-            </div>
-        </form>
-                        
-    </div>
+    
     <section id="register-box">
         <div class="contaier-fluid">
             <div class="register-details">
-                <h4>Employeee Salary Expence Add</h4>
+                <h4>Employeee Salary Expence Edit</h4>
                 <div class="line"></div>
                 {% if msg == 1 %}
                 <div class="message-bx-confirm" id="msgbox">
@@ -317,42 +287,49 @@
 
                 <!-- Register Form -->
 
-                <form action="{% url 'employee_salary_save'  %}" method="post">
+                <form action="{% url 'salary_edit_save' %}" method="post">
                     {% csrf_token %}
                         {% if emp_reg_edit %}
                         <div class="card" id="emp_details">
-                            <span><h5>{{emp_reg_edit.empfullName}}</h5></span>
-                                <b>ID: {{emp_reg_edit.empidreg}}</b>
-                            <span ><b>Date Of Joing:</b> {{emp_reg_edit.empdofj}}
+                            <span><h5>{{emp_reg_edit.empreg_id.empfullName}}</h5></span>
+                                <b>ID: {{emp_reg_edit.empreg_id.empidreg}}</b>
+                            <span ><b>Date Of Joing:</b> {{emp_reg_edit.empreg_id.empdofj}}
                         
-                            <b style="margin-left: 0.50em;">Confirmed Salary:</b>   {{emp_reg_edit.empconfirmsalary}}</span>
+                            <b style="margin-left: 0.50em;">Confirmed Salary:</b>   {{emp_reg_edit.empreg_id.empconfirmsalary}}</span>
+                            
+                               
                         </div>
-                        <input type="text" name="Emp_regid" id="emp_regid" value="{{emp_reg_edit.id}}" required hidden>
+                        <input type="text" name="Emp_regid" id="emp_regid" value="{{emp_reg_edit.empreg_id.id}}" required hidden>
+                        <input type="text" name="Emp_regsalid" id="emp_regsalid" value="{{emp_reg_edit.id}}" required hidden>
                         {% endif %}
                     
                     <div class="line mt-4"></div>
                     <div class="input-group-box">
-                        <label>Leaves</label>
-                        <input type="number" name="leave_full" id="lf" style="width: 28%;" value="0" min="0" placeholder="Full day" >
+                        <label>Leaves </label>
+                        <input type="number" name="leave_full" id="lf" style="width: 28%;" value="{{emp_reg_edit.empfull_leave}}" min="0" placeholder="Full day" >
                       
-                        <input type="number"  name="leave_half" id="lh" style="width: 26%;" value="0" min="0" placeholder="Half day" >
+                        <input type="number"  name="leave_half" id="lh" style="width: 26%;" value="{{emp_reg_edit.emphalf_leave}}" min="0" placeholder="Half day" >
                     </div>
                     <div class="input-group-box">
                         <label>Work Delay</label>
-                        <input type="number" name="work_delay" id="wd" min="0" value="0" placeholder="Work delay count" >
+                        <input type="number" name="work_delay" id="wd" min="0" value="{{emp_reg_edit.emp_delay}}" placeholder="Work delay count" >
                     </div>
                     <div class="input-group-box">
                         <label>Any Other Amount To Add</label>
-                        <input type="number" name="other_amt" id="otamt" min="0" value="0"  >
+                        <input type="number" name="other_amt" id="otamt" min="0" value="{{emp_reg_edit.emp_other_amt}}"  >
                     </div>
                     <div class="input-group-box">
-                        <label>Any Other Deduction Amount</label>
-                        <input type="number" name="other_damt" id="otdamt" min="0" value="0"  >
+                        <label>Any Other Amount To Deduction</label>
+                        <input type="number" name="other_damt" id="otdamt" min="0" value="{{emp_reg_edit.emp_other_damt}}"  >
+                    </div>
+                    <div class="input-group-box">
+                        <label>Amount</label>
+                        <input type="text" name="amt" value="{{emp_reg_edit.emppaid_amt}}" readonly >
                     </div>
                     <div class="input-group-box">
                         <label>Salary Month</label>
                         <select name="empsalary_month" id="sm" required>
-                           
+                            <option value="{{ content.month_number }}" selected>{{ content.mn }}</option>
                             {% for value, label in content.months  %}
                             <option value="{{ value }}">{{ label }}</option>
                             {% endfor %}
@@ -360,14 +337,14 @@
                         </select>
                         <label>Salary Year</label>
                         <select name="empsalary_year" id="sy" >
-                            <option value="{{current_year}}">{{current_year}}</option>
+                            <option value="{{content.ye}}" selected>{{ content.ye }}</option>
                             {% for value, label in content.years  %}
                             <option value="{{ value }}">{{ label }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="input-group-box">
-                        <label>Date Of Salary Given</label>
+                        <label>Date Of Salary Given:<br>{{emp_reg_edit.empslaray_date}}</label>
                         <input type="date" name="empsalary_date" required>
                     </div>
                     <div class="input-group-box" id="results">
@@ -397,6 +374,8 @@
                                 <th>Designation</th>
                                 <th>Employee Id</th>
                                 <th>Confirmed Salary</th>
+                                <th>Salary Paid Date</th>
+                                <th>Salary Paid Month</th>
                                 <th>Current Salary </th>
                                
                                 <!-- <th>Salary Status</th> --> 
@@ -404,20 +383,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for i in emp_reg %}
+                            {% for i in emp_salary_all %}
                             <tr>
                                 <td>{{forloop.counter}} </td>
-                                <td> <a href="{% url 'salary_expence_add' i.id %}" class="#"> <i class="bi bi-pen-fill"></i>  </a></td>
-                                <td><a href="{% url 'employee_salary_details' i.id %}">{{i.empfullName}}</a></td>
-                                <td>{{i.empdofj}}</td>
+                                <td> <a href="{% url 'salary_expence_edit' i.id %}" class="#"> <i class="bi bi-pen-fill"></i>  </a></td>
+                                <td><a href="{% url 'employee_salary_details' i.empreg_id.id %}">{{i.empreg_id.empfullName}}</a></td>
+                                <td>{{i.empreg_id.empdofj}}</td>
                                 
-                                <td>{{i.empdept_id.department}}</td>
-                                <td>{{i.empdesignation}}</td>
-                                <td>{{i.empidreg}}</td>
-                                <td>{{i.empconfirmsalary}}</td>
-                                <td>
-                                 <span style="color: #f72824; font-weight: 700;">Not Paid</span> 
-                                </td>
+                                <td>{{i.empreg_id.empdept_id.department}}</td>
+                                <td>{{i.empreg_id.empdesignation}}</td>
+                                <td>{{i.empreg_id.empidreg}}</td>
+                                <td>{{i.empreg_id.empconfirmsalary}}</td>
+                                <td>{{i.empslaray_date}}</td>
+                                <td>{{i.empsalary_month}}</td>
+                                <td>{{i.emppaid_amt}}</td>
                                
                             </tr>
                             {% endfor %}
@@ -475,9 +454,6 @@
         });
       </script>
       
-
-
-
 </main>
 
 {% endblock %}

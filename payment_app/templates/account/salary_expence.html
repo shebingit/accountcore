@@ -480,6 +480,7 @@ h6
                         <thead>
                             <tr>
                                 <th></th>
+                                <th></th>
                                 <th>Date of Joing</th>
                                 <th>Full Name</th>
                                 <th>Department</th>
@@ -497,6 +498,7 @@ h6
                                
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
+                                        <td> <a href="{% url 'salary_expence_edit' i.id %}" class="#"> <i class="bi bi-pen-fill"></i>  </a></td>
                                         <td>{{i.empreg_id.empdofj}}</td>
                                         <td><a href="{% url 'employee_salary_details' i.empreg_id.id %}" style="font-size: 0.91em;">{{i.empreg_id.empfullName}}</a></td>
                                         <td>{{i.empreg_id.empdept_id.department}}</td>

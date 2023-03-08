@@ -512,6 +512,11 @@ h6
                                 
                                 <th>Salary Month</th>
                                 <th>Paid Date</th>
+                                <th> FulldayLeave /Amount</th>
+                                <th> HalfdayLeave /Amount</th>
+                                <th> Work Delay /Amount</th>
+                                <th>Other Amount Add</th>
+                                <th>Deduction</th>
                                 <th>Paid Amount</th>
                                 <th> Srtatus</th>
 
@@ -525,6 +530,11 @@ h6
                                        
                                         <td>{{i.empsalary_month}}</td>
                                         <td>{{i.empslaray_date}}</td>
+                                        <td>{{i.empfull_leave}} / {{i.empfull_leave_amt}}</td>
+                                        <td>{{i.emphalf_leave}} / {{i.emphalf_leave_amt}}</td>
+                                        <td>{{i.emp_delay}} / {{i.emp_delay_amt}}</td>
+                                        <td>{{i.emp_other_amt}}</td>
+                                        <td>{{i.emp_other_damt}}</td>
                                         <td>{{i.emppaid_amt}}</td>
                                         <td>
                                             {%if i.emp_paidstatus == 1 %}

@@ -15,7 +15,7 @@
     }
     .inex-equl
     {
-        color: #fbfb17;
+        color: #d2d242;
         font-weight: 700;
     }
     /* Login Success Message Box*/
@@ -156,6 +156,22 @@
         font-size: 1.7em;
         color: #243062;
     }
+    @media(max-width:840px){
+        .left-side-box
+        {
+            
+            flex-direction: column;
+            
+        }
+
+    #income-exp-box
+        {
+            
+            grid-template-columns: repeat(1,1fr);
+            margin-bottom: 1em;
+            
+        }
+    }
  
 </style>
 
@@ -246,7 +262,7 @@
                 <h5 class="inex-loss mt-3"> Loss</h5>
                 {% else %}
                 <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-equl" akhi="{{content.balans}}">0</span></span>
-                <h5 class="inex-equl mt-3"> No Profit No Loss</h5>
+               <h6 class="inex-equl mt-3"> &nbsp; No Profit No Loss</h6>
                 {% endif %}
            
             </div>
