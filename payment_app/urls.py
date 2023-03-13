@@ -40,6 +40,8 @@ urlpatterns = [
     path('Company-Holoidays-Edit/<int:pk>',views.company_holidy_edit,name="company_holidy_edit"),
     
     
+    path('Recipt-Data',views.recipt_data,name='recipt_data'),
+    path('Recipt-Data-Save',views.recipt_data_save,name='recipt_data_save'),
     
     
     

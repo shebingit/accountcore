@@ -1558,6 +1558,81 @@ def company_holidy_edit(request,pk):
         return redirect('/')
 
 
+def recipt_data(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        r_data=Receipt_Data.objects.all().first()
+        
+        cur_date=datetime.now().date()
+
+        return render(request,'account/recept_data.html',{'r_data':r_data,'cur_date':cur_date})
+        
+    else:
+        return redirect('/')
+    
+
+def recipt_data_save(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        if request.method =='POST':
+
+            check=Receipt_Data.objects.all()
+            if check:
+                r_data=Receipt_Data.objects.first()
+                r_data.auth_fullname=request.POST['aut_name']
+
+                if request.FILES.get('aut_signature'):
+                    r_data.auth_signature=request.FILES.get('aut_signature')
+                else:
+                      r_data.auth_signature =  r_data.auth_signature
+                r_data.company_name=request.POST['company']
+                r_data.company_address1=request.POST['company_add1']
+                r_data.company_address2=request.POST['company_add2']
+                r_data.company_address3=request.POST['company_add3']
+
+                if request.FILES.get('company_logo'):
+                    r_data.company_logo=request.FILES.get('company_logo')
+                else:
+                    r_data.company_logo= r_data.company_logo
+
+                if request.FILES.get('company_seal'):
+                    r_data.company_seal=request.FILES.get('company_seal')
+                else:
+                    r_data.company_seal= r_data.company_seal
+                r_data.company_email=request.POST['company_email']
+                r_data.company_site=request.POST['company_site']
+                r_data.save()
+
+            else:
+                r_data=Receipt_Data()
+                r_data.auth_fullname=request.POST['aut_name']
+                r_data.auth_signature=request.FILES.get('aut_signature')
+                r_data.company_name=request.POST['company']
+                r_data.company_address1=request.POST['company_add1']
+                r_data.company_address2=request.POST['company_add2']
+                r_data.company_address3=request.POST['company_add3']
+                r_data.company_logo=request.FILES.get('company_logo')
+                r_data.company_seal=request.FILES.get('company_seal')
+                r_data.company_email=request.POST['company_email']
+                r_data.company_site=request.POST['company_site']
+                r_data.save()
+                r_data=Receipt_Data.objects.all().first()
+            
+            cur_date=datetime.now().date()
+        return render(request,'account/recept_data.html',{'r_data':r_data,'cur_date':cur_date})
+        
+    else:
+        return redirect('/')
+
+
 
  
 def salary_expence(request):
@@ -1743,7 +1818,7 @@ def employee_salary_save(request):
                     w_delay=0
                 if not request.POST['other_amt']:
                     any_other=0
-                if not request.POST['any_dother']:
+                if not request.POST['other_damt']:
                     any_dother=0
 
                 conf_salary=emp_reg.empconfirmsalary
@@ -1756,75 +1831,91 @@ def employee_salary_save(request):
                 net_salary=int(net_salary) + int(any_other)
                 net_salary=int(net_salary) - int(any_dother)
 
-            
-                emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(net_salary)
-                emp_reg.emp_salary_status=1
-                emp_reg.save()
-
-                emp_salary=EmployeeSalary()
-                emp_salary.empreg_id=emp_reg
-            
                 m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
+                my = m + ' ' + request.POST['empsalary_year']
+
+                if EmployeeSalary.objects.filter(empreg_id=emp_reg,empsalary_month=my).exists():
+                    
+                    print('Salary Already Payed')
+                    msg=3
                 
-                emp_salary.empsalary_month= m + ' ' + request.POST['empsalary_year']
+                else:
 
-                emp_salary.empslaray_date=request.POST['empsalary_date']
-                emp_salary.emppaid_amt= int(net_salary)
-                emp_salary.empfull_leave=leavefull
-                emp_salary.emphalf_leave=leavehalf
-                emp_salary.empfull_leave_amt=full_day_leave_amt
-                emp_salary.emphalf_leave_amt=half_day_leave_amt
-                emp_salary.emp_delay=w_delay
-                emp_salary.emp_delay_amt=w_delay_amt
-                emp_salary.emp_other_amt=any_other
-                emp_salary.emp_other_damt=any_dother
-                emp_salary.emp_paidstatus=1
-                emp_salary.save()
-                msg=1
+            
+                    emp_reg.emptol_salary= int(emp_reg.emptol_salary) + int(net_salary)
+                    emp_reg.emp_salary_status=1
+                    emp_reg.save()
 
-                 # Salay Expence adding to IncomeExpence Table
-                if EmployeeSalary.objects.exists():
-                  
-
-                    pay_date = datetime.strptime(request.POST['empsalary_date'], '%Y-%m-%d').date()
-
-    # Calculate start and end datetime objects for the month corresponding to input_date
-                    payfr_date = pay_date.replace(day=1)
-                    payto_date = (payfr_date - timedelta(days=1))
-                    payto_date = (payfr_date.replace(month=payfr_date.month+1) - timedelta(days=1))
+                    emp_salary=EmployeeSalary()
+                    emp_salary.empreg_id=emp_reg
                 
+                    m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
+                    
+                    emp_salary.empsalary_month= m + ' ' + request.POST['empsalary_year']
+
+                    emp_salary.empslaray_date=request.POST['empsalary_date']
+                    emp_salary.emppaid_amt= int(net_salary)
+                    emp_salary.empfull_leave=leavefull
+                    emp_salary.emphalf_leave=leavehalf
+                    emp_salary.empfull_leave_amt=full_day_leave_amt
+                    emp_salary.emphalf_leave_amt=half_day_leave_amt
+                    emp_salary.emp_delay=w_delay
+                    emp_salary.emp_delay_amt=w_delay_amt
+                    emp_salary.emp_other_amt=any_other
+                    emp_salary.emp_other_damt=any_dother
+                    emp_salary.emp_paidstatus=1
+                    emp_salary.save()
+                    msg=1
+
+                    # Salay Expence adding to IncomeExpence Table
+                    if EmployeeSalary.objects.exists():
                     
 
-                    try:
-                        inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=payfr_date,exin_date__lte=payto_date).first()
-                        sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=payfr_date,empslaray_date__lte=payto_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-                        #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
-                        
-                        if sal_exp: 
+                        pay_date = datetime.strptime(request.POST['empsalary_date'], '%Y-%m-%d').date()
 
-                            if inexp:
+                        print(pay_date)
 
-                                inexp.exin_head_name='SALARY'
-                                inexp.exin_amount=sal_exp
-                                inexp.exin_typ=2
-                                inexp.exin_date=payto_date
-                                inexp.exin_status=1
-                                inexp.save()
-                                            
+                        # Calculate start and end datetime objects for the month corresponding to input_date
+                        payfr_date = pay_date.replace(day=1)
+
+                        last_daymonth = payfr_date.replace(day=28) + timedelta(days=4)
+                        payto_date = last_daymonth - timedelta(days=last_daymonth.day)
+
+                        print('Pay date:',payfr_date)
+                        print('Pay End Date:',payto_date)
+
+                       
+                    
+                        try:
+                            inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=payfr_date,exin_date__lte=payto_date).first()
+                            sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=payfr_date,empslaray_date__lte=payto_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                            #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
+                            
+                            if sal_exp: 
+
+                                if inexp:
+
+                                    inexp.exin_head_name='SALARY'
+                                    inexp.exin_amount=sal_exp
+                                    inexp.exin_typ=2
+                                    inexp.exin_date=payto_date
+                                    inexp.exin_status=1
+                                    inexp.save()
+                                                
+                                else:
+
+                                    incexp=IncomeExpence()
+                                    incexp.exin_head_name='SALARY'
+                                    incexp.exin_amount=sal_exp
+                                    incexp.exin_typ=2
+                                    incexp.exin_date=payto_date
+                                    incexp.exin_status=1
+                                    incexp.save()
                             else:
+                                print('No Data')
 
-                                incexp=IncomeExpence()
-                                incexp.exin_head_name='SALARY'
-                                incexp.exin_amount=sal_exp
-                                incexp.exin_typ=2
-                                incexp.exin_date=payto_date
-                                incexp.exin_status=1
-                                incexp.save()
-                        else:
-                            print('No Data')
-
-                    except EmployeeSalary.DoesNotExist:
-                            print('No Data')
+                        except EmployeeSalary.DoesNotExist:
+                                print('No Data')
 
             except Company_Holidays.DoesNotExist:
                 msg=2
@@ -1973,8 +2064,6 @@ def salary_edit_save(request):
              return redirect('/')
         
         
-       
-
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
@@ -2046,12 +2135,17 @@ def salary_edit_save(request):
                 m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
                 
                 emp_salary.empsalary_month= m + ' ' + request.POST['empsalary_year']
-                sal_date=request.POST['empsalary_date']
-                if request.POST['empsalary_date']:
-                    emp_salary.empslaray_date=request.POST['empsalary_date']
-                else:
-                    emp_salary.empslaray_date=emp_salary.empslaray_date
-                    sal_date=emp_salary.empslaray_date
+
+                # sal_date=request.POST['empsalary_date']
+
+                # if request.POST['empsalary_date']:
+
+                #     emp_salary.empslaray_date=request.POST['empsalary_date']
+
+                # else:
+
+                emp_salary.empslaray_date=emp_salary.empslaray_date
+                sal_date=emp_salary.empslaray_date
 
                 emp_salary.emppaid_amt= int(net_salary)
                 emp_salary.empfull_leave=leavefull
@@ -2070,12 +2164,18 @@ def salary_edit_save(request):
                 if EmployeeSalary.objects.exists():
                   
 
-                    pay_date = datetime.strptime(sal_date, '%Y-%m-%d').date()
+                    pay_date = sal_date #datetime.strptime(request.POST['empsalary_date'], '%Y-%m-%d').date()
 
-    # Calculate start and end datetime objects for the month corresponding to input_date
+                    print(pay_date)
+
+                    # Calculate start and end datetime objects for the month corresponding to input_date
                     payfr_date = pay_date.replace(day=1)
-                    payto_date = (payfr_date - timedelta(days=1))
-                    payto_date = (payfr_date.replace(month=payfr_date.month+1) - timedelta(days=1))
+
+                    last_daymonth = payfr_date.replace(day=28) + timedelta(days=4)
+                    payto_date = last_daymonth - timedelta(days=last_daymonth.day)
+
+                    print('Pay date:',payfr_date)
+                    print('Pay End Date:',payto_date)
                 
                     
 
@@ -3236,6 +3336,9 @@ def admin_approve(request,pk):
         pay_aprove.admin_payconfirm=1
         pay_aprove.pay_status=1
         pay_aprove.save()
+
+        payed_date=pay_aprove.paydofj # Getting the payed date to add the OJT amount to Income Expence table 
+
         reg=Register.objects.get(id=pay_aprove.reg_id_id)
         reg.regbalance_amt= int(reg.regtotal_amt - pay_aprove.payintial_amt)
         pay_aprove.paybalance_amt=int( reg.regbalance_amt)
@@ -3267,6 +3370,48 @@ def admin_approve(request,pk):
             reg.payment_status=1
             reg.payprogress=100
         reg.save()
+
+        #calculating the starting date and ending date of OJT amount payed 
+
+        fr_date = payed_date.replace(day=1)
+        last_daymonth = fr_date.replace(day=28) + timedelta(days=4)
+        to_date = last_daymonth - timedelta(days=last_daymonth.day)
+
+        #Income adding to IncomeExpence Table
+        if PaymentHistory.objects.exists():
+            try:
+                inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                payhist=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
+                
+                if payhist:
+                                
+                    if inexpe:
+                        inexpe.exin_head_name='OJT'
+                        inexpe.exin_amount=payhist
+                        inexpe.exin_typ=1
+                        inexpe.exin_date=to_date
+                        inexpe.exin_status=1
+                        inexpe.save()
+
+                    else:
+
+                        incexpence=IncomeExpence()
+                        incexpence.exin_head_name='OJT'
+                        incexpence.exin_amount=payhist
+                        incexpence.exin_typ=1
+                        incexpence.exin_date=to_date
+                        incexpence.exin_status=1
+                        incexpence.save()
+                else:
+                    print('No Data')
+
+            except PaymentHistory.DoesNotExist:
+                    print('No Data')
+        else:
+            print('No Data')
+     
+
         return redirect('newpay_confirm_list')
             
     else:
@@ -3331,6 +3476,51 @@ def admin_confirm(request,pk):
         pay_aprove.paytotal_amt=int(reg.regtotal_amt)
         pay_aprove.paybalance_amt=int(reg.regbalance_amt)
         pay_aprove.save()
+
+        payed_date = pay_aprove.paydofj
+        
+        #calculating the starting date and ending date of OJT amount payed 
+
+        fr_date = payed_date.replace(day=1)
+        last_daymonth = fr_date.replace(day=28) + timedelta(days=4)
+        to_date = last_daymonth - timedelta(days=last_daymonth.day)
+
+        #Income adding to IncomeExpence Table
+        if PaymentHistory.objects.exists():
+            try:
+                inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
+                payhist=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
+                
+                if payhist:
+                                
+                    if inexpe:
+                        inexpe.exin_head_name='OJT'
+                        inexpe.exin_amount=payhist
+                        inexpe.exin_typ=1
+                        inexpe.exin_date=to_date
+                        inexpe.exin_status=1
+                        inexpe.save()
+
+                    else:
+
+                        incexpence=IncomeExpence()
+                        incexpence.exin_head_name='OJT'
+                        incexpence.exin_amount=payhist
+                        incexpence.exin_typ=1
+                        incexpence.exin_date=to_date
+                        incexpence.exin_status=1
+                        incexpence.save()
+                else:
+                    print('No Data')
+
+            except PaymentHistory.DoesNotExist:
+                    print('No Data')
+        else:
+            print('No Data')
+
+
+
         return redirect('admin_dashboard')
         
     else:
@@ -4407,11 +4597,13 @@ def singeldata_receipt(request,pk):
 
     date = datetime.now().date()   
     payhis = PaymentHistory.objects.get(id=pk)
+    r_data=Receipt_Data.objects.first()
     number_in_words = num2words(payhis.payintial_amt)
     template_path = 'account/singledata_Receipt.html'
     context = {'payhis': payhis,
+               'r_data':r_data,
                'number_in_words':number_in_words,
-    'media_url':settings.MEDIA_URL,
+    'path':settings.NEWPATH,
     'date':date,
     }
    
@@ -4437,12 +4629,14 @@ def singelUserfull_receipt(request,pk):
     date = datetime.now().date() 
     reg=Register.objects.get(id=pk)  
     payhis = PaymentHistory.objects.filter(reg_id=reg).last()
+    r_data=Receipt_Data.objects.first()
     number_in_words = num2words(reg.reg_payedtotal)
     template_path = 'account/singleUser_full_Receipt.html'
     context = {'reg': reg,
                'payhis':payhis,
+               'r_data':r_data,
                'number_in_words':number_in_words,
-    'media_url':settings.MEDIA_URL,
+     'path':settings.NEWPATH,
     'date':date,
     }
    

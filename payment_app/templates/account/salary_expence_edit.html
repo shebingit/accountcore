@@ -236,7 +236,7 @@
      .register-details-table .container
      {
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        height: 70vh;
+      
         margin-top: 1.4em;
         padding-top:2em ;
      }
@@ -344,8 +344,8 @@
                         </select>
                     </div>
                     <div class="input-group-box">
-                        <label>Date Of Salary Given:<br>{{emp_reg_edit.empslaray_date}}</label>
-                        <input type="date" name="empsalary_date" required>
+                        <label>Date Of Salary Given:</label>
+                        <input type="text" name="empsalary_date" value="{{emp_reg_edit.empslaray_date}}" readonly>
                     </div>
                     <div class="input-group-box" id="results">
                        

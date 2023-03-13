@@ -49,11 +49,14 @@
         <table class="table table-striped">
 			<thead>
 				<tr>
-					<th><img src="static/logo.png" height="95" width="270"> </th>
+					<th>{%if r_data.company_logo %}
+                        <img src="{{path}}{{r_data.company_logo.url}}" height="95" width="270" alt="Comapany Logo"> 
+                        {% endif %}
+                    </th>
 					<th></th>
-					<th><h3>ALTOS Technologies</h3>
-                        <span>1st Floor, Carnival Infopark Phase 1
-                         <br><br>Kakkanad, Kochi</span>
+					<th><h3>{{r_data.company_name}}</h3>
+                        <span> {{r_data.company_address1}} &nbsp;{{r_data.company_address2}}
+                         <br><br>{{r_data.company_address2}}</span>
                          <p>Date : {{date}}</p>
                     </th>
 				</tr>
@@ -107,7 +110,7 @@
             <br><br> 
             <hr>
            
-           <br><br><br>  <br><br><br>  <br><br><br>  <br><br> 
+           <br><br><br>  
           
             <table class="table">
                 <thead>
@@ -115,12 +118,26 @@
                         <th>
                            
                            <span>Received By</span> 
+                           <p>{{r_data.auth_fullname}}</p>
                         </th>
-                        <th></th>
+                       
                         <th>
+                            {%if r_data.auth_signature %}
+                            <img src="{{path}}{{r_data.auth_signature.url}}" height="125" width="150" alt="Signature"> 
+                            {% endif %}
+                            <br>
                             <span>Authorized Signature</span>
                         </th>
                     </tr>
+                     <!-- <tr>
+                        <th></th>
+                        <th>
+                            {%if r_data.company_seal %}
+                            <img src="{{path}}{{r_data.company_seal.url}}" height="130" width="150" alt="Signature"> 
+                            {% endif %}
+                        </th>
+                        <th></th>
+                    </tr> -->
                 </thead>
                 
             </table>
@@ -154,7 +171,7 @@
                
                
           
-            <span>Email: info@altostechnologies.com | Website: www.altostechnologies.com</span>
+            <span>Email: {{r_data.company_email}} | Website: {{r_data.company_site}}</span>
         </div>
     </div>
     

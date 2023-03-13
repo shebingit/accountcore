@@ -1,0 +1,507 @@
+{% extends 'account/account_base.html' %}
+{% load static %}
+{% block body %}
+
+
+
+<style>
+
+    /* message-information style */
+    
+    .message-information
+    
+    {
+        padding: 1.2em;
+        background: #efefff;
+        text-align: center;
+    }
+    .message-information ul li{
+        list-style: none;
+        font-size: 0.99em;
+        font-weight: 600;
+    
+    }
+    
+    /*Register Box Register-details  Style */
+    
+        #register-box .contaier-fluid
+        {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            padding: 1em;
+            gap: 1em;
+            background-color:#fafafa;
+           
+           
+        }
+        .register-details
+        {
+          
+            background: #ffff;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+           
+        }
+    
+        .register-details h4, .register-details-table h4{
+          
+            margin-top: 1.1em;
+            font-size: 1.35em;
+            margin-left: 0.40em;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color:rgb(38, 17, 63);
+           
+            
+        }
+        .register-details .line,  .register-details-table .line
+        {
+            width: 60px;
+            height: 3px;
+            border-bottom: 3px solid #000;
+            margin-left: 0.60em;
+    
+        }
+    
+    
+    
+    
+        /* Alert box */
+    
+        .register-details .message-bx,  .register-details .message-bx-confirm
+        {
+           
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em; 
+        }
+        .register-details .message-bx
+        {
+            background: #e8e340;
+        }
+        .register-details .message-bx-confirm
+        {
+            background: #6fc146;
+        }
+      
+        .register-details .message-bx-delete
+        {
+            background: #f7684c;
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em;
+           
+        }
+        .register-details form{
+            padding:0.50em 1em;
+            background: #fafafa;
+        }
+        .register-details form .input-group-box
+        {
+            margin-top: 1.5em;
+        }
+        .input-group-box label
+        {
+            width: 35%;
+            font-size: 0.90em;
+            font-weight: 600;
+            padding: 0.40em;
+        }
+        .input-group-box input, select{
+          width: 55%;
+          padding: 0.20em;
+          border: 1px solid #828181;
+          font-size: 0.90em;
+         
+        }
+        .input-group-box input:focus, select:focus
+        {
+            border:0.01rem solid #111158;
+            outline: none;
+            border-radius: 3px;
+        }
+        .input-group-box select option{
+            font-size: 0.90em;
+            padding: 1em 0em;
+        }
+        .submit_button
+        {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 15vh;
+            background: #fafafa;
+            margin-top: 1em;
+        }
+        .submit_button button
+        {
+            padding: 0.40em 1.4em;
+            font-weight: 600;
+            background: #261b52;
+            color: #ffff;
+            margin:none ;
+            border: none;
+            letter-spacing: 0.04em;
+        }
+        #register-details a
+        {
+            padding: 0em 0.40em;
+            font-size: 1.1em;
+        
+        }
+        #register-details .stus span{
+            font-size: 0.85em;
+        }
+        #register-details .edit
+        {
+            font-size: 0.95em;
+        }
+        #register-details .edit:nth-child(1)
+        {
+          
+            color: #1b126f; 
+        }
+        #register-details .check
+        {
+          
+            color: #3da309; 
+        }
+        #register-details .wating
+        {
+            color: #fff308;
+        }
+        #register-details .wating span
+        {
+            color: #d3c90d;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        #register-details .notcheck
+        {
+            color: #ec0909;
+        }
+        #register-details .confirmbtn
+        {
+            font-size: 0.89em;
+            font-weight: 600;
+            border: none;
+            padding: 0.40em 0.80em;
+            background: #111158;
+            color: #ffff;
+        }
+        .actionbtns
+        {
+            font-size: 0.85em;
+        }
+        .actionbtns a:nth-child(1) i{
+            color: #e61010;
+            margin-bottom: 0.40em;
+        }
+        /* Media Query*/
+        @media(max-width:964px)
+        {
+            #register-box .contaier-fluid
+            {
+            grid-template-columns:repeat(1,1fr) ;
+            }
+            .register-details
+            {
+                height: auto;
+            }
+            
+        }
+        /*Register Box Register-details End Style */
+    
+         /*Register Box Register-details Table Style */
+         .register-details-table .container
+         {
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+          
+            margin-top: 1.4em;
+            padding-top:2em ;
+         }
+         #register-details
+         {
+            font-size: 0.90em;
+         }
+          /* Media Query*/
+        @media(max-width:964px)
+        {
+        
+            .register-details-table .container
+            {
+                height: auto;
+                overflow-x: scroll;
+              
+               
+            }
+            #register-details
+            {
+              width: 100%; 
+            }
+            .register-details-table 
+            {
+                overflow-x: scroll;
+            }
+        }
+
+        #reciept
+        {
+            padding: 1.3rem;
+        }
+
+        #reciept .card-head
+        {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #reciept .card-body h4{
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .pay_data
+        {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin-top:3rem;
+        }
+        .card-footer
+        {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border: none;
+            margin-bottom: 2.3rem;
+        }
+        .signature
+        {
+            width: 150px;
+            height: 125px;
+        }
+       
+        .company-logo
+        {
+            width: 250px;
+            height: 125px; 
+        }
+        .seal
+        {
+            width: 135px;
+            height: 120px;
+            margin-top: 1em;
+        }
+        .c_logo, .seal_img, .signat
+        {
+            width: 100%;
+            height: auto;
+        }
+        .seal_img
+        {
+            margin-top: 1.6em;
+        }
+       @media(max-width:732px)
+       {
+        #reciept .card-head
+        {
+            flex-direction: column;
+        }
+        .company-logo
+        {
+            width: 250px;
+            height: 80px; 
+        }
+        .card-footer
+        {
+            justify-content: space-between;
+        }
+        .recived p, .signature p
+        {
+            font-size: 0.80em;
+        }
+       }
+       
+    </style>
+    
+    
+    <main>
+        <section id="register-box">
+             <!-- Message Infomation Display-->
+    
+             <div class="message-information"  id="msgbox">
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            <div class="contaier-fluid">
+                
+                <!-- End Message Infomation Display-->
+                <div class="register-details">
+                    <h4>Receipt Details</h4>
+                    <div class="line"></div>
+                    <!-- {% if msg == 1 %}
+                    <div class="message-bx-confirm" id="msgbox">
+                        <p><i class="bi bi-check-all"></i>Employee Registeration Completed </p>
+                    </div>
+                    
+                    {% endif %} -->
+    
+                    <!-- Register Form -->
+    
+                    <form action="{% url 'recipt_data_save'  %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="input-group-box" >
+                            <label>Authorized Name</label>
+                            <input type="text" name="aut_name" value="{{r_data.auth_fullname}}">
+                        </div>
+                        <div class="input-group-box">
+                            <label>Authorized Signature</label>
+                            <input type="file" name="aut_signature" ><br>
+                            <span  style="font-size: 0.75em;color:red;margin:auto;">Upload Signature with no background</span>
+                        </div>
+                       
+                        
+                        <div class="input-group-box">
+                            <label>Company Name </label>
+                            <input type="text" name="company" value="{{r_data.company_name}}">
+                        </div>
+    
+                        <div class="input-group-box">
+                            <label>Company Address 1 </label>
+                            <input type="text" name="company_add1" value="{{r_data.company_address1}}" >
+                        </div>
+                        <div class="input-group-box">
+                            <label>Company Address 2 </label>
+                            <input type="text" name="company_add2" value="{{r_data.company_address2}}">
+                        </div>
+                       
+                        <div class="input-group-box">
+                            <label>Company Address 3 </label>
+                            <input type="text" name="company_add3" value="{{r_data.company_address3}}" >
+                        </div>
+                        <div class="input-group-box">
+                            <label>Company Email  </label>
+                            <input type="email" name="company_email" value="{{r_data.company_email}} " >
+                        </div>
+                        <div class="input-group-box">
+                            <label>Company Website  </label>
+                            <input type="text" name="company_site" value="{{r_data.company_site}} ">
+                        </div>
+                        <div class="input-group-box">
+                            <label>Comapany Logo</label>
+                            <input type="file" name="company_logo" ><br>
+                            <span  style="font-size: 0.75em;color:red;margin:auto;">Upload Logo with no background</span>
+                        </div>
+                        <div class="input-group-box">
+                            <label>Comapany Seal</label>
+                            <input type="file" name="company_seal" ><br>
+                            <span  style="font-size: 0.75em;color:red;margin:auto;">Upload Logo with no background</span>
+                        </div>
+                        
+                        
+                        <div class="submit_button">
+                            <button type="submit">Register</button>
+                        </div>
+                    </form>
+                </div>
+    
+                <div class="register-details-table">
+                    <h4> Receipt Format</h4>
+                    <div class="line"></div>
+    
+                    <div class="container" >
+
+                        <div class="card" id="reciept">
+                            <div class="card-head">
+                                <div class="company-logo">
+                                    {% if r_data.company_logo %}
+                                    <img src="{{r_data.company_logo.url}}" class="c_logo">
+                                    {% endif %}
+                                </div>
+                              
+                                <div class="company_address">
+                                    <h4>{{r_data.company_name}}</h4>
+                                    <p>{{r_data.company_address1}}, {{r_data.company_address2}}<br>
+                                    {{r_data.company_address3}} <br>Date : {{cur_date}}</p>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h4>PAYMENT RECEIPT</h4>
+                                <div class="pay_data">
+                                    <div class="pay_head">
+                                        <p>Received with thanks from</p>
+                                        <p>Amount Received in words:</p>
+                                        <p>For the purpose of Software Training </p>
+                                        <p>Payment Date:</p>
+                                        <p>Amount</p>
+                                    </div>
+                                    <div class="pay_details">
+                                        <p>FULL NAME</p>
+                                        <p>ELEVEN THOUSAND RUPEES ONLY</p>
+                                        <p>PYTHON</p>
+                                        <p>March 10, 2023</p>
+                                        <p>Rs 11000.00</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <hr>
+                            <div class="card-footer">
+                                <div class="recived">
+                                   
+                                    <p>Received By</p>
+                                    <p>{{r_data.auth_fullname}}</p>
+                                </div>
+
+                                <div class="seal">
+                                    {% if r_data.company_seal %}
+                                    <img src="{{r_data.company_seal.url}}" class="seal_img">
+                                    {% endif %}
+                                  
+                                </div>
+                               
+                             
+                                <div class="signature">
+                                    {% if r_data.auth_signature %}
+                                    <img src="{{r_data.auth_signature.url}}" class="signat">
+                                    {% endif %}
+                                    <p>Authorized Signature</p>
+                                </div>
+                               
+                               
+                            </div>
+                            <p class="text-center mt-2" style="font-size: 0.80em;">There is no refund for the payment you have done.Thank you!!!</p>
+                            <hr>
+                           <p class="text-center" style="font-size: 0.75em;">Email: {{r_data.company_email}} | Website: {{r_data.company_site}}</p>
+                        </div>
+                       
+    
+                    </div>
+                </div>
+               
+            </div>
+        </section>
+    
+        <!-- Meaage Box fead Out -->
+    
+    
+    </main>
+
+
+
+{% endblock %}

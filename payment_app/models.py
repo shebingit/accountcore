@@ -69,13 +69,17 @@ class EmployeeSalary(models.Model):
     emp_paidstatus = models.IntegerField(default=0)
 
 
-class Expence_Details(models.Model):
-    exp_head_name = models.CharField(max_length=255)
-    exp_date = models.DateField(auto_now_add=False,null=True)
-    exp_amount = models.IntegerField(default=0)
-    exp_typ = models.CharField(max_length=200,default='')
-    exp_dese = models.TextField(default='')
-    exp_status = models.IntegerField(default=0)
+class Receipt_Data(models.Model):
+    auth_fullname = models.CharField(max_length=255)
+    auth_signature = models.FileField(upload_to='Receipt',default='')
+    company_name = models.CharField(max_length=200,default='')
+    company_address1 = models.CharField(max_length=200,default='')
+    company_address2 = models.CharField(max_length=200,default='')
+    company_address3 = models.CharField(max_length=200,default='')
+    company_logo = models.FileField(upload_to='Receipt',default='')
+    company_seal = models.FileField(upload_to='Receipt',default='')
+    company_email = models.CharField(max_length=200,default='')
+    company_site = models.CharField(max_length=200,default='')
 
 
 
