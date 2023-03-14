@@ -843,7 +843,7 @@ def save_payment(request):
             reg=Register.objects.get(id=int(request.POST['payname']))
             pay_amt=int(request.POST['pinit_amunt'])
             total_amt=int(reg.regtotal_amt)
-            cal=total_amt / 3
+            cal=int(total_amt / 3)
 
             paymt.reg_id=reg
             paymt.head_name=request.POST['payhname']
@@ -858,7 +858,7 @@ def save_payment(request):
             
                 current_date = reg.next_pay_date
 
-                if pay_amt >= cal:
+                if pay_amt >= int(reg.next_pat_amt):
                 
                     after_days = current_date + timedelta(days=30)
                 else:
@@ -870,7 +870,7 @@ def save_payment(request):
             paymt.paydofj=request.POST['pdfj']
             pay_amt=int(request.POST['pinit_amunt'])
             paymt.paybalance_amt=int(reg.regbalance_amt) - pay_amt
-            paymt.paytotal_amt=int(reg.regtotal_amt)
+            paymt.paytotal_amt=int(reg.reg_payedtotal)
             paymt.save()
             #reg.payprogress=int(request.POST['progres'])
             reg.save()
@@ -950,7 +950,7 @@ def register_Details(request):
             total_amt=int(request.POST['tot_amount'])
             cal=total_amt / 3
           
-            reg.next_pat_amt=cal
+            reg.next_pat_amt=cal 
             reg.regtotal_amt=total_amt
             reg.dept_id=Department.objects.get(id=request.POST['dept'])
             next_date=request.POST['nxtpdof']
@@ -3346,17 +3346,20 @@ def admin_approve(request,pk):
         reg.reg_payedtotal=int(pay_aprove.payintial_amt)
         reg.reg_status=1
 
+        pay_aprove.paytotal_amt=int(reg.reg_payedtotal)
+        pay_aprove.save()
+
         #next payment calculation
 
-        cal=reg.regtotal_amt / 3
+        cal=int(reg.regtotal_amt / 3)
         
-        if reg.next_pat_amt == pay_aprove.payintial_amt:
+        if cal == pay_aprove.payintial_amt:
             reg.next_pat_amt = cal
 
-        elif reg.next_pat_amt >  pay_aprove.payintial_amt:
-            reg.next_pat_amt =  int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
+        elif cal >  pay_aprove.payintial_amt:
+            reg.next_pat_amt =  int(cal) - int(pay_aprove.payintial_amt)
 
-        elif  reg.next_pat_amt <  pay_aprove.payintial_amt:
+        elif  cal <  pay_aprove.payintial_amt:
             amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
             reg.next_pat_amt = int(cal) - int(amt)
 
@@ -3443,7 +3446,8 @@ def admin_confirm(request,pk):
 
         #next payment calculation
 
-        cal=reg.regtotal_amt / 3
+        cal=int(reg.regtotal_amt / 3)
+        cal2=int(cal) * 2
         
         if reg.next_pat_amt == pay_aprove.payintial_amt:
             reg.next_pat_amt = cal
@@ -3451,11 +3455,10 @@ def admin_confirm(request,pk):
         elif reg.next_pat_amt >  pay_aprove.payintial_amt:
             amt =  int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
 
-            if  reg.next_pat_amt < cal:
+            if  reg.next_pat_amt < cal and reg.reg_payedtotal < cal2 :
                 reg.next_pat_amt =  cal + amt
             else:
-                reg.next_pat_amt = int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
-
+                 reg.next_pat_amt = int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
 
         elif  reg.next_pat_amt <  pay_aprove.payintial_amt:
             amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
@@ -3473,8 +3476,7 @@ def admin_confirm(request,pk):
             reg.save()
 
         pay_aprove.paybalance_amt= int(reg.regbalance_amt)
-        pay_aprove.paytotal_amt=int(reg.regtotal_amt)
-        pay_aprove.paybalance_amt=int(reg.regbalance_amt)
+        pay_aprove.paytotal_amt=int(reg.reg_payedtotal)
         pay_aprove.save()
 
         payed_date = pay_aprove.paydofj

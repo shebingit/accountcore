@@ -78,7 +78,9 @@ WSGI_APPLICATION = 'pymentcore.wsgi.application'
 DATABASES = {
     'default': {
          'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'account_dbcore',
+        #'NAME': 'account_dbcore',
+         'NAME': 'infoxtec_account_dbcore',
+        
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
