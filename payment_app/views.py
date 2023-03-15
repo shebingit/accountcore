@@ -1999,6 +1999,7 @@ def salary_calculate(request):
                 
         except Company_Holidays.DoesNotExist:
                 msg=2
+                return render(request,'account/result.html',{'msg':msg})
 
         
 
