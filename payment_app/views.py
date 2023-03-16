@@ -579,7 +579,7 @@ def upcoming_payments_list(request):
             reg_count=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,payment_status=0).count()
             tk_amount=0
             for i in reg:
-                tk_amount=tk_amount + int(i.reg_payedtotal)
+                tk_amount=tk_amount + int(i.next_pat_amt)
 
             content={'fr_date':fr_date,
                     'to_date':to_date,
@@ -858,7 +858,7 @@ def save_payment(request):
             
                 current_date = reg.next_pay_date
 
-                if pay_amt >= int(reg.next_pat_amt):
+                if pay_amt >= int(reg.fixed_intial_amt):
                 
                     after_days = current_date + timedelta(days=30)
                 else:
@@ -948,9 +948,10 @@ def register_Details(request):
             reg.refrence=request.POST['refby']
             intial_amt=int(request.POST['init_amunt'])
             total_amt=int(request.POST['tot_amount'])
-            cal=total_amt / 3
+            reg.fixed_intial_amt= int(request.POST['fixedinit_amunt'])
+            cal=int(request.POST['fixedinit_amunt'])
           
-            reg.next_pat_amt=cal 
+            #reg.next_pat_amt=cal 
             reg.regtotal_amt=total_amt
             reg.dept_id=Department.objects.get(id=request.POST['dept'])
             next_date=request.POST['nxtpdof']
@@ -1076,6 +1077,7 @@ def register_edit_save(request,pk):
                 reg.dofj=reg.dofj
 
             reg.refrence=request.POST['refby']
+            reg.fixed_intial_amt=int(request.POST['fixedinit_amunt'])
             reg.regtotal_amt=int(request.POST['tot_amount'])
             reg.dept_id=Department.objects.get(id=request.POST['dept'])
 
@@ -3223,7 +3225,7 @@ def adminupcomingPayments(request):
             reg_count=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,payment_status=0).count()
             tk_amount=0
             for i in reg:
-                tk_amount=tk_amount + int(i.reg_payedtotal)
+                tk_amount=tk_amount + int(i.next_pat_amt)
 
             content={'fr_date':sdate,
                     'to_date':edate,
@@ -3352,17 +3354,20 @@ def admin_approve(request,pk):
 
         #next payment calculation
 
-        cal=int(reg.regtotal_amt / 3)
+        cal=int(reg.fixed_intial_amt)
         
         if cal == pay_aprove.payintial_amt:
-            reg.next_pat_amt = cal
+            reg.next_pat_amt = int( reg.regbalance_amt / 2)
+            reg.fixed_intial_amt = int( reg.regbalance_amt / 2)
 
         elif cal >  pay_aprove.payintial_amt:
             reg.next_pat_amt =  int(cal) - int(pay_aprove.payintial_amt)
+            reg.fixed_intial_amt = int( reg.regbalance_amt / 2)
 
         elif  cal <  pay_aprove.payintial_amt:
-            amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
-            reg.next_pat_amt = int(cal) - int(amt)
+             
+            reg.next_pat_amt = int( reg.regbalance_amt / 2)
+            reg.fixed_intial_amt = int( reg.regbalance_amt / 2)
 
         else:
             print('error')
@@ -3447,23 +3452,26 @@ def admin_confirm(request,pk):
 
         #next payment calculation
 
-        cal=int(reg.regtotal_amt / 3)
-        cal2=int(cal) * 2
+        #cal=int(reg.regtotal_amt / 3)
+        #cal2=int(cal) * 2
         
-        if reg.next_pat_amt == pay_aprove.payintial_amt:
-            reg.next_pat_amt = cal
+        if reg.fixed_intial_amt == pay_aprove.payintial_amt:
+            reg.next_pat_amt = int(reg.regbalance_amt)
+            reg.fixed_intial_amt = int(reg.regbalance_amt)
 
-        elif reg.next_pat_amt >  pay_aprove.payintial_amt:
-            amt =  int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
+        elif reg.fixed_intial_amt >  pay_aprove.payintial_amt:
+            #amt =  int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
 
-            if  reg.next_pat_amt < cal and reg.reg_payedtotal < cal2 :
-                reg.next_pat_amt =  cal + amt
-            else:
-                 reg.next_pat_amt = int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
+            #if  reg.next_pat_amt < cal and reg.reg_payedtotal < cal2 :
+                #reg.next_pat_amt =  cal + amt
+            #else:
+            reg.next_pat_amt = int(reg.fixed_intial_amt) - int(pay_aprove.payintial_amt)
+            reg.fixed_intial_amt = int(reg.fixed_intial_amt) - int(pay_aprove.payintial_amt)
 
-        elif  reg.next_pat_amt <  pay_aprove.payintial_amt:
-            amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
-            reg.next_pat_amt = int(cal) - int(amt)
+        elif  reg.fixed_intial_amt <  pay_aprove.payintial_amt:
+            #amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
+            reg.next_pat_amt = int(reg.regbalance_amt)
+            reg.fixed_intial_amt = int(reg.regbalance_amt)
 
         else:
             print('error')

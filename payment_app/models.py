@@ -20,6 +20,7 @@ class Register(models.Model):
     next_pat_amt =  models.IntegerField(default=0)
     refrence=  models.CharField(max_length=255)
     firstpay_id = models.IntegerField(default=0)
+    fixed_intial_amt = models.IntegerField(default=0)
     regbalance_amt =  models.IntegerField(default=0)
     reg_payedtotal = models.IntegerField(default=0)
     regtotal_amt =  models.IntegerField(default=0)
