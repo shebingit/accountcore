@@ -579,7 +579,7 @@ def upcoming_payments_list(request):
             reg_count=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,payment_status=0).count()
             tk_amount=0
             for i in reg:
-                tk_amount=tk_amount + int(i.reg_payedtotal)
+                tk_amount=tk_amount + int(i.next_pat_amt)
 
             content={'fr_date':fr_date,
                     'to_date':to_date,
@@ -858,7 +858,7 @@ def save_payment(request):
             
                 current_date = reg.next_pay_date
 
-                if pay_amt >= int(reg.next_pat_amt):
+                if pay_amt >= int(reg.fixed_intial_amt):
                 
                     after_days = current_date + timedelta(days=30)
                 else:
@@ -948,9 +948,10 @@ def register_Details(request):
             reg.refrence=request.POST['refby']
             intial_amt=int(request.POST['init_amunt'])
             total_amt=int(request.POST['tot_amount'])
-            cal=total_amt / 3
+            reg.fixed_intial_amt= int(request.POST['fixedinit_amunt'])
+            cal=int(request.POST['fixedinit_amunt'])
           
-            reg.next_pat_amt=cal 
+            #reg.next_pat_amt=cal 
             reg.regtotal_amt=total_amt
             reg.dept_id=Department.objects.get(id=request.POST['dept'])
             next_date=request.POST['nxtpdof']
@@ -1076,6 +1077,7 @@ def register_edit_save(request,pk):
                 reg.dofj=reg.dofj
 
             reg.refrence=request.POST['refby']
+            reg.fixed_intial_amt=int(request.POST['fixedinit_amunt'])
             reg.regtotal_amt=int(request.POST['tot_amount'])
             reg.dept_id=Department.objects.get(id=request.POST['dept'])
 
@@ -1999,6 +2001,7 @@ def salary_calculate(request):
                 
         except Company_Holidays.DoesNotExist:
                 msg=2
+                return render(request,'account/result.html',{'msg':msg})
 
         
 
@@ -2136,16 +2139,53 @@ def salary_edit_save(request):
                 
                 emp_salary.empsalary_month= m + ' ' + request.POST['empsalary_year']
 
-                # sal_date=request.POST['empsalary_date']
+               
+                if request.POST['empsalary_date']:
 
-                # if request.POST['empsalary_date']:
+                    sal_date=request.POST['empsalary_date']
+                   
 
-                #     emp_salary.empslaray_date=request.POST['empsalary_date']
+                    pay_date = emp_salary.empslaray_date #datetime.strptime(request.POST['empsalary_date'], '%Y-%m-%d').date()
+                    emp_salary.empslaray_date=request.POST['empsalary_date']
 
-                # else:
+                  
 
-                emp_salary.empslaray_date=emp_salary.empslaray_date
-                sal_date=emp_salary.empslaray_date
+                    # Calculate start and end datetime objects for the month corresponding to input_date
+                    payfr_date = pay_date.replace(day=1)
+
+                    last_daymonth = payfr_date.replace(day=28) + timedelta(days=4)
+                    payto_date = last_daymonth - timedelta(days=last_daymonth.day)
+
+                    print('Pay date:',payfr_date)
+                    print('Pay End Date:',payto_date)
+                
+                    
+                    # Here we change the salary expence amount value in expencce income table 
+
+                    try:
+                        inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=payfr_date,exin_date__lte=payto_date).first()
+                        sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=payfr_date,empslaray_date__lte=payto_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                        
+                        sal_exp = int(sal_exp) - int(net_salary)  
+                    
+                        
+                        if sal_exp: 
+
+                            if inexp:
+
+                                inexp.exin_head_name='SALARY'
+                                inexp.exin_amount=sal_exp
+                                inexp.exin_typ=2
+                                inexp.exin_date=payto_date
+                                inexp.exin_status=1
+                                inexp.save()
+
+                    except EmployeeSalary.DoesNotExist:
+                            print('No Data')
+
+                else:
+                    emp_salary.empslaray_date=emp_salary.empslaray_date
+                
 
                 emp_salary.emppaid_amt= int(net_salary)
                 emp_salary.empfull_leave=leavefull
@@ -2158,15 +2198,19 @@ def salary_edit_save(request):
                 emp_salary.emp_other_damt=any_dother
                 emp_salary.emp_paidstatus=1
                 emp_salary.save()
+                sal_date=emp_salary.empslaray_date
                 msg=1
 
-                 # Salay Expence adding to IncomeExpence Table
+                # Salay Expence adding to IncomeExpence Table
                 if EmployeeSalary.objects.exists():
                   
+                    if request.POST['empsalary_date']:
 
-                    pay_date = sal_date #datetime.strptime(request.POST['empsalary_date'], '%Y-%m-%d').date()
+                        pay_date = datetime.strptime(request.POST['empsalary_date'], '%Y-%m-%d').date()
+                    else:
+                        pay_date = sal_date 
 
-                    print(pay_date)
+                  
 
                     # Calculate start and end datetime objects for the month corresponding to input_date
                     payfr_date = pay_date.replace(day=1)
@@ -2182,6 +2226,7 @@ def salary_edit_save(request):
                     try:
                         inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=payfr_date,exin_date__lte=payto_date).first()
                         sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=payfr_date,empslaray_date__lte=payto_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        
                         #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
                         
                         if sal_exp: 
@@ -3222,7 +3267,7 @@ def adminupcomingPayments(request):
             reg_count=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,payment_status=0).count()
             tk_amount=0
             for i in reg:
-                tk_amount=tk_amount + int(i.reg_payedtotal)
+                tk_amount=tk_amount + int(i.next_pat_amt)
 
             content={'fr_date':sdate,
                     'to_date':edate,
@@ -3351,17 +3396,20 @@ def admin_approve(request,pk):
 
         #next payment calculation
 
-        cal=int(reg.regtotal_amt / 3)
+        cal=int(reg.fixed_intial_amt)
         
         if cal == pay_aprove.payintial_amt:
-            reg.next_pat_amt = cal
+            reg.next_pat_amt = int( reg.regbalance_amt / 2)
+            reg.fixed_intial_amt = int( reg.regbalance_amt / 2)
 
         elif cal >  pay_aprove.payintial_amt:
             reg.next_pat_amt =  int(cal) - int(pay_aprove.payintial_amt)
+            reg.fixed_intial_amt = int( reg.regbalance_amt / 2)
 
         elif  cal <  pay_aprove.payintial_amt:
-            amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
-            reg.next_pat_amt = int(cal) - int(amt)
+             
+            reg.next_pat_amt = int( reg.regbalance_amt / 2)
+            reg.fixed_intial_amt = int( reg.regbalance_amt / 2)
 
         else:
             print('error')
@@ -3446,23 +3494,26 @@ def admin_confirm(request,pk):
 
         #next payment calculation
 
-        cal=int(reg.regtotal_amt / 3)
-        cal2=int(cal) * 2
+        #cal=int(reg.regtotal_amt / 3)
+        #cal2=int(cal) * 2
         
-        if reg.next_pat_amt == pay_aprove.payintial_amt:
-            reg.next_pat_amt = cal
+        if reg.fixed_intial_amt == pay_aprove.payintial_amt:
+            reg.next_pat_amt = int(reg.regbalance_amt)
+            reg.fixed_intial_amt = int(reg.regbalance_amt)
 
-        elif reg.next_pat_amt >  pay_aprove.payintial_amt:
-            amt =  int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
+        elif reg.fixed_intial_amt >  pay_aprove.payintial_amt:
+            #amt =  int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
 
-            if  reg.next_pat_amt < cal and reg.reg_payedtotal < cal2 :
-                reg.next_pat_amt =  cal + amt
-            else:
-                 reg.next_pat_amt = int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
+            #if  reg.next_pat_amt < cal and reg.reg_payedtotal < cal2 :
+                #reg.next_pat_amt =  cal + amt
+            #else:
+            reg.next_pat_amt = int(reg.fixed_intial_amt) - int(pay_aprove.payintial_amt)
+            reg.fixed_intial_amt = int(reg.fixed_intial_amt) - int(pay_aprove.payintial_amt)
 
-        elif  reg.next_pat_amt <  pay_aprove.payintial_amt:
-            amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
-            reg.next_pat_amt = int(cal) - int(amt)
+        elif  reg.fixed_intial_amt <  pay_aprove.payintial_amt:
+            #amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
+            reg.next_pat_amt = int(reg.regbalance_amt)
+            reg.fixed_intial_amt = int(reg.regbalance_amt)
 
         else:
             print('error')

@@ -345,7 +345,9 @@
                     </div>
                     <div class="input-group-box">
                         <label>Date Of Salary Given:</label>
-                        <input type="text" name="empsalary_date" value="{{emp_reg_edit.empslaray_date}}" readonly>
+                        <input type="text" name="empsalary_date1" value="{{emp_reg_edit.empslaray_date}}" readonly>
+                        <label>Change Date :</label>
+                        <input type="date" name="empsalary_date" id="myDate">
                     </div>
                     <div class="input-group-box" id="results">
                        
@@ -455,5 +457,10 @@
       </script>
       
 </main>
+
+<script>
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById("myDate").setAttribute("max", today);
+</script>
 
 {% endblock %}
