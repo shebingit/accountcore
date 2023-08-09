@@ -5,7 +5,7 @@ from django.conf import settings
 
 
 urlpatterns = [
-
+    path('go',views.go,name='go'),
     path('',views.login_page,name='login_page'),
     path('Login-Dashboard',views.login_dashboard,name='login_dashboard'),
     path('Admin-Dashboard',views.admin_dashboard,name='admin_dashboard'),

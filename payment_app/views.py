@@ -9,13 +9,42 @@ from datetime import datetime,timedelta
 from django.conf import settings
 from django.http import HttpResponse
 from django.template.loader import get_template
-from xhtml2pdf import pisa
-from num2words import num2words
+
 import calendar
 from django.db.models import Sum
 from django.core.mail import send_mail
 from django.db.models import Q
 
+
+def go(request):
+    reg1=Register.objects.filter(reg_status=1)
+    payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+    approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+
+    cur_date=datetime.now().date()
+    fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+    last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+    to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+    income_total=0
+    exp_total=0
+    income_value = IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date,exin_typ=1)
+    for i in income_value:
+        income_total=income_total+int(i.exin_amount)
+    print(income_total)
+
+    expence_value = IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date,exin_typ=2)
+    for i in expence_value:
+        exp_total=exp_total+int(i.exin_amount)
+    print(exp_total)
+
+    
+    bala_value= income_total - exp_total
+    
+    content={'payhis_list':payhis_list,
+             'approve_count':approve_count,'income_total':income_total,
+             'exp_total':exp_total,'bala_value':bala_value}
+
+    return render(request, 'admin/index1.html',content)
 
 #login Section
 def login_page(request):

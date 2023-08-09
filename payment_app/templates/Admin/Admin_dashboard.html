@@ -2,6 +2,8 @@
 {% load static %}
 {% block body %}
 
+
+
 <style>
        /* Login Success Message Box*/
        .welcome_messagebox
@@ -36,26 +38,20 @@
     #action-box
     {
         background:var( --white-color);
-        display: flex;
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(8,1fr);
         justify-content: center;
-        flex-wrap: wrap;
         gap: 1em;
-        padding: 1.2em;
-       margin-bottom: 1em;
-       margin-top: 1em;
-       
     }
     #action-box .card
     {
         height: 130px;
-        width: 270px;
+        width: 200px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        border: none;
-        margin: none;
+        gap:1rem;
+       
         border-radius: 5px;
         cursor: pointer;
     }
@@ -111,54 +107,215 @@
 </div>
 {% endif %}
 
-<div class=" container-fluid" id="action-box">
-    <a href="{% url 'admin_analysis' %}">
-        <div class="card">
-            
-            <i class="bi bi-graph-up-arrow"></i><h5>Analysis</h5>
-            
-        </div>
-    </a>
-<a href="{% url 'newpay_confirm_list' %}">
-    <div class="card">
-        
-        <i class='bi bi-currency-rupee nav_icon'></i><h5>OJT New Registration</h5>
-        <div class="nofication">
-            <span>{{payhis}}</span>
-        </div>
-    </div>
-</a>
-
-<a href="{% url 'admin_paymentsview' %}">
-    <div class="card">
-        
-        <i class="bi bi-search"></i><h5>Track Payments</h5>
-       
-    </div>
-</a>
-<a href="{% url 'admin_trackPayments' %}">
-    <div class="card">
-        
-        <i class="bi bi-arrow-right-square-fill"></i><h5>Upcoming Payments</h5>
-       
-    </div>
-</a>
-<a href="{% url 'admin_accounts' %}">
-    <div class="card">
-        
-        <i class="bi bi-currency-rupee nav_icon"></i><h5>Accounts</h5>
-       
-    </div>
-</a>
-<a href="{% url 'admin_department_form' %}">
-    <div class="card">
-        <i class="bi bi-box-fill"></i><h5>Department</h5>
-    </div>
-</a>
-</div>
-<!--Container Main end-->
 
 <style>
+    body{
+        background: #edf6f9;
+    }
+   section
+   {
+    padding-top: 2rem;
+   }
+   
+    .top-container
+    {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(2, 2, 76, 0.782);
+        color: #e6e9ea;
+        border-radius: 10px;
+        padding: 0.80rem 1.5rem;
+    
+    }
+    
+    .top-head h2
+    {
+        font-weight: 600;
+        letter-spacing: 0.06rem;
+        color: #edf0f1;
+        font-size: 1.6rem;
+    }
+     .breadcrumb-item a
+    {
+        color: #dfe2e3; 
+    }
+    .breadcrumb .active
+    {
+        color: #edf0f1; 
+    }
+    .page-card
+    {
+       
+        padding: 1rem 1rem;
+        background: #edf6f9;
+       
+    }
+    .page-card-container
+    {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+       padding: 2rem 1rem;
+        box-shadow: rgba(191, 190, 190, 0.16) 0px 1px 4px;
+        
+    }
+    .page-cardBox
+    {
+        border: 0.001rem skyblue;
+        padding: 1.2rem 1.50rem;
+        min-width: 200px;
+        background: #f7fdf8;
+        box-shadow: rgba(120, 119, 119, 0.08) 0px 4px 12px;
+        border-radius: 10px;
+        text-align: center;
+      
+        
+    }
+    .page-cardBox:hover
+    {
+        background: #eaf4f4;
+        transition: 0.3s ease-out ;
+        border: 0.002px solid #eaf4f4;
+    }
+    .page-cardBox a{
+        color: #161a1d;
+        font-weight: 600;
+        font-size: 0.90rem;
+    }
+    .card-iconBox .bx
+    {
+        font-size:1.2rem ;
+    }
+.approve-head h3
+{
+    margin-bottom: 2rem;
+    font-size:1.2rem;
+    font-weight: 600;
+}
+</style>
+
+<section>
+    <div class="container top-container">
+        <div class="top-head">
+            <h2>Dashboard</h2>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">/ Dashboard</li>
+            </ol>
+          </nav>
+    </div>
+</section>
+
+<!---- Page Card Section -------->
+
+<section id="Page-card" class="page-card">
+    <a href="{% url 'go' %}">Home</a>
+    <div class="container page-card-container">
+        <div class="page-cardBox">
+            <a href="{% url 'admin_analysis' %}">
+                <div class="card-iconBox"><i class='bx bxs-analyse'></i></div>
+                <div class="card-headBox">Analysis</div>
+            </a>
+        </div>
+        <div class="page-cardBox">
+            <a href="{% url 'newpay_confirm_list' %}">
+                <div class="card-iconBox"><i class='bx bxs-user'></i></div>
+                <div class="card-headBox">OJT Registration</div>
+            </a>
+        </div>
+        <div class="page-cardBox">
+            <a href="{% url 'admin_paymentsview' %}">
+                <div class="card-iconBox"><i class='bx bxs-objects-vertical-bottom'></i></div>
+                <div class="card-headBox">Track Payments</div>
+            </a>
+        </div>
+        <div class="page-cardBox">
+            <a href="{% url 'admin_trackPayments' %}">
+                <div class="card-iconBox"><i class='bx bxs-calendar'></i></div>
+                <div class="card-headBox">Upcoming Payments</div>
+            </a>
+        </div>
+        <div class="page-cardBox">
+            <a href="{% url 'admin_accounts' %}">
+                <div class="card-iconBox"><i class='bx bxs-wallet-alt'></i></div>
+                <div class="card-headBox">Accounts</div>
+            </a>
+        </div>
+       
+        <div class="page-cardBox">
+            <a href="{% url 'admin_department_form' %}">
+                <div class="card-iconBox"><i class='bx bxs-grid-alt'></i></div>
+                <div class="card-headBox">Department</div>
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!----End Page Card Section -------->
+
+<!---- Approve Section -------->
+
+<section id="Approve-section" class="approve-section">
+    <div class="container approve-container">
+        <div class="approve-head">
+            <h3>Payments List For Approve</h3>
+        </div>
+        <div class="approve-leftBox">
+                
+            <table id="register-details" class="display" >
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Full Name</th>
+                        <th>Date Of Payed</th>
+                        
+                        <th>Paied Amount</th>
+                        <th>Balance Amount</th>
+                        <th>Total Amount</th>
+                        <th> Staus</th>
+                        <th>Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in payhis_list %}
+                    <tr>
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+                        <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.reg_id.fullName}}</a></td>
+                        <td>{{i.paydofj}}</td>
+                       
+                        <td>{{i.payintial_amt}}</td>
+                        {% if i.paybalance_amt > 0 %}
+                        <td class="danger">{{i.paybalance_amt}}</td> 
+                        {% else %}
+                        <td class="succes">{{i.paybalance_amt}}</td> 
+                        {% endif %}
+                        <td>{{i.paytotal_amt}}</td> 
+                        <td><a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a></td>
+                        <td>
+                           <a href="{% url 'admin_confirm' i.id %}" class="confirm "> <button class="btn btn-outline-primary">Confirm</button></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                  
+                </tbody>
+               
+            </table>
+
+        </div>
+    </div>
+</section>
+
+<!---- End  Approve Section -------->
+
+
+ <style>
     #payment-approve .card
     {
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
@@ -177,76 +334,20 @@
     {
         font-size: 0.90em;
     }
-    #payment-approve .card .wating
+ .wating
     {
         color: #f4e91b;
     }
-    #payment-approve .card .confirm
+     .confirm
     {
-        background: #230e4b;
+       
         color: #fff;
         padding: 0.50em 1em;
         font-size: 0.93em;
         font-weight: 600;
         letter-spacing: 0.04em;
     }
-</style>
-
-<!--Container List Show-->
- <div class="container-fluid" id="payment-approve">
-   
-    <div class="card">
-        <div class="register-details-table">
-            <h4>Payments List For Approve</h4>
-            <div class="line"></div>
-            <div class="container">
-
-                <table id="register-details" class="display" >
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Full Name</th>
-                            <th>Date Of Payed</th>
-                            
-                            <th>Paied Amount</th>
-                            <th>Balance Amount</th>
-                            <th>Total Amount</th>
-                            <th> Staus</th>
-                            <th>Action</th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for i in payhis_list %}
-                        <tr>
-                            <td>
-                                {{ forloop.counter }}
-                            </td>
-                            <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.reg_id.fullName}}</a></td>
-                            <td>{{i.paydofj}}</td>
-                           
-                            <td>{{i.payintial_amt}}</td>
-                            {% if i.paybalance_amt > 0 %}
-                            <td class="danger">{{i.paybalance_amt}}</td> 
-                            {% else %}
-                            <td class="succes">{{i.paybalance_amt}}</td> 
-                            {% endif %}
-                            <td>{{i.paytotal_amt}}</td> 
-                            <td><a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a></td>
-                            <td>
-                                <a href="{% url 'admin_confirm' i.id %}" class="confirm">Confirm</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                      
-                    </tbody>
-                   
-                </table>
-
-            </div>
-        </div>
-    </div>
-</div>
+</style> 
 
 </main>
 
