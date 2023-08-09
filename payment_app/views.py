@@ -2337,6 +2337,44 @@ def income_expence_form(request):
     else:
         return redirect('/')
     
+    
+def income_expence_edit(request,inex_edit):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        exp_income=IncomeExpence.objects.get(id=inex_edit)
+        return render(request,'account/income_expence_edit.html',{'exp_income':exp_income})
+    else:
+        return redirect('/')
+    
+
+def income_expence_edit_save(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        if request.method =='POST':
+            incom =int(request.POST['exincom'])
+            ex_in=IncomeExpence.objects.get(id=incom)
+            ex_in.exin_head_name=request.POST['exin_head_name'].upper()
+            ex_in.exin_date=request.POST['exin_date']
+            ex_in.exin_amount=request.POST['exin_amt']
+            ex_in.exin_dese=request.POST['exin_dese']
+            ex_in.exin_typ=request.POST['exin_type']
+            ex_in.exin_status=1
+            ex_in.save()
+            msg=1
+            exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('exin_date')
+
+        return render(request,'account/income_expence.html',{'msg':msg,'exp_income':exp_income})
+    else:
+        return redirect('/')
+
+    
 
 def income_expence_add(request):
     if 'uid' in request.session:
@@ -2362,6 +2400,23 @@ def income_expence_add(request):
         return redirect('/')
 
     
+def income_expence_delete(request,incom_delete):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+       
+        ex_in=IncomeExpence.objects.get(id=incom_delete)  
+        ex_in.delete()
+        msg=2
+        exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('exin_date')
+
+        return render(request,'account/income_expence.html',{'msg':msg,'exp_income':exp_income})
+    else:
+        return redirect('/')
+
 
 def emp_Register_form(request):
     if 'uid' in request.session:

@@ -50,6 +50,10 @@ urlpatterns = [
     path('Income-Expence',views.income_expence_form,name='income_expence_form'),
     path('Income-Expence-Save',views.income_expence_add,name='income_expence_add'),
     
+    path('Income-Expence-Edit/<int:inex_edit>',views.income_expence_edit,name="income_expence_edit"),
+    path('Income-Expence-Edit-Save',views.income_expence_edit_save,name="income_expence_edit_save"),
+    path('Income-Expence-Delete/<int:incom_delete>',views.income_expence_delete,name="income_expence_delete"),
+    
     
     path('Employee-Register-Form',views.emp_Register_form,name='emp_Register_form'),
     path('Employee-Register',views.employee_register_Details,name='employee_register_Details'),

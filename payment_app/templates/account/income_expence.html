@@ -287,8 +287,8 @@
                             {% for i in exp_income %}
                             <tr>
                                 <td>
-                                    <a href="#" class="delete"><i class="bi bi-x-circle-fill"></i></a>
-                                    <a href="#" class="edit"><i class="bi bi-pen-fill"></i></a>
+                                    <a href="{% url 'income_expence_delete' i.id %}" class="delete"><i class="bi bi-x-circle-fill"></i></a>
+                                    <a href="{% url 'income_expence_edit' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a>
                                    
                                 </td>
                                 <td>{{i.exin_date}}</td>
@@ -326,6 +326,29 @@
     <!-- Meaage Box fead Out -->
 
 
+    <!-- Edit Modal -->
+<div class="modal fade" id="income_expence_edit_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 </main>
+
+
+
 
 {% endblock %}

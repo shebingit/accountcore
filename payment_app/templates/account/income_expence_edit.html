@@ -1,0 +1,206 @@
+{% extends 'account/account_base.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+
+    /*Register Box Register-details  Style */
+    
+        #register-box .contaier-fluid
+        {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1em;
+            gap: 1em;
+            background-color:#fafafa;
+           
+           
+        }
+        .register-details
+        {
+           
+            background: #ffff;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            padding: 0.40rem 4rem;
+           
+            margin-top: 1rem;
+        }
+    
+        .register-details h4, .register-details-table h4{
+          
+            margin-top: 1.1em;
+            font-size: 1.35em;
+            margin-left: 0.40em;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color:rgb(38, 17, 63);
+           
+            
+        }
+        .register-details .line,  .register-details-table .line
+        {
+            width: 60px;
+            height: 3px;
+            border-bottom: 3px solid #000;
+            margin-left: 0.60em;
+    
+        }
+    
+        /* success Alert box */
+    
+        .register-details .message-bx
+        {
+            background: #6fc146;
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em; 
+        }
+        .register-details .message-bx-delete
+        {
+            background: #d74141;
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em; 
+        }
+        .register-details form{
+            padding:0.50em 1em;
+            background: #fafafa;
+        }
+        .register-details form .input-group-box, .input-group-option
+        {
+            margin-top: 1.5em;
+        }
+        .input-group-box label, .input-group-option  label
+        {
+            width: 40%;
+            font-size: 0.90em;
+            font-weight: 600;
+            padding: 0.40em;
+        }
+        .input-group-option input
+        {
+            padding-right: 0.50em;
+    
+          font-size: 0.90em;
+        }
+        .input-group-box input, select, textarea{
+          width: 50%;
+          padding: 0.20em;
+          border: 1px solid #828181;
+          font-size: 0.90em;
+         
+        }
+        .input-group-box input:focus, select:focus, textarea:focus
+        {
+            border:0.01rem solid #111158;
+            outline: none;
+            border-radius: 3px;
+        }
+        .input-group-box select option{
+            font-size: 0.90em;
+            padding: 1em 0em;
+        }
+        .submit_button
+        {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 15vh;
+            background: #fafafa;
+            margin-top: 1em;
+        }
+        .submit_button button
+        {
+            padding: 0.40em 1.4em;
+            font-weight: 600;
+            background: #261b52;
+            color: #ffff;
+            margin:none ;
+            border: none;
+            letter-spacing: 0.04em;
+        }
+        .submit_button a
+        {
+            padding: 0.40em 1.4em;
+            font-weight: 600;
+            background: #08070e;
+            color: #ffff;
+            margin:none ;
+            border: none;
+            letter-spacing: 0.04em;
+            margin-right: 0.30rem;
+        }
+</style>
+
+
+<main>
+    <section id="register-box">
+        <div class="contaier-fluid">
+
+            <div class="register-details">
+                <h4>Income / Expence Edit Form </h4>
+                <div class="line"></div>
+                
+                {% if msg == 1 %}
+                <div class="message-bx" id="msgbox">
+                    <p><i class="bi bi-check-all"></i> Successfull!  Income / Expence Added  </p>
+                </div>
+                {% elif msg == 2 %}
+                <div class="message-bx-delete" id="msgbox-delete">
+                    <p><i class="bi bi-x"></i> Successfull!  Expence Deleted  </p>
+                </div>
+                {% endif %}
+
+
+                <form action="{% url 'income_expence_edit_save'  %}" method="post">
+                    {% csrf_token %}
+
+                    <input type="text" name="exincom" value="{{exp_income.id}}">
+                    <div class="input-group-option" >
+                        <label>Choose Type</label>
+                        <input type="radio" name="exin_type" value="1"{% if exp_income.exin_typ == 1 %}checked{% endif %}>&nbsp;Income
+                        <input type="radio" name="exin_type" value="2"{% if exp_income.exin_typ == 2 %}checked{% endif %} >&nbsp;Expence
+                        
+                    </div>
+                    <div class="input-group-box" >
+                        <label>Head Name</label>
+                        <input type="text" name="exin_head_name"  style="text-transform:uppercase" value="{{exp_income.exin_head_name}}" required>
+                        
+                    </div>
+                    <div class="input-group-box" >
+                        <label>Date: {{fixededit.fixed_date}} </label>
+                        <input type="date" name="exin_date" value="{{ exp_income.exin_date|date:'Y-m-d' }}" >
+                    </div>
+                    <div class="input-group-box" >
+                        <label>Amount </label>
+                        <input type="text" name="exin_amt" value="{{exp_income.exin_amount}}"  required>
+                    </div>
+                    <div class="input-group-box" >
+                        <label>Note </label>
+                        <textarea  name="exin_dese" value="{{exp_income.exin_dese}}" ></textarea>
+                    </div>
+                    
+                    <div class="submit_button">
+                        <a href="{% url 'income_expence_form' %}">Back</a>
+                        <button type="submit">Save</button>
+                    </div>
+                </form>
+
+                
+            </div>
+
+        </div>
+    </section>
+</main>
+
+{% endblock %}
