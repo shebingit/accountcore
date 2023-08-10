@@ -3,263 +3,91 @@
 {% block body %}
 
 
-<style>
 
-/*Register Box Register-details  Style */
-
-    #register-box .contaier-fluid
-    {
-        display: grid;
-        grid-template-columns:2.2fr;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-       
-       
-    }
-    .register-details
-    {
-        height: 80vh;
-        background: #ffff;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-       
-    }
-
-    .register-details h4, .register-details-table h4{
-      
-        margin-top: 1.1em;
-        font-size: 1.35em;
-        margin-left: 0.40em;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color:rgb(38, 17, 63);
-       
+<div class="content-wrapper">
+    <div class="row">
         
-    }
-    .register-details .line,  .register-details-table .line
-    {
-        width: 60px;
-        height: 3px;
-        border-bottom: 3px solid #000;
-        margin-left: 0.60em;
+        <div class="col-md-3 grid-margin stretch-card">
+          <a href="{% url 'admin_trackPayments' %}">
+              <div class="card">
+              <div class="card-body">
+                  <h4 class="card-title">Upcoming Payments</h4>
+                  <div class="media">
+                  <i class="mdi mdi-magnify icon-md text-info d-flex align-self-center me-3"></i>
+                  <div class="media-body">
+                      <p class="card-text">Cras sit amet nibh libero, in gravida nulla. </p>
+                  </div>
+                  </div>
+              </div>
+              </div>
+          </a>
+        </div>
+        <div class="col-md-3 grid-margin stretch-card">
+          <a href="{% url 'admin_pending_payments' %}">
+              <div class="card">
+              <div class="card-body">
+                  <h4 class="card-title">Pending Payments</h4>
+                  <div class="media">
+                  <i class="mdi mdi-layers icon-md text-info d-flex align-self-end me-3"></i>
+                  <div class="media-body">
+                      <p class="card-text">Cras sit amet nibh libero, in gravida nulla.</p>
+                  </div>
+                  </div>
+              </div>
+              </div>
+          </a>
+        </div>
+        <div class="col-md-3 grid-margin stretch-card">
+            <a href="{% url 'admin_incompleted_payments' %}">
+                <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Incomplete Payments</h4>
+                    <div class="media">
+                    <i class="mdi mdi-layers icon-md text-info d-flex align-self-end me-3"></i>
+                    <div class="media-body">
+                        <p class="card-text">Cras sit amet nibh libero, in gravida nulla. </p>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </a>
+          </div>
+          <div class="col-md-3 grid-margin stretch-card">
+            <a href="{% url 'admin_completed_payments' %}">
+                <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Complete Payments</h4>
+                    <div class="media">
+                    <i class="mdi mdi-layers icon-md text-info d-flex align-self-end me-3"></i>
+                    <div class="media-body">
+                        <p class="card-text">Cras sit amet nibh libero, in gravida nulla. </p>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </a>
+          </div>
+    </div>
 
-    }
 
-    /* Alert box */
 
-    .register-details .message-bx,  .register-details .message-bx-confirm
-    {
-       
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details .message-bx
-    {
-        background: #e8e340;
-    }
-    .register-details .message-bx-confirm
-    {
-        background: #6fc146;
-    }
-  
-    .register-details .message-bx-delete
-    {
-        background: #f7684c;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em;
-       
-    }
-    .register-details form{
-        padding:0.50em 1em;
-        background: #fafafa;
-    }
-    .register-details form .input-group-box
-    {
-        margin-top: 1.5em;
-    }
-    .input-group-box label
-    {
-        width: 35%;
-        font-size: 0.90em;
-        font-weight: 600;
-        padding: 0.40em;
-    }
-    .input-group-box input, select{
-      width: 55%;
-      padding: 0.20em;
-      border: 1px solid #828181;
-      font-size: 0.90em;
-     
-    }
-    .input-group-box input:focus, select:focus
-    {
-        border:0.01rem solid #111158;
-        outline: none;
-        border-radius: 3px;
-    }
-    .input-group-box select option{
-        font-size: 0.90em;
-        padding: 1em 0em;
-    }
-    .submit_button
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 15vh;
-        background: #fafafa;
-        margin-top: 1em;
-    }
-    .submit_button button
-    {
-        padding: 0.40em 1.4em;
-        font-weight: 600;
-        background: #261b52;
-        color: #ffff;
-        margin:none ;
-        border: none;
-        letter-spacing: 0.04em;
-    }
-    #register-details a
-    {
-        padding: 0em 0.40em;
-        font-size: 1.1em;
-    
-    }
-    #register-details .edit
-    {
-        font-size: 0.95em;
-    }
-    #register-details .edit:nth-child(1)
-    {
-      
-        color: #1b126f; 
-    }
-    #register-details .check
-    {
-      
-        color: #3da309; 
-    }
-    #register-details .wating
-    {
-        color: #fff308;
-    }
-    #register-details .wating span
-    {
-        color: #d3c90d;
-        font-size: 0.85em;
-        font-weight: 600;
-    }
-    #register-details .notcheck
-    {
-        color: #ec0909;
-    }
-    #register-details .confirmbtn
-    {
-        font-size: 0.89em;
-        font-weight: 600;
-        border: none;
-        padding: 0.40em 0.80em;
-        background: #111158;
-        color: #ffff;
-    }
-    .down-load
-    {
-        color: #f62020;
-        cursor: pointer;
-    }
-    .not-download
-    {
-        color: #f7ea2d;
-    }
-    /* Media Query*/
-    @media(max-width:964px)
-    {
-        #register-box .contaier-fluid
-        {
-        grid-template-columns:repeat(1,1fr) ;
-        }
-        .register-details
-        {
-            height: auto;
-        }
+
+    <div class="row mt-3">
+        <div class="col-lg-12 d-flex flex-column">
         
-    }
-    /*Register Box Register-details End Style */
-
-     /*Register Box Register-details Table Style */
-     .register-details-table .container
-     {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        
-        margin-top: 1.4em;
-        padding-top:2em ;
-        padding-bottom:2em ;
-     }
-     #register-details
-     {
-        font-size: 0.90em;
-     }
-      /* Media Query*/
-    @media(max-width:964px)
-    {
-    
-        .register-details-table .container
-        {
-            height: auto;
-            overflow-x: scroll;
-          
-           
-        }
-        #register-details
-        {
-          width: 100%; 
-        }
-        .register-details-table 
-        {
-            overflow-x: scroll;
-        }
-    }
-    #register-details .start
-    {
-        background: #ec0909;
-    }
-    #register-details .progressing
-    {
-        background: #f2f22d;
-    }
-    #register-details .end
-    {
-        background: #8de769;
-    }
-    #register-details .recipt
-    {
-        background: #fff;
-    }
-</style>
-
-
-<main>
-    <section id="register-box">
-        <div class="contaier-fluid">
-            
-            <div class="register-details-table">
-                <h4>Payments List <a href="{% url 'adminpaymentfull_view' %}"><i class="bi bi-arrow-right-square-fill"></i></a></h4>
-                <div class="line"></div>
-                <div class="container">
-
-                    <table id="register-details" class="display" >
+          <div class="row flex-grow">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card card-rounded">
+                <div class="card-body">
+                  <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                      <h4 class="card-title card-title-dash"><i class="mdi mdi-format-list-bulleted icon-sm text-info  me-3"></i> Payments List</h4>
+                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value"> {{payhis_count}} </span> payments</p>
+                    </div>
+                    
+                  </div>
+                  <div class="table-responsive  mt-1">
+                    <table class="table select-table">
                         <thead>
                             <tr>
                                 <th></th>
@@ -269,16 +97,15 @@
                                 <th>TL Amount</th>
                                 <th>Payment List</th>
                                 <th>Full Receipt</th>
-                              
                             </tr>
                         </thead>
                         <tbody>
                             {% for i in reg %}
                                 {% if i.payprogress >= 10 and i.payment_status == 0 %}
-                                    <tr>
+                                    <tr >
                                         <td>
                                             {{ forloop.counter }}
-                                           
+                                        
                                         </td>
                                         <td class="progressing">{{i.fullName}}</td>
                                     
@@ -286,37 +113,37 @@
                                         <td class="progressing">{{i.regbalance_amt}} </td> 
                                         <td class="progressing">{{i.regtotal_amt}} </td> 
                                         <td>
-                                            <table id="pay-details" class="display" >
-                                            <thead>
-                                                <tr>
-                                                    <th>Pay Head</th>
-                                                    <th>Date</th>
-                                                    <th>Amount</th>
-                                                    <th>Receipt</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for j in payhis %}
-                                                    {% if j.reg_id_id == i.id %}
-                                                    <tr  class="progressing">
-                                                        <td>{{j.head_name}}</td>
-                                                        <td>{{j.paydofj}}</td>
-                                                        <td class="progressing">{{j.payintial_amt}}</td>
-                                                        <td class="recipt">
-                                                            {% if j.pay_status == 1 %}
-                                                            <a href="{% url 'singeldata_receipt' j.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
-                                                            {% else %}
-                                                            <a href="#" class="not-download"><i class="bi bi-exclamation-circle-fill"></i></a>
-                                                            {% endif %}
-                                                        </td>
+                                            <table  class="table select-table" >
+                                                <thead>
+                                                    <tr>
+                                                        <th>Pay Head</th>
+                                                        <th>Date</th>
+                                                        <th>Amount</th>
+                                                        <th>Receipt</th>
                                                     </tr>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </tbody>
+                                                </thead>
+                                                <tbody>
+                                                    {% for j in payhis %}
+                                                        {% if j.reg_id_id == i.id %}
+                                                        <tr>
+                                                            <td>{{j.head_name}}</td>
+                                                            <td>{{j.paydofj}}</td>
+                                                            <td class="progressing">{{j.payintial_amt}}</td>
+                                                            <td >
+                                                                {% if j.pay_status == 1 %}
+                                                                <a href="{% url 'singeldata_receipt' j.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a>
+                                                                {% else %}
+                                                                <a href="#" class="not-download"><i class="bi bi-exclamation-circle-fill"></i></a>
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
                                             </table>
 
                                         </td>
-                                        <td class="recipt"> <a href="{% url 'singelUserfull_receipt' i.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                        <td> <a href="{% url 'singelUserfull_receipt' i.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a></td>
                                         
                                     </tr>
                                 {% elif  i.payprogress == 100 or i.payment_status == 1  %}
@@ -332,37 +159,37 @@
                                     <td class="end">{{i.regbalance_amt}} </td> 
                                     <td class="end">{{i.regtotal_amt}} </td> 
                                     <td>
-                                        <table id="pay-details" class="display" >
-                                        <thead>
-                                            <tr>
-                                                <th>Pay Head</th>
-                                                <th>Date</th>
-                                                <th>Amount</th>
-                                                <th>Receipt</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for j in payhis %}
-                                                {% if j.reg_id_id == i.id %}
-                                                <tr class="end">
-                                                    <td>{{j.head_name}}</td>
-                                                    <td>{{j.paydofj}}</td>
-                                                    <td class="end">{{j.payintial_amt}}</td>
-                                                    <td class="recipt">
-                                                        {% if j.pay_status == 1 %}
-                                                        <a href="{% url 'singeldata_receipt' j.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
-                                                        {% else %}
-                                                        <a href="#" class="not-download"><i class="bi bi-exclamation-circle-fill"></i></a>
-                                                        {% endif %}
-                                                    </td>
+                                        <table class="table select-table" >
+                                            <thead>
+                                                <tr>
+                                                    <th>Pay Head</th>
+                                                    <th>Date</th>
+                                                    <th>Amount</th>
+                                                    <th>Receipt</th>
                                                 </tr>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </tbody>
+                                            </thead>
+                                            <tbody>
+                                                {% for j in payhis %}
+                                                    {% if j.reg_id_id == i.id %}
+                                                    <tr>
+                                                        <td>{{j.head_name}}</td>
+                                                        <td>{{j.paydofj}}</td>
+                                                        <td class="end">{{j.payintial_amt}}</td>
+                                                        <td>
+                                                            {% if j.pay_status == 1 %}
+                                                            <a href="{% url 'singeldata_receipt' j.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a>
+                                                            {% else %}
+                                                            <a href="#" class="not-download"><i class="bi bi-exclamation-circle-fill"></i></a>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tbody>
                                         </table>
 
                                     </td>
-                                    <td class="recipt"> <a href="{% url 'singelUserfull_receipt' i.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                    <td class="recipt"> <a href="{% url 'singelUserfull_receipt' i.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a></td>
                                     
                                 </tr>
 
@@ -380,56 +207,59 @@
                                         <td class="start">{{i.regbalance_amt}} </td> 
                                         <td class="start">{{i.regtotal_amt}} </td> 
                                         <td>
-                                            <table id="pay-details" class="display" >
-                                            <thead>
-                                                <tr>
-                                                    <th>Pay Head</th>
-                                                    <th>Date</th>
-                                                    <th>Amount</th>
-                                                    <th>Receipt</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for j in payhis %}
-                                                    {% if j.reg_id_id == i.id %}
-                                                    <tr class="start">
-                                                        <td>{{j.head_name}}</td>
-                                                        <td>{{j.paydofj}}</td>
-                                                        <td >{{j.payintial_amt}}</td>
-                                                        <td class="recipt">
-                                                            {% if j.pay_status == 1 %}
-                                                        <a href="{% url 'singeldata_receipt' j.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a>
-                                                            {% else %}
-                                                            <a href="#" class="not-download"><i class="bi bi-exclamation-circle-fill"></i></a>
-                                                            {% endif %}
-                                                        </td>
+                                            <table class="table select-table" >
+                                                <thead>
+                                                    <tr>
+                                                        <th>Pay Head</th>
+                                                        <th>Date</th>
+                                                        <th>Amount</th>
+                                                        <th>Receipt</th>
                                                     </tr>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </tbody>
+                                                </thead>
+                                                <tbody>
+                                                    {% for j in payhis %}
+                                                        {% if j.reg_id_id == i.id %}
+                                                        <tr class="start">
+                                                            <td>{{j.head_name}}</td>
+                                                            <td>{{j.paydofj}}</td>
+                                                            <td >{{j.payintial_amt}}</td>
+                                                            <td>
+                                                                {% if j.pay_status == 1 %}
+                                                            <a href="{% url 'singeldata_receipt' j.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a>
+                                                                {% else %}
+                                                                <a href="#" class="not-download"><i class="bi bi-exclamation-circle-fill"></i></a>
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
                                             </table>
 
                                         </td>
-                                        <td class="recipt"> <a href="{% url 'singelUserfull_receipt' i.id %}" class="down-load"><i class="bi bi-file-pdf-fill"></i></a></td>
+                                        <td class="recipt"> <a href="{% url 'singelUserfull_receipt' i.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a></td>
                                         
                                     </tr>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
-                          
+                        
                         </tbody>
-                       
                     </table>
-
+                  </div>
                 </div>
+              </div>
             </div>
-           
+          </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Meaage Box fead Out -->
+</div>
 
 
-</main>
 
 {% endblock %}
+
+
+
+    

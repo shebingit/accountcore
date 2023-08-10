@@ -8800,6 +8800,7 @@ p {
   margin-bottom: 1rem;
 }
 
+
 abbr[title],
 abbr[data-bs-original-title] {
   text-decoration: underline dotted;
@@ -8876,12 +8877,12 @@ sup {
 }
 
 a {
-  color: #0d6efd;
-  text-decoration: underline;
+  color: #21252a;
+  text-decoration: none;
 }
 
 a:hover {
-  color: #0a58ca;
+  color: #192d45;
 }
 
 a:not([href]):not([class]), a:not([href]):not([class]):hover {
@@ -8995,6 +8996,11 @@ textarea {
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
+}
+.span-data
+{
+  font-size: 0.85rem;
+  font-weight: 800;
 }
 
 button,
@@ -9131,7 +9137,23 @@ progress {
 [hidden] {
   display: none !important;
 }
-
+/* .start
+{
+  background: rgba(220, 15, 15, 0.863);
+}
+.progressing
+{
+  background: rgba(234, 255, 7, 0.863);
+}
+.end
+{
+  background: rgba(16, 146, 7, 0.863);
+} */
+.mdi-file-pdf
+{
+  color: #dc1515;
+  font-size: 20px
+}
 .lead {
   font-size: 1.25rem;
   font-weight: 300;

@@ -1,0 +1,123 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="home-tab">
+                <div class="tab-content tab-content-basic">
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
+
+                        <div class="row">
+                            <div class="col-md-4 grid-margin stretch-card">
+                             
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title text-success">Income - <i class="mdi mdi-currency-inr icon-sm"></i> {{content.inco}}  </h4>
+                                        <div class="media">
+                                        <i class="mdi mdi-plus icon-md text-info d-flex align-self-start me-3"></i>
+                                        <div class="media-body">
+                                            <p class="card-text">Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque.</p>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              
+                            </div>
+                            <div class="col-md-4 grid-margin stretch-card">
+                            
+                                <div class="card">
+                                  <div class="card-body">
+                                      <h4 class="card-title text-danger">Expence - <i class="mdi mdi-currency-inr icon-sm"></i> {{content.expe}} </h4>
+                                      <div class="media">
+                                      <i class="mdi mdi-minus icon-md text-info d-flex align-self-center me-3"></i>
+                                      <div class="media-body">
+                                          <p class="card-text">Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque.</p>
+                                      </div>
+                                      </div>
+                                  </div>
+                                </div>
+                              
+                            </div>
+                            <div class="col-md-4 grid-margin stretch-card">
+                             
+                                <div class="card">
+                                    <div class="card-body">
+                                      <h4 class="card-title">Balance - <i class="mdi mdi-currency-inr icon-sm"></i> {{content.balans}}</h4>
+                                      <div class="media">
+                                      <i class="mdi mdi-contrast icon-md text-info d-flex align-self-end me-3"></i>
+                                      <div class="media-body">
+                                          <p class="card-text">Cras sit amet nibh libero,  in gravida nulla. Nulla vel metus scelerisque.</p>
+                                      </div>
+                                      </div>
+                                    </div>
+                                </div>
+                              
+                            </div>
+                        </div>
+
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row flex-grow">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+                <div class="card-body">
+                  <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                      <h4 class="card-title card-title-dash mb-2">{% now "F" %} - Income Expence Entries </h4>
+                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{exp_income_count}}</span> entries on this month </p>
+                    </div>
+                    
+                  </div>
+                  <div class="table-responsive  mt-1">
+                    <table class="table select-table">
+                      <thead>
+                        <tr>
+                              
+                            <th>Date</th>
+                            <th>Head Name</th>
+                            <th>Income</th>
+                            <th>Expence</th>
+                            <th>Note</th>
+                            
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in exp_income %}
+                        <tr>
+                           
+                            <td>{{i.exin_date}}</td>
+                            <td>{{i.exin_head_name}}</td>
+                            {% if i.exin_typ == 1 %}
+                            <td class="income">{{i.exin_amount}}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                            {% if i.exin_typ == 2 %}
+                            <td class="exp">{{i.exin_amount}}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                            <td>{{i.exin_dese}}</td>
+                            
+                            
+                        </tr>
+                        {% endfor %}
+                      
+                    </tbody>
+                    
+                    </table>
+                  </div>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

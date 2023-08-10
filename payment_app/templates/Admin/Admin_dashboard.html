@@ -4,351 +4,134 @@
 
 
 
-<style>
-       /* Login Success Message Box*/
-       .welcome_messagebox
-       {
-          margin-top: 1em;
-          
-          height: 60px;
-       
-          padding: 0.07em 0.10em;
-         
-       }
-       .welcome_messagebox .msg-box
-       {
-           padding: 1em;
-           background: #a0ef94;
-         
-           width: 100%;
-           height: 100%;
-          
-       }
-       .welcome_messagebox .msg-box p{
-           font-weight: 600;
-           font-size: 0.88em;
-           color: #121e50;
-          
-       }
-       .welcome_messagebox .msg-box i{
-           color: #0c376b;
-           padding-right: 0.60em;
-       }
-      
-    #action-box
-    {
-        background:var( --white-color);
-        display: grid;
-        grid-template-columns: repeat(8,1fr);
-        justify-content: center;
-        gap: 1em;
-    }
-    #action-box .card
-    {
-        height: 130px;
-        width: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap:1rem;
-       
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    #action-box .card:hover{
-        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-        transition: 0.5s;
-    }
-    #action-box .card h5{
-        margin-top: 0.40em;
-        margin-bottom: 0.80em;
-        color:rgb(21, 74, 139);
-        font-weight: 600;
-        font-size: 1.2em;
-    }
-    .nofication 
-    {
-        background-color: rgb(239, 24, 24);
-        margin-top:0.10em;
-        color: #ffff;
-        width: 30px;
-        height: 30px;
-        border-radius: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .nofication span{
-        font-size: 0.83em;
-        font-weight: 600;
-    }
-    @media (max-width:832px)
-    {
-        #action-box
-        {
-            background:var( --white-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 1em;
-            height: auto;
-            padding: 1em 0.20em;
-        }
-    }
-</style>
-<main>
-<!--Container Main start-->
-{% if msg_succes == 1 %}
-<div class="welcome_messagebox" id="msgbox">
-    <div class="msg-box">
-        <p><i class="bi bi-person-check-fill"></i> Login Successfull...</p>
-    </div>
-</div>
-{% endif %}
 
 
-<style>
-    body{
-        background: #edf6f9;
-    }
-   section
-   {
-    padding-top: 2rem;
-   }
-   
-    .top-container
-    {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: rgba(2, 2, 76, 0.782);
-        color: #e6e9ea;
-        border-radius: 10px;
-        padding: 0.80rem 1.5rem;
-    
-    }
-    
-    .top-head h2
-    {
-        font-weight: 600;
-        letter-spacing: 0.06rem;
-        color: #edf0f1;
-        font-size: 1.6rem;
-    }
-     .breadcrumb-item a
-    {
-        color: #dfe2e3; 
-    }
-    .breadcrumb .active
-    {
-        color: #edf0f1; 
-    }
-    .page-card
-    {
-       
-        padding: 1rem 1rem;
-        background: #edf6f9;
-       
-    }
-    .page-card-container
-    {
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-       padding: 2rem 1rem;
-        box-shadow: rgba(191, 190, 190, 0.16) 0px 1px 4px;
-        
-    }
-    .page-cardBox
-    {
-        border: 0.001rem skyblue;
-        padding: 1.2rem 1.50rem;
-        min-width: 200px;
-        background: #f7fdf8;
-        box-shadow: rgba(120, 119, 119, 0.08) 0px 4px 12px;
-        border-radius: 10px;
-        text-align: center;
-      
-        
-    }
-    .page-cardBox:hover
-    {
-        background: #eaf4f4;
-        transition: 0.3s ease-out ;
-        border: 0.002px solid #eaf4f4;
-    }
-    .page-cardBox a{
-        color: #161a1d;
-        font-weight: 600;
-        font-size: 0.90rem;
-    }
-    .card-iconBox .bx
-    {
-        font-size:1.2rem ;
-    }
-.approve-head h3
-{
-    margin-bottom: 2rem;
-    font-size:1.2rem;
-    font-weight: 600;
-}
-</style>
-
-<section>
-    <div class="container top-container">
-        <div class="top-head">
-            <h2>Dashboard</h2>
-        </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Home</a></li>
-              <li class="breadcrumb-item active" aria-current="page">/ Dashboard</li>
-            </ol>
-          </nav>
-    </div>
-</section>
-
-<!---- Page Card Section -------->
-
-<section id="Page-card" class="page-card">
-    <a href="{% url 'go' %}">Home</a>
-    <div class="container page-card-container">
-        <div class="page-cardBox">
-            <a href="{% url 'admin_analysis' %}">
-                <div class="card-iconBox"><i class='bx bxs-analyse'></i></div>
-                <div class="card-headBox">Analysis</div>
-            </a>
-        </div>
-        <div class="page-cardBox">
-            <a href="{% url 'newpay_confirm_list' %}">
-                <div class="card-iconBox"><i class='bx bxs-user'></i></div>
-                <div class="card-headBox">OJT Registration</div>
-            </a>
-        </div>
-        <div class="page-cardBox">
-            <a href="{% url 'admin_paymentsview' %}">
-                <div class="card-iconBox"><i class='bx bxs-objects-vertical-bottom'></i></div>
-                <div class="card-headBox">Track Payments</div>
-            </a>
-        </div>
-        <div class="page-cardBox">
-            <a href="{% url 'admin_trackPayments' %}">
-                <div class="card-iconBox"><i class='bx bxs-calendar'></i></div>
-                <div class="card-headBox">Upcoming Payments</div>
-            </a>
-        </div>
-        <div class="page-cardBox">
-            <a href="{% url 'admin_accounts' %}">
-                <div class="card-iconBox"><i class='bx bxs-wallet-alt'></i></div>
-                <div class="card-headBox">Accounts</div>
-            </a>
-        </div>
-       
-        <div class="page-cardBox">
-            <a href="{% url 'admin_department_form' %}">
-                <div class="card-iconBox"><i class='bx bxs-grid-alt'></i></div>
-                <div class="card-headBox">Department</div>
-            </a>
-        </div>
-    </div>
-</section>
-
-
-<!----End Page Card Section -------->
-
-<!---- Approve Section -------->
-
-<section id="Approve-section" class="approve-section">
-    <div class="container approve-container">
-        <div class="approve-head">
-            <h3>Payments List For Approve</h3>
-        </div>
-        <div class="approve-leftBox">
-                
-            <table id="register-details" class="display" >
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Full Name</th>
-                        <th>Date Of Payed</th>
-                        
-                        <th>Paied Amount</th>
-                        <th>Balance Amount</th>
-                        <th>Total Amount</th>
-                        <th> Staus</th>
-                        <th>Action</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for i in payhis_list %}
-                    <tr>
-                        <td>
-                            {{ forloop.counter }}
-                        </td>
-                        <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.reg_id.fullName}}</a></td>
-                        <td>{{i.paydofj}}</td>
-                       
-                        <td>{{i.payintial_amt}}</td>
-                        {% if i.paybalance_amt > 0 %}
-                        <td class="danger">{{i.paybalance_amt}}</td> 
-                        {% else %}
-                        <td class="succes">{{i.paybalance_amt}}</td> 
-                        {% endif %}
-                        <td>{{i.paytotal_amt}}</td> 
-                        <td><a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a></td>
-                        <td>
-                           <a href="{% url 'admin_confirm' i.id %}" class="confirm "> <button class="btn btn-outline-primary">Confirm</button></a>
-                        </td>
-                    </tr>
-                    {% endfor %}
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            
+            <div class="tab-content tab-content-basic">
+              <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
+                <div class="row">
+                  <div class="col-md-4 grid-margin stretch-card">
+                    <a href="{% url 'admin_analysis' %}">
+                        <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Analysis</h4>
+                            <div class="media">
+                            <i class="mdi mdi-google-analytics icon-md text-info d-flex align-self-start me-3"></i>
+                            <div class="media-body">
+                                <p class="card-text">Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque.</p>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </a>
+                  </div>
+                  <div class="col-md-4 grid-margin stretch-card">
+                    <a href="{% url 'admin_paymentsview' %}">
+                        <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Track Payment</h4>
+                            <div class="media">
+                            <i class="mdi mdi-magnify icon-md text-info d-flex align-self-center me-3"></i>
+                            <div class="media-body">
+                                <p class="card-text">Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque.</p>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </a>
+                  </div>
+                  <div class="col-md-4 grid-margin stretch-card">
+                    <a href="{% url 'admin_accounts' %}">
+                        <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Account</h4>
+                            <div class="media">
+                            <i class="mdi mdi-layers icon-md text-info d-flex align-self-end me-3"></i>
+                            <div class="media-body">
+                                <p class="card-text">Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque.</p>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </a>
+                  </div>
+                </div>
+             
+                <div class="row">
+                  <div class="col-lg-12 d-flex flex-column">
                   
-                </tbody>
-               
-            </table>
-
+                    <div class="row flex-grow">
+                      <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                          <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                              <div>
+                                <h4 class="card-title card-title-dash">Payment Approvel Requests</h4>
+                               <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{approve_count}}</span> new requests</p>
+                              </div>
+                              
+                            </div>
+                            <div class="table-responsive  mt-1">
+                              <table class="table select-table">
+                                <thead>
+                                  <tr>
+                                    <th>Confirm</th>
+                                    <th>Full Name</th>
+                                    <th>Date</th>
+                                    <th>Payed Amount</th>
+                                    <th>Total Payed</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for app in payhis_list %}
+                                  <tr>
+                                    <td>
+                                      <div>
+                                        <div class="btn-wrapper">
+                                          <a href="{% url 'admin_confirm' app.id %}" class="btn btn-primary text-white me-0"><i class="icon-check"></i>Aprove</a>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div class="d-flex ">
+                                        <div><h6>{{app.reg_id.fullName}}</h6></div>
+                                      </div>
+                                    </td>
+                                    <td><h6>{{app.paydofj}}</h6> </td>
+                                    <td><div><h6>{{app.payintial_amt}}</h6></div></td>
+                                    <td><div><h6>{{app.paybalance_amt}}</h6></div></td>
+                                    <td><div><h6>{{app.paytotal_amt}}</h6></div></td>
+                                    
+                                    <td><div class="badge badge-opacity-warning">wating for approve</div></td>
+                                  </tr>
+                                  {% endfor %}
+                                  
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                   
+                  </div>
+                 
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</section>
 
-<!---- End  Approve Section -------->
+    <!-- content-wrapper ends -->
+   
 
-
- <style>
-    #payment-approve .card
-    {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        border: none;
-        padding: 0.80em 0.50em;
-        overflow: scroll;
-    }
-    #payment-approve .card h4{
-        margin-top:0.30em;
-        margin-bottom: 1em;
-        font-weight: 600;
-        font-size: 1.4em;
-        text-align: center;
-    }
-    #payment-approve .card .display
-    {
-        font-size: 0.90em;
-    }
- .wating
-    {
-        color: #f4e91b;
-    }
-     .confirm
-    {
-       
-        color: #fff;
-        padding: 0.50em 1em;
-        font-size: 0.93em;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-    }
-</style> 
-
-</main>
 
 {% endblock %}

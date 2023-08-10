@@ -228,6 +228,10 @@ urlpatterns = [
     path('Admin-Analysis',views.admin_analysis,name='admin_analysis'),
     path('Admin-Analysis-On_Months',views.admin_analysis_months,name='admin_analysis_months'),
     path('Admin-Analysis-On_Months-Search',views.admin_analysis_search,name='admin_analysis_search'),
+
+
+    #10/08/23----------------
+    path('Admin-Analysis-Income-Expence',views.admin_analysis_income_expence_details,name='admin_analysis_income_expence_details'),
     
     
     
