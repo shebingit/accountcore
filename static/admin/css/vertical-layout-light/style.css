@@ -31300,3 +31300,107 @@ div.tagsinput span.tag a {
 }
 
 /*# sourceMappingURL=../maps/vertical-layout-light/style.css.map */
+
+
+/* New creation */
+.small-text{
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  color: #000000;
+}
+.search-form
+{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 1rem;
+   
+}
+.search-select, .search-date
+{
+padding: 8px 10px;
+border: 1px solid #DFDFDF;
+border-radius: 6px;
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 16px;
+font-family: "Manrope", sans-serif;
+min-width: 140px;
+height: 34px;
+background: #ffffff;
+}
+.search-button
+{
+    padding: 8px 10px;
+    border: 1px solid #DFDFDF;
+    border-radius: 6px;
+    line-height: 16px;
+    height: 34px;
+    background: #ffffff;
+}
+.search-button:hover{
+    background: #0f0f0f;
+    color: #ffffff;
+}
+.close-btn
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 8px;
+  border: none;
+  outline: none;
+  border-radius: 6px;
+  display: none;
+  height: 32px;
+  background: #ffffff;
+}
+.messageBox-container
+{
+  background: #ffffff;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.50rem;
+  border-radius: 5px;
+  margin-bottom: 0.30rem;
+  transition: opacity 1s ease-in-out; /* Add a transition for opacity */
+  opacity: 1; /* Set initial opacity to fully visible */
+  
+}
+.messageicon-Box 
+{
+ 
+  color: #ffffff;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  padding: 2px;
+  
+}
+.successBox
+{
+  background: rgba(103, 185, 65, 0.978);
+}
+.errorBox
+{
+  background: rgba(226, 25, 25, 0.978);
+}
+.messageBox-container .success-text{
+  font-weight: 600;
+  color:rgba(103, 185, 65, 0.800);
+  padding-top: 2px;
+}
+.messageBox-container .error-text{
+  font-weight: 600;
+  color:rgba(226, 26, 26, 0.800);
+  padding-top: 2px;
+}
+
+
+
+
+       

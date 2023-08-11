@@ -232,8 +232,13 @@ urlpatterns = [
 
     #10/08/23----------------
     path('Admin-Analysis-Income-Expence',views.admin_analysis_income_expence_details,name='admin_analysis_income_expence_details'),
-    
-    
+    path('Admin-State-Assign',views.admin_state_form,name='admin_state_form'),
+    path('Admin-Employee-Register-Form',views.admin_employee_register_form,name='admin_employee_register_form'),
+    path('Admin-Employee-Register',views.admin_employee_register,name='admin_employee_register'),
+    path('Admin-State-Register',views.admin_state_register,name='admin_state_register'),
+    path('Admin-State-Allocation',views.admin_state_allocation,name='admin_state_allocation'),
+    path('Admin-State-Re-allocation',views.admin_state_reallocation,name='admin_state_reallocation'),
+     
     
 
 

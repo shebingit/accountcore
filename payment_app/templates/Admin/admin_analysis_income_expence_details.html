@@ -56,22 +56,84 @@
                               
                             </div>
                         </div>
-
-                        
-                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .search-form
+        {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            gap: 1rem;
+           
+        }
+        .search-select, .search-date
+        {
+        padding: 8px 10px;
+        border: 1px solid #DFDFDF;
+        border-radius: 6px;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 16px;
+        font-family: "Manrope", sans-serif;
+        min-width: 120px;
+        height: 34px;
+        background: #ffffff;
+        }
+        .search-button
+        {
+            padding: 8px 10px;
+            border: 1px solid #DFDFDF;
+            border-radius: 6px;
+            line-height: 16px;
+            height: 34px;
+            background: #ffffff;
+        }
+        .search-button:hover{
+            background: #0f0f0f;
+            color: #ffffff;
+        }
+    </style>
+
+
     <div class="row flex-grow">
+       
         <div class="col-12 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
                   <div class="d-sm-flex justify-content-between align-items-start">
                     <div>
                       <h4 class="card-title card-title-dash mb-2">{% now "F" %} - Income Expence Entries </h4>
-                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{exp_income_count}}</span> entries on this month </p>
+                      <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{exp_income_count}}</span> entries on this month </p>
+                    </div>
+
+                    <div>
+                        <form class="search-form" action="#" method="post">
+                            {% csrf_token %}
+                            <div >
+                                <select name="search_select" class="search-select">
+                                   
+                                    <option> All</option>
+                                    {% for i in exp_income %}
+                                    <option value="{{i.exin_head_name}}">{{i.exin_head_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="">
+                                <input type="date" class="search-date">
+                            </div>
+                            <div class=" ">
+                                <input type="date" class="search-date">
+                            </div>
+                            <div>
+                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                            </div>
+                        </form>
                     </div>
                     
                   </div>
@@ -82,8 +144,8 @@
                               
                             <th>Date</th>
                             <th>Head Name</th>
-                            <th>Income</th>
-                            <th>Expence</th>
+                            <th><a href="#">Income</a></th>
+                            <th><a href="#">Expence</a></th>
                             <th>Note</th>
                             
                         </tr>

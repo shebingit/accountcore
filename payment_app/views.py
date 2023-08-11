@@ -3127,6 +3127,8 @@ def admin_dashboard(request):
         payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
         approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
 
+        states = Register_State.objects.filter(allocate_status=1)
+
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
@@ -3234,7 +3236,12 @@ def admin_dashboard(request):
                 i.fixed_date=fr_date
                 i.save()
 
-        return render(request,'Admin/Admin_dashboard.html',{'payhis':payhis,'payhis_list':payhis_list,'approve_count':approve_count})
+        content={'payhis':payhis,
+                         'payhis_list':payhis_list,
+                         'approve_count':approve_count,
+                         'states':states}
+
+        return render(request,'Admin/Admin_dashboard.html',content)
     
     else:
         return redirect('/')
@@ -4768,12 +4775,267 @@ def admin_analysis_search(request):
         return redirect('/')
 
 
+#11/08/23--------------------------------------------
+    
+def admin_state_form(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        depart = Department.objects.get(department='ACCOUNTS',dpt_Status=1)
+        reg_emps = EmployeeRegister.objects.filter(empdept_id__id=depart.id)
+
+        try:
+            reg_states = Register_State.objects.filter(state_status=1).order_by('-id')
+            reg_states_count = Register_State.objects.filter(state_status=1).count()
+
+        except Register_State.DoesNotExist:
+
+            reg_states=None
+            reg_states_count=0
+        
+
+        content={'reg_emps':reg_emps,'reg_states':reg_states,
+                 'reg_states_count':reg_states_count
+                 }
+
+        return render(request,'Admin/admin_state_assign.html',content)
+    else:
+        return redirect('/')
+
+
+def admin_employee_register_form(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        depart=Department.objects.all()
+        reg_emps= EmployeeRegister.objects.all().order_by('-id')
+        reg_emps_count= EmployeeRegister.objects.count()
+        content={'depart':depart,'reg_emps':reg_emps,'reg_emps_count':reg_emps_count}
+        return render(request,'Admin/admin_employee_register_form.html',content)
+    else:
+        return redirect('/')
     
 
+def admin_employee_register(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        depart=Department.objects.all()
+
+        if request.method == 'POST':
+            emp_reg = EmployeeRegister()
+
+            emp_reg.empidreg = request.POST['emp_id']
+            emp_reg.empfullName = request.POST['emp_Name']
+            emp_reg.empdept_id =Department.objects.get(id=int(request.POST['emp_dept']))
+            emp_reg.empdesignation = request.POST['emp_desig']
+            emp_reg.empdofj = request.POST['emp_dfj']
+
+            if request.POST['emp_sal']:
+
+                emp_reg.empconfirmsalary = request.POST['emp_sal']
+            else:
+                 emp_reg.empconfirmsalary=0
+            emp_reg.emp_status = 1
+           
+            emp_reg.save()
+
+            success_msg= 'Success! New employee data has been saved'
+            reg_emps= EmployeeRegister.objects.all().order_by('-id')
+            reg_emps_count= EmployeeRegister.objects.count()
+
+            content={'depart':depart,'reg_emps':reg_emps,
+                     'reg_emps_count':reg_emps_count,
+                     'success_msg':success_msg}
+        
+        else:
+
+            error_msg= 'Opps! Something went wrong'
+            reg_emps= EmployeeRegister.objects.all().order_by('-id')
+            reg_emps_count= EmployeeRegister.objects.count()
+
+            content={'depart':depart,'reg_emps':reg_emps,
+                     'reg_emps_count':reg_emps_count,
+                     'error_msg':error_msg}
+            
+        return render(request,'Admin/admin_employee_register_form.html',content)
+
+        
+    else:
+        return redirect('/')
 
 
 
+def admin_state_register(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        depart = Department.objects.get(department='ACCOUNTS',dpt_Status=1)
+        reg_emps = EmployeeRegister.objects.filter(empdept_id__id=depart.id)
 
+        try:
+            reg_states = Register_State.objects.filter(state_status=1)
+            reg_states_count = Register_State.objects.filter(state_status=1).count()
+
+        except Register_State.DoesNotExist:
+
+            reg_states=None
+            reg_states_count=0
+        
+        if request.method == 'POST':
+            reg_state = Register_State()
+            
+            reg_state.state_name = request.POST['stateName']
+           
+            reg_state.state_status = 1
+            reg_state.save()
+            reg_state.state_id = f'ALTOS_STATE_0{reg_state.id}'
+            reg_state.save()
+
+            success_msg= 'Success! Your data has been processed successfully'
+
+            reg_states = Register_State.objects.filter(state_status=1).order_by('-id')
+            reg_states_count = Register_State.objects.filter(state_status=1).count()
+
+
+            content={'reg_emps':reg_emps,'reg_states':reg_states,
+                     'reg_states_count':reg_states_count,
+                     'success_msg':success_msg}
+
+            return render(request,'Admin/admin_state_assign.html',content)
+
+        else:
+
+            error_msg= 'Opps! Something went wrong'
+            content={'reg_emps':reg_emps,'reg_states':reg_states,
+                     'reg_states_count':reg_states_count,
+                     'error_msg':error_msg}
+
+            return render(request,'Admin/admin_state_assign.html',content)
+
+    else:
+        return redirect('/')
+
+
+
+def admin_state_allocation(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        depart = Department.objects.get(department='ACCOUNTS',dpt_Status=1)
+        reg_emps = EmployeeRegister.objects.filter(empdept_id__id=depart.id)
+
+        try:
+            reg_states = Register_State.objects.filter(state_status=1)
+            reg_states_count = Register_State.objects.filter(state_status=1).count()
+
+        except Register_State.DoesNotExist:
+
+            reg_states=None
+            reg_states_count=0
+        
+        if request.method == 'POST':
+
+            reg_state = Register_State.objects.get(id=int(request.POST['state_rowid']))
+            
+          
+            reg_state.allocateid = EmployeeRegister.objects.get(id=int(request.POST['stateName']))
+            
+            reg_state.allocate_status = 1
+            reg_state.save()
+            
+            success_msg= 'Success! State allocated successfully'
+
+            reg_states = Register_State.objects.filter(state_status=1).order_by('-id')
+            reg_states_count = Register_State.objects.filter(state_status=1).count()
+
+
+            content={'reg_emps':reg_emps,'reg_states':reg_states,
+                        'reg_states_count':reg_states_count,
+                        'success_msg':success_msg}
+
+            return render(request,'Admin/admin_state_assign.html',content)
+
+        else:
+
+            error_msg= 'Opps! Something went wrong'
+            content={'reg_emps':reg_emps,'reg_states':reg_states,
+                     'reg_states_count':reg_states_count,
+                     'error_msg':error_msg}
+
+            return render(request,'Admin/admin_state_assign.html',content)
+
+    else:
+        return redirect('/')
+
+
+
+def admin_state_reallocation(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        depart = Department.objects.get(department='ACCOUNTS',dpt_Status=1)
+        reg_emps = EmployeeRegister.objects.filter(empdept_id__id=depart.id)
+
+        try:
+            reg_states = Register_State.objects.filter(state_status=1)
+            reg_states_count = Register_State.objects.filter(state_status=1).count()
+
+        except Register_State.DoesNotExist:
+
+            reg_states=None
+            reg_states_count=0
+        
+        if request.method == 'POST':
+
+            reg_state = Register_State.objects.get(id=int(request.POST['restate_rowid']))
+            
+          
+            reg_state.allocateid = EmployeeRegister.objects.get(id=int(request.POST['re-allocateName']))
+            
+            reg_state.allocate_status = 1
+            reg_state.save()
+            
+            success_msg= 'Success! State Re-allocated successfully'
+
+            reg_states = Register_State.objects.filter(state_status=1).order_by('-id')
+            reg_states_count = Register_State.objects.filter(state_status=1).count()
+
+
+            content={'reg_emps':reg_emps,'reg_states':reg_states,
+                        'reg_states_count':reg_states_count,
+                        'success_msg':success_msg}
+
+            return render(request,'Admin/admin_state_assign.html',content)
+
+        else:
+
+            error_msg= 'Opps! Something went wrong'
+            content={'reg_emps':reg_emps,'reg_states':reg_states,
+                     'reg_states_count':reg_states_count,
+                     'error_msg':error_msg}
+
+            return render(request,'Admin/admin_state_assign.html',content)
+
+    else:
+        return redirect('/')
 
 
 

@@ -1,0 +1,229 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+<!--- State Add & Asssign to Accountant  -->
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#register-employee" role="tab" aria-controls="register-employee" aria-selected="true">Reg. Employee </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#employee-view" role="tab" aria-selected="false">Employee List</a>
+                </li>
+                
+              </ul>
+              {% if success_msg %}
+                <div class="messageBox-container" id="message-container">
+                
+                        <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                        <p class="text-center success-text">{{success_msg}}</p>
+                </div>
+              {% elif error_msg %}
+                <div class="messageBox-container" id="message-container">
+                        <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                        <p class="text-center error-text">{{error_msg}}</p>
+                </div>
+              {% endif %}
+              <div>
+                <div class="btn-wrapper">
+                  <a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
+                  <a href="#" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
+                  <a href="#" class="btn btn-primary text-white me-0"><i class="icon-download"></i> Export</a>
+                </div>
+              </div>
+            </div>
+            <div class="tab-content tab-content-basic">
+              <div class="tab-pane fade show active" id="register-employee" role="tabpanel" aria-labelledby="register-employee"> 
+                <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card card-rounded">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <form action="{% url 'admin_employee_register' %}" class="forms-sample" method="post">
+                                  {% csrf_token %}
+                                  <div class="d-flex justify-content-between align-items-center">
+                                      <h4 class="card-title card-title-dash">Employee Registration Form</h4>
+                                      <div>
+                                        <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" type="button"><i class="mdi mdi-account-plus"></i>Add  employee</button>
+                                      </div>
+                                  </div>
+                                  <div class="form-group ">
+                                      <label for="empName">Full Name</label>
+                                      <input type="text" class="form-control small-text" id="empName" name="emp_Name" placeholder="Full Name" required>
+                                  </div>
+                                  <div class="form-group ">
+                                      <label for="Date_ofjoin">Date Of Joing</label>
+                                      <input type="date" class="form-control small-text" id="Date_ofjoin" name="emp_dfj" placeholder="Date Of Joing">
+                                  </div>
+                                  <div class="form-group">
+                                      <label for="Department">Department</label>
+                                      <select  class="form-control small-text" id="Department" name="emp_dept" required>
+                                        <option value="">Choose Department</option>
+                                        {% for dept in depart %}
+                                        <option value="{{dept.id}}">{{dept.department}}</option>
+                                        {% endfor %}
+                                        
+                                      </select>
+                                  </div>
+                                  <div class="form-group">
+                                      <label for="Designation">Designation</label>
+                                      <input type="text" class="form-control small-text" id="Designation" name="emp_desig" placeholder="Designation">
+                                  </div>
+                                  <div class="form-group ">
+                                      <label for="Employeeeid">Employeee id</label>
+                                      <input type="text" class="form-control small-text" id="Employeeeid" name="emp_id" placeholder="Employeee id">
+                                  </div>
+                                  <div class="form-group ">
+                                      <label for="confirmed"> confirmed Salary</label>
+                                      <input type="text" class="form-control small-text" id="confirmed" name="emp_sal" placeholder="confirmed Salary">
+                                  </div>
+                                 
+                              </form>
+                              
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+     
+              </div>
+
+              <div class="tab-pane fade" id="employee-view" role="tabpanel" aria-labelledby="employee-view"> 
+                
+                <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                        <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                            <div>
+                                <h4 class="card-title card-title-dash">Registered Employee List</h4>
+                            <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{reg_emps_count}}</span> Employees</p>
+                            </div>
+                            <div class="d-sm-flex">
+                                
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                            </div>
+                            
+                            </div>
+                            <div class="table-responsive  mt-1">
+                            <table class="table select-table" id="employee-details">
+                                <thead>
+                                <tr>
+                                    <th>Employee Id</th>
+                                    <th>Full Name</th>
+                                    <th>Department</th>
+                                    <th>Designation </th>
+                                    <th>Date Of Joing</th>
+                                    <th>confirmed Salary</th>
+                                    <th>Status</th>
+                                   
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                {% for reg in reg_emps %}
+                                
+                                <tr>
+                                  
+                                        <td>{{reg.empidreg}}</td>
+                                        <td><h6>{{reg.empfullName}}</h6> </td>
+                                        <td>{{reg.empdept_id.department}} </td>
+                                        <td>{{reg.empdesignation}}</td>
+                                        <td>{{reg.empdofj}} </td>
+                                        <td>{{reg.empconfirmsalary}} </td>
+                                        <td>
+                                            {% if reg.emp_status == 1 %}
+                                            <div class="badge badge-opacity-success"> Active</div>
+                                            {% else %}
+                                            <div class="badge badge-opacity-danger"> De-active</div>
+                                            {% endif %}
+                                        </td>
+                                       
+                                   
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+</div>
+
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const employeeTable = document.getElementById('employee-details');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = employeeTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const empidCell = rows[i].getElementsByTagName('td')[0];
+            const empnameCell = rows[i].getElementsByTagName('td')[1];
+            const departmentCell = rows[i].getElementsByTagName('td')[2];
+            const designationCell = rows[i].getElementsByTagName('td')[3];
+            const statusCell = rows[i].getElementsByTagName('td')[6];
+
+            if (empidCell || empnameCell || departmentCell || designationCell || statusCell ) {
+                const id = empidCell.textContent || empidCell.innerText;
+                const empname = empnameCell.textContent || empnameCell.innerText;
+                const dept = departmentCell.textContent || departmentCell.innerText;
+                const desig = designationCell.textContent || designationCell.innerText;
+                const status_emp = statusCell.textContent || statusCell.innerText;
+               
+
+                if (id.toLowerCase().includes(filterValue) || empname.toLowerCase().includes(filterValue) || dept.toLowerCase().includes(filterValue) || desig.toLowerCase().includes(filterValue)|| status_emp.toLowerCase().includes(filterValue)) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+{% endblock %}

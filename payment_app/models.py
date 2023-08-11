@@ -47,7 +47,7 @@ class EmployeeRegister(models.Model):
     empPhone = models.CharField(max_length=15)
     empemail = models.EmailField()
     empdofj = models.DateField(auto_now_add=False,null=True)
-    empconfirmsalary =  models.IntegerField(default=0)
+    empconfirmsalary =  models.IntegerField(default=0,null=True)
     empfirst_salry= models.IntegerField(default=0)
     emptol_salary=models.IntegerField(default=0)
     emp_salary_status=models.IntegerField(default=0)
@@ -107,3 +107,11 @@ class Company_Holidays(models.Model):
     ch_no = models.IntegerField(default=0,null=True)
     ch_workno = models.IntegerField(default=0,null=True)
 
+
+class Register_State(models.Model):
+    state_name= models.CharField(max_length=255,default='',null=True,blank=True)
+    state_id= models.CharField(max_length=255,default='',null=True,blank=True)
+    state_status= models.CharField(max_length=255,default='0',null=True,blank=True)
+    allocateid= models.ForeignKey(EmployeeRegister, on_delete=models.CASCADE, null=True,default='')
+    allocate_status= models.CharField(max_length=255,default='0',null=True,blank=True)
+   
