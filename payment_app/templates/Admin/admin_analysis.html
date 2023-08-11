@@ -133,7 +133,7 @@
                   <a href="{% url 'admin_analysis' %}">
                       <div class="card">
                       <div class="card-body">
-                          <h4 class="card-title text-success">Income - &nbsp;{{content.next_month_income}} </h4>
+                          <h4 class="card-title text-success">Income - &nbsp;{{next_month_income}} </h4>
                           <div class="media">
                           <i class="mdi mdi-arrow-up-thick icon-md text-info d-flex align-self-start me-3"></i>
                           <div class="media-body">
@@ -148,7 +148,7 @@
                   <a href="{% url 'admin_paymentsview' %}">
                       <div class="card">
                       <div class="card-body">
-                          <h4 class="card-title text-danger">Expence - &nbsp; {{content.next_month_exp}}</h4>
+                          <h4 class="card-title text-danger">Expence - &nbsp; {{next_month_exp}}</h4>
                           <div class="media">
                           <i class="mdi mdi-arrow-down-thick icon-md text-info d-flex align-self-center me-3"></i>
                           <div class="media-body">
@@ -164,9 +164,9 @@
                       <div class="card">
                       <div class="card-body">
                           <h4 class="card-title">Balance - &nbsp; 
-                            {% if content.next_month_income > content.next_month_exp %}
+                            {% if next_month_income > next_month_exp %}
                             <span class="text-success span-data "><i class="mdi mdi-menu-up"></i> Profit</span> 
-                            {% elif content.next_month_income < content.next_month_exp  %}
+                            {% elif next_month_income < next_month_exp  %}
                             <span class="text-danger span-data"><i class="mdi mdi-menu-down"></i>Loss</span> 
                             {% else %}
                             <span class="text-success span-data"><i class="mdi mdi-menu-up"></i> No-Profit & No Loss</span>  
@@ -486,132 +486,7 @@
 
 
 <main>
-    <div class="container" id="head-sction">
-        <div>
-            <h2>Analysis On   {% now "F" %}</h2>
-            <div class="line"></div>
-        </div>
-        <div>
-            <a href="{% url 'admin_analysis_months' %}"><i class="bi bi-calendar-week"></i>  &nbsp;Analysis Based On  Month</a>
-        </div>
-       
-    </div>
-
-    <div class="container" id="income-exp-box">
-
-        <div class="income_expence_box">
-            <h5>Income And Expence</h5>
-
-            <div class="card">
-                <span>{{content.cur_date}}</span>
-            </div>
-
-            <div class="chart-box">
-    
-                <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
-                
-            </div>
-
-            <div class="details-box">
-                <div class="card">
-                    <h6>{% now "F" %} Income <span><i class="bi bi-calendar3"></i></span></h6>
-         
-                     <div class="loader">
-                         <span><i class="bi bi-currency-rupee rupe"></i>
-                       
-                             <span class="value " akhi="{{content.income}}">0</span>
-                            
-                         </span>
-                     </div>
-                 </div>
-                 <div class="card">
-                     <h6>{% now "F" %} Expence <span><i class="bi bi-calendar3"></i></span></h6>
-                     <div class="loader">
-                         <span><i class="bi bi-currency-rupee rupe"></i>
-                           
-                             <span class="value " akhi="{{content.expence}}">0</span>
-                            
-                            
-                         </span>
-                     </div>
-                 </div>
-                 <div class="card">
-                     <h6>{% now "F" %} Balance <span><i class="bi bi-calendar3"></i></span></h6>
-                     <div class="loader">
-                         
-                       
-                         {% if content.income > content.expence %}
-                         <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-profit" akhi="{{content.balans}}">0</span></span>
-                         
-                         <h5 class="inex-profit"> Profit</h5>
-                         {% elif  content.income < content.expence %}
-                         <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-loss" akhi="{{content.balans}}">0</span></span>
-                         
-                         <h5 class="inex-loss"> Loss</h5>
-                         {% else %}
-                         <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-equl" akhi="{{content.balans}}">0</span></span>
-                         <h5 class="inex-equl "> No Profit No Loss</h5>
-                         {% endif %}
-                    
-                     </div>
-                 </div>
-                
-
-            </div>
-
-            <h5 class="mt-4">Next Month</h5>
-            <p style="font-size: 0.80em;">Income Taken From O J T & Expenxe taken  From Fixed Expence</p>
-
-            <div class="details-box">
-                <div class="card">
-                    <h6>Next Month Income <span><i class="bi bi-calendar3"></i></span></h6>
-         
-                     <div class="loader">
-                         <span><i class="bi bi-currency-rupee rupe"></i>
-                       
-                             <span class="">{{content.next_month_income}}</span>
-                            
-                         </span>
-                     </div>
-                 </div>
-                 <div class="card">
-                     <h6>Next Month Expence <span><i class="bi bi-calendar3"></i></span></h6>
-                     <div class="loader">
-                         <span><i class="bi bi-currency-rupee rupe"></i>
-                           
-                             <span class="">{{content.next_month_exp}}</span>
-                            
-                            
-                         </span>
-                     </div>
-                 </div>
-                 <div class="card">
-                     <h6>Next Month Balance <span><i class="bi bi-calendar3"></i></span></h6>
-                     <div class="loader">
-                         
-                       
-                         {% if content.next_month_income > content.next_month_exp %}
-                         <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-profit">{{content.next_balans}}</span></span>
-                         
-                         <h5 class="inex-profit"> Profit</h5>
-                         {% elif  content.next_month_income < content.next_month_exp %}
-                         <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-loss">{{content.next_balans}}</span></span>
-                         
-                         <h5 class="inex-loss"> Loss</h5>
-                         {% else %}
-                         <span><i class="bi bi-currency-rupee rupe"></i><span class="value inex-equl" >{{content.next_balans}}</span></span>
-                         <h5 class="inex-equl "> No Profit No Loss</h5>
-                         {% endif %}
-                    
-                     </div>
-                 </div>
-                
-
-            </div>
-
-           
-           
-        </div>
+  
 
         <div class="internship">
 
@@ -802,61 +677,4 @@
 
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-
-    <script>
-        var xValues = ["Income", "Expence", "Profit/Loss"];
-        var yValues = [{{content.inc_pr}}, {{content.exp_pr}}, {{content.bal_pr}}];
-        var barColors = [
-          "#51e109",
-          "#eb1d1d",
-          "#ffdf28",
-          
-        ];
-        
-        new Chart("myChart", {
-          type: "doughnut",
-          data: {
-            labels: xValues,
-            datasets: [{
-              backgroundColor: barColors,
-              data: yValues
-            }]
-          },
-          options: {
-            title: {
-              display: true,
-              text: "Company Income Expence "
-            }
-          }
-        });
-        </script>
-
-        <script>
-            var xValues = ["Income", "Expence", "Profit/Loss"];
-            var yValues = [{{content.inc_pr}}, {{content.exp_pr}}, {{content.bal_pr}}];
-            var barColors = [
-              "#51e109",
-              "#eb1d1d",
-              "#ffdf28",
-              
-            ];
-            
-            new Chart("myChart2", {
-              type: "doughnut",
-              data: {
-                labels: xValues,
-                datasets: [{
-                  backgroundColor: barColors,
-                  data: yValues
-                }]
-              },
-              options: {
-                title: {
-                  display: true,
-                  text: "Company Income Expence "
-                }
-              }
-            });
-            </script>
 </main>

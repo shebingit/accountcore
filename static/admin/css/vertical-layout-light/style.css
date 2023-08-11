@@ -23903,6 +23903,9 @@ select.border-dark.tt-hint:focus {
 .icon-sm {
   font-size: 1rem;
 }
+.icon-ex-sm {
+  font-size: 0.75rem;
+}
 
 /* Loaders */
 #pgloading {
@@ -31303,6 +31306,19 @@ div.tagsinput span.tag a {
 
 
 /* New creation */
+
+.count-value
+{
+  color: rgb(7, 7, 79);
+  font-size: 0.85rem;
+  margin-left: 0.20rem;
+  margin-right: 0.20rem;
+  font-weight: 700;
+  height: 45px;
+  width: 45px;
+  background-color: rgb(239, 243, 243);
+  padding: 0.30rem;
+}
 .small-text{
   font-style: normal;
   font-weight: 500;
@@ -31398,6 +31414,65 @@ background: #ffffff;
   font-weight: 600;
   color:rgba(226, 26, 26, 0.800);
   padding-top: 2px;
+}
+.profile,.profile-details
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.80rem;
+}
+
+.profile-imgBox
+{
+  width: 140px;
+  height: 120px;
+  background: #eeededde;
+  padding: 0.50rem;
+  
+}
+.profile-imgBox img{
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.profile-edit
+{
+  color: #0c63e4;
+}
+.profile-edit button
+{
+  border: none;
+  background: transparent;
+  outline: none;
+  color: #0c63e4;
+
+}
+.profile-pic
+{
+  height: 10vh;
+  border: 1px dashed #ccc; 
+  overflow: hidden;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.upload-box
+{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0.7; /* Adjust the opacity to your liking */
+  transition: opacity 0.3s ease;
+  font-size: 0.85rem;
+}
+.password-info
+{
+  padding-left: 1rem;
+  padding-top: 1rem;
 }
 
 

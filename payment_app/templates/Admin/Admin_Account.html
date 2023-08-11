@@ -2,6 +2,260 @@
 {% load static %}
 {% block body %}
 
+<style>
+.box{
+    border: #000000d2;
+}
+</style>
+
+<!--- Admin Profile Settings -->
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="register-employee" aria-selected="true">Profile </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="password-tab" data-bs-toggle="tab" href="#password-change" role="tab" aria-selected="false">Password Change</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="company-tab" data-bs-toggle="tab" href="#company-details" role="tab" aria-selected="false">Company Details</a>
+                </li>
+                
+              </ul>
+              {% if success_msg %}
+                <div class="messageBox-container" id="message-container">
+                
+                        <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                        <p class="text-center success-text">{{success_msg}}</p>
+                </div>
+              {% elif error_msg %}
+                <div class="messageBox-container" id="message-container">
+                        <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                        <p class="text-center error-text">{{error_msg}}</p>
+                </div>
+              {% endif %}
+              
+            </div>
+            <div class="tab-content tab-content-basic">
+              <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile"> 
+                <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card card-rounded">
+                        <div class="card-body">
+                        <form class="forms-sample" action="#">
+                          <div class="row flex-grow">
+                           
+                            <div class="col-lg-5 col-md-5 col-sm-12 profile ">
+                                <div class="profile-imgBox" id="profile-imgBox">
+                                    <img  src="{% static 'admin/images/faces/profile/admin-dummy-img.png' %}" id="profile-image">
+                                </div>
+                                <div class="profile-details">
+                                    <h3>Shebin Shaji</h3>
+                                    <p>shebinshaji@gmail.com - Admin &nbsp;<span class="profile-edit"><button id="editbtn"><i class="mdi mdi-pen"> edit</i></button></span> </p>
+                                </div>
+                                <div class="profile-pic">
+                                    <label for="file-upload" class="upload-box">
+                                        <span>Upload Profile Picture JPG,PNG</span>
+                                    </label>
+                                    <input type="file" id="file-upload" onchange="displayImage(this)" hidden>
+                                </div>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-12  ">
+                                <h5 class="fw-bold">Account Information</h5>
+                               
+                                    {% csrf_token %}
+                                    <div class="form-group mt-3">
+                                        <label for="fname">Full Name</label>
+                                        <input type="text" class="form-control" id="fname" placeholder="Full Name" readonly>
+                                      </div>
+                                    <div class="form-group ">
+                                      <label for="uname">User Name</label>
+                                      <input type="text" class="form-control" id="uname" placeholder="User Name" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="email">Email address</label>
+                                      <input type="email" class="form-control" id="email" placeholder="Email" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="psw">Password</label>
+                                      <input type="password" class="form-control" id="psw" placeholder="Password" readonly>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-outline-success me-2">Update Changes</button>
+                                    <button class="btn btn-outline-danger">Cancel</button>
+                                
+                            </div>
+                          </div>
+                        </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+     
+              </div>
+
+              <div class="tab-pane fade" id="password-change" role="tabpanel" aria-labelledby="password-change"> 
+                
+                <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-6 sm-12 p-2">
+                                        <div class="password-info">
+                                            <div>
+                                                <h4>Change Password</h4>
+                                                <p>In order to protect your account, make sure your password:</p>
+                                            </div>
+                                           
+                                            <ul>
+                                                <li>Use a mix of uppercase and lowercase letters.</li>
+                                                <li>Include numbers and special characters (e.g., !, @, #, $).</li>
+                                                <li>Avoid using common words, names, or easily guessable information.</li>
+                                                <li>Make your password at least 8 characters long.</li>
+                                                <li>Do not use sequential or repetitive characters (e.g., "123456" or "aaaaaa").</li>
+                                                <li>Avoid using easily obtainable information, such as your birthday or phone number.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 sm-12">
+                                        <form class="forms-sample">
+                                            <div class="form-group">
+                                                <label for="oldpsw">Old Password</label>
+                                                <input type="password" class="form-control" id="oldpsw" placeholder="Old Password">
+                                              </div>
+                                            
+                                            <div class="form-group">
+                                              <label for="newpsw">New Password</label>
+                                              <input type="password" class="form-control" id="newpsw" placeholder="New Password">
+                                            </div>
+                                            <div class="form-group">
+                                              <label for="confpsw">Confirm Password</label>
+                                              <input type="password" class="form-control" id="confpsw" placeholder="Confirm Password">
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-outline-success me-2">Change Password</button>
+                                            <button class="btn btn-outline-danger">Cancel</button>
+                                          </form> 
+                                    </div>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+              </div>
+
+              <div class="tab-pane fade" id="company-details" role="tabpanel" aria-labelledby="company-details"> 
+                <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card card-rounded">
+                        <div class="card-body">
+                        <form class="forms-sample" action="#">
+                          <div class="row flex-grow">
+                           
+                            <div class="col-lg-5 col-md-5 col-sm-12 profile ">
+                                <div class="profile-imgBox" id="profile-imgBox">
+                                    <img  src="{% static 'admin/images/faces/profile/admin-dummy-img.png' %}" id="profile-image">
+                                </div>
+                                <div class="profile-details">
+                                    <h3>AltosTechnologies</h3>
+                                    <p>altosTechnologies@gmail.com  &nbsp;<span class="profile-edit"><button id="editbtn"><i class="mdi mdi-pen"> edit</i></button></span> </p>
+                                </div>
+                                <div class="profile-pic">
+                                    <label for="file-upload" class="upload-box">
+                                        <span>Upload Logo Picture JPG,PNG</span>
+                                    </label>
+                                    <input type="file" id="logo-upload" onchange="displayLogo(this)" hidden>
+                                </div>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-12  ">
+                                <h5 class="fw-bold">Company Information</h5>
+                               
+                                    {% csrf_token %}
+                                    <div class="form-group mt-3">
+                                        <label for="comp_name">Company Name</label>
+                                        <input type="text" class="form-control" id="comp_name" placeholder="Company name" readonly>
+                                      </div>
+                                    
+                                    <div class="form-group">
+                                      <label for="comp_email">Email Address</label>
+                                      <input type="email" class="form-control" id="comp_email" placeholder="Email address" readonly>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="comp_website">Website Url</label>
+                                        <input type="url" class="form-control" id="comp_website" placeholder="Website url" readonly>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="comp_address">Company Address</label>
+                                        <textarea  class="form-control" id="comp_address" style="height: 100px;" placeholder="Company address" readonly></textarea>
+                                    </div>
+                                    
+                                    
+                                    <button type="submit" class="btn btn-outline-success me-2">Update Changes</button>
+                                    <button class="btn btn-outline-danger">Cancel</button>
+                                
+                            </div>
+                          </div>
+                        </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+     
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    // click on edit button to perform edit
+
+    $(document).ready(function() {
+        // When the button is clicked
+        $("#editbtn").click(function() {
+            // Remove the readonly attribute from the input field
+            $("#fname").prop("readonly", false);
+            $("#uname").prop("readonly", false);
+            $("#email").prop("readonly", false);
+            $("#psw").prop("readonly", false);
+           
+        });
+    });
+
+    function displayImage(input) {
+        var file = input.files[0];
+    
+        // Check if the selected file is a JPG or PNG image
+        if (file && (file.type === "image/jpeg" || file.type === "image/png")) {
+            var reader = new FileReader();
+    
+            reader.onload = function(e) {
+                var image = document.getElementById("profile-image");
+                image.src = e.target.result;
+            };
+    
+            reader.readAsDataURL(file);
+        } else {
+            alert("Please select a valid JPG or PNG image.");
+            input.value = ""; // Clear the input field
+        }
+    }
+    </script>
+
+
+{% endblock %}
 
 <style>
 
@@ -284,5 +538,3 @@
 
 
 </main>
-
-{% endblock %}

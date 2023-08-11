@@ -119,6 +119,8 @@ def login_dashboard(request):
                         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
                         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
+                        states = Register_State.objects.filter(allocate_status=1)
+
                         #Income adding to IncomeExpence Table
                         if PaymentHistory.objects.exists():
                             inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
@@ -219,7 +221,15 @@ def login_dashboard(request):
                         approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
                         
                         msg_succes=1
-                        return render(request,'Admin/Admin_dashboard.html',{'payhis':payhis,'payhis_list':payhis_list,'approve_count':approve_count,'msg_succes':msg_succes})
+
+                        content = {'payhis':payhis,
+                                   'payhis_list':payhis_list,
+                                   'approve_count':approve_count,
+                                   'msg_succes':msg_succes,
+                                   'states':states
+                                   }
+                        
+                        return render(request,'Admin/Admin_dashboard.html',content)
                     
                     else:
                         return redirect('/')
@@ -3080,8 +3090,17 @@ def admin_account(request):
         else:
             return redirect('/')
         user=User.objects.get(id=admid)
-        
-        return render(request,'Admin/Admin_Account.html',{'user':user})
+
+        reg1=Register.objects.filter(reg_status=1)
+        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+
+        content={'user':user,
+                 'approvels':approvels,
+                 'approve_count':approve_count
+                 }
+
+        return render(request,'Admin/Admin_Account.html',content)
 
     else:
             return redirect('/')
@@ -4435,13 +4454,16 @@ def admin_analysis(request):
         else:
             return redirect('/')
         
+        # current month 
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
 
-      
+
+        states = Register_State.objects.filter(allocate_status=1)
+
         next_month = cur_date.replace(day=28) + timedelta(days=4)  # get the next month by adding 4 days to the 28th day
         next_month_start = next_month.replace(day=1)  # get the first day of the next month
         next_month_end = next_month_start.replace(day=28) - timedelta(days=1)  # get the last day of the next month by subtracting 1 day from the 28th day
@@ -4594,6 +4616,11 @@ def admin_analysis(request):
                  'exp_pr':exp_pr,
                  'cur_date':cur_date,
                  'inc_pr':inc_pr,
+                 'income_total':income_total,
+                 'exp_total':exp_total,
+                 'bala_value':bala_value,
+                 'bala_value_chart':bala_value_chart,
+                 'states':states,
                 #  'reg':reg,'reg_c':reg_c,'reg_c_amt':reg_c_amt,
                 #  'reg_ojt_amt':reg_ojt_amt,'reg_pending':reg_pending,'reg_complete':reg_complete,
                 #  'reg_p_amt':reg_p_amt,'reg_c_amt':reg_c_amt,'reg_in_amt':reg_in_amt,'reg_incomplete':reg_incomplete,'reg_upaid_c':reg_upaid_c,'reg_upaid':reg_upaid,
@@ -4605,7 +4632,7 @@ def admin_analysis(request):
                  }
   
        
-        return render(request,'Admin/admin_analysis.html',{'content':content,'income_total':income_total,'exp_total':exp_total,'bala_value':bala_value,'bala_value_chart':bala_value_chart})
+        return render(request,'Admin/admin_analysis.html',content)
     else:
         return redirect('/')
     
