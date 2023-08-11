@@ -3445,22 +3445,6 @@ def adminsearch_data_full(request):
 
 
 
-def newpay_confirm_list(request):
-
-    if 'admid' in request.session:
-        if request.session.has_key('admid'):
-            admid = request.session['admid']
-        else:
-            return redirect('/')
-            
-        reg=Register.objects.filter(reg_status=0)
-        firstpayhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).first
-        payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg)
-        return render(request,'Admin/newpayment_list.html',{'payhis':payhis,'firstpayhis':firstpayhis})
-            
-    else:
-        return redirect('/')
-
 
 def view_details(request,pk):
 
@@ -3831,9 +3815,21 @@ def admin_department_form(request):
             admid = request.session['admid']
         else:
             return redirect('/')
-        dept=Department.objects.all()
         
-        return render(request,'Admin/admin_department_form.html',{'dept':dept})
+        states = Register_State.objects.filter(allocate_status=1)
+        reg1=Register.objects.filter(reg_status=1)
+        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+        dept=Department.objects.all().order_by('-id')
+        dept_count=Department.objects.all().count()
+
+        content={'dept':dept,
+                     'states':states,
+                     'approvels':approvels,
+                     'approve_count':approve_count,
+                     'dept_count':dept_count,
+                     }
+        return render(request,'Admin/admin_department_form.html',content)
         
     else:
         return redirect('/')
@@ -3845,24 +3841,41 @@ def admin_department_add(request):
             admid = request.session['admid']
         else:
             return redirect('/')
-        if request.method =='POST':
-
-            if request.POST['dept_id']:
-                dept=Department.objects.get(id=int( request.POST['dept_id']))
-                dept.department=request.POST['dept_name'].upper()
-                dept.save()
-                msg=3
-            else:
-
-                dept=Department()
-                dept.department=request.POST['dept_name'].upper()
-                dept.dpt_Status=1
-                dept.save()
-                msg=1
-
-            dept=Department.objects.all()
         
-        return render(request,'Admin/admin_department_form.html',{'dept':dept,'msg':msg})
+        states = Register_State.objects.filter(allocate_status=1)
+        reg1=Register.objects.filter(reg_status=1)
+        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+        
+        if request.method =='POST':  
+            dept=Department()
+            dept.department=request.POST['dept_name'].upper()
+            dept.dpt_Status=1
+            dept.save()
+            success_msg= 'Success! New department data has been saved'
+            dept=Department.objects.all().order_by('-id')
+            dept_count=Department.objects.all().count()
+            
+            content={'dept':dept,
+                     'success_msg':success_msg,
+                     'states':states,
+                     'approvels':approvels,
+                     'approve_count':approve_count,
+                     'dept_count':dept_count,
+                     }
+            return render(request,'Admin/admin_department_form.html',content)
+        else:
+            error_msg= 'Opps! Something went wrong'
+            
+            content={'dept':dept,
+                     'error_msg':error_msg,
+                     'states':states,
+                     'approvels':approvels,
+                     'approve_count':approve_count,
+                     'dept_count':dept_count,
+                     }
+        
+            return render(request,'Admin/admin_department_form.html',content)
         
     else:
         return redirect('/')
@@ -3877,13 +3890,12 @@ def admin_edit_dept(request,pk):
           
         dept_edit=Department.objects.get(id=pk)
       
-        dept=Department.objects.all()
+        dept=Department.objects.all().order_by('-id')
         return render(request,'Admin/admin_department_form.html',{'dept':dept,'dept_edit':dept_edit})
     
     else:
         return redirect('/')
           
-    
     
 def admin_remove_dept(request,pk):
     if 'admid' in request.session:
@@ -3891,20 +3903,35 @@ def admin_remove_dept(request,pk):
             admid = request.session['admid']
         else:
             return redirect('/')
-          
-        dept=Department.objects.get(id=pk)
-        dept.delete()
-        msg=2
-        dept=Department.objects.all()
         
-        return render(request,'Admin/admin_department_form.html',{'dept':dept,'msg':msg})
+        states = Register_State.objects.filter(allocate_status=1)
+        reg1=Register.objects.filter(reg_status=1)
+        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+        
+          
+        depart=Department.objects.get(id=pk)
+        depart.delete()
+        error_msg= 'Opps! Department data has been removed'
+
+        dept=Department.objects.all().order_by('-id')
+        dept_count=Department.objects.all().count()
+        
+        content={'dept':dept,
+                     'error_msg':error_msg,
+                     'states':states,
+                     'approvels':approvels,
+                     'approve_count':approve_count,
+                     'dept_count':dept_count,
+                     }
+        
+        return render(request,'Admin/admin_department_form.html',content)
         
     else:
         return redirect('/')
 
 
     
-
 
 # Admin Accounts Section 
 

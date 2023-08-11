@@ -162,7 +162,7 @@ urlpatterns = [
     path('Admin-Password-Save',views.admin_password_changeing,name='admin_password_changeing'),
     
 
-    path('New-Payments-List',views.newpay_confirm_list,name='newpay_confirm_list'),
+    
     path('Payment-Track',views.admin_trackPayments,name='admin_trackPayments'),
     path('Admin-Upcoming-Payments',views.adminupcomingPayments,name='adminupcomingPayments'),
     path('Admin-Payments-View',views.admin_paymentsview,name='admin_paymentsview'),
