@@ -16,35 +16,6 @@ from django.core.mail import send_mail
 from django.db.models import Q
 
 
-def go(request):
-    reg1=Register.objects.filter(reg_status=1)
-    payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-    approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
-
-    cur_date=datetime.now().date()
-    fr_date=datetime(cur_date.year, cur_date.month, 1).date()
-    last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
-    to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
-    income_total=0
-    exp_total=0
-    income_value = IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date,exin_typ=1)
-    for i in income_value:
-        income_total=income_total+int(i.exin_amount)
-    print(income_total)
-
-    expence_value = IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date,exin_typ=2)
-    for i in expence_value:
-        exp_total=exp_total+int(i.exin_amount)
-    print(exp_total)
-
-    
-    bala_value= income_total - exp_total
-    
-    content={'payhis_list':payhis_list,
-             'approve_count':approve_count,'income_total':income_total,
-             'exp_total':exp_total,'bala_value':bala_value}
-
-    return render(request, 'admin/index1.html',content)
 
 #login Section
 def login_page(request):
@@ -101,19 +72,27 @@ def login_dashboard(request):
     if request.method=='POST':
             username=request.POST['uname']
             password=request.POST['psw']
-            user=authenticate(username=username,password=password)
-        
+
+            try:
+                user=Dashboard_Register.objects.get(dsh_username=username,dsh_password=password)
+            
+            except Dashboard_Register.DoesNotExist:
+
+                messages.info(request, 'Invalid Username  or  Password. Try Again.')
+                return redirect('login_page')
             
             if user is not None:
-                if user.is_superuser == 1:
+                if user.active_status == 1:
                     request.session["admid"]=user.id
-                    login(request, user)
                     if 'admid' in request.session:
                         if request.session.has_key('admid'):
                             admid = request.session['admid']
                         else:
                             return redirect('/')
                         
+                        admin_DHB=Dashboard_Register.objects.get(id=admid)
+                        success_msg = 'Authentication Success!'
+
                         cur_date=datetime.now().date()
                         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
                         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
@@ -223,7 +202,9 @@ def login_dashboard(request):
                         
                         msg_succes=1
 
-                        content = {'payhis':payhis,
+                        content = {'admin_DHB':admin_DHB,
+                                   'success_msg':success_msg,
+                                   'payhis':payhis,
                                    'payhis_list':payhis_list,
                                    'approve_count':approve_count,
                                    'msg_succes':msg_succes,
@@ -381,6 +362,8 @@ def dashboard(request):
            
         else:
             return redirect('/')
+        
+
         reg=Register.objects.filter(reg_status=1)
         reg_count=Register.objects.all().count()
         dept_count=Department.objects.all().count()
@@ -635,7 +618,6 @@ def upcoming_payments_list(request):
         return redirect('/')
 
 
-
 def allpayments(request):
     if 'uid' in request.session:
         if request.session.has_key('uid'):
@@ -819,7 +801,6 @@ def edit_dept(request,pk):
     else:
         return redirect('/')
     
-
     
 def remove_dept(request,pk):
     if 'uid' in request.session:
@@ -853,7 +834,6 @@ def pyment_form(request):
         return redirect('/')
 
 
-
 def addpayment_details(request,pk):
     if 'uid' in request.session:
         if request.session.has_key('uid'):
@@ -866,7 +846,6 @@ def addpayment_details(request,pk):
         return render(request,'account/Payment_form.html',{'reg':reg,'reg_dt':reg_dt})
     else:
             return redirect('/')
-
 
 
 def save_payment(request):
@@ -956,8 +935,7 @@ def payhis_remove(request,pk):
     
     else:
         return redirect('/')
-        
-     
+            
 
 def Register_form(request):
     if 'uid' in request.session:
@@ -1766,7 +1744,6 @@ def employee_pending_salary(request):
             return redirect('/')
 
     
-
 def salary_expence_add(request,pk):
      
     if 'uid' in request.session:
@@ -2096,8 +2073,6 @@ def salary_expence_edit(request,pk):
     else:
         return redirect('/')
     
-
-
 def salary_edit_save(request):
     
     if 'uid' in request.session:
@@ -2735,8 +2710,6 @@ def Search_data_full(request):
     else:
         return redirect('/')
     
-
-
     
 
 def employee_salary_details(request,pk):
@@ -3091,13 +3064,14 @@ def admin_account(request):
             admid = request.session['admid']
         else:
             return redirect('/')
-        user=User.objects.get(id=admid)
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
 
         reg1=Register.objects.filter(reg_status=1)
         approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
         approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
 
-        content={'user':user,
+        content={'admin_DHB':admin_DHB,
                  'approvels':approvels,
                  'approve_count':approve_count
                  }
@@ -3106,6 +3080,53 @@ def admin_account(request):
 
     else:
             return redirect('/')
+
+
+def admin_account_details_save(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+        reg1=Register.objects.filter(reg_status=1)
+        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+
+        if request.method == 'POST':
+            
+            admin_DHB.dsh_name = request.POST['fname']
+            admin_DHB.dsh_email = request.POST['email']
+            admin_DHB.dsh_username = request.POST['uname'] 
+            admin_DHB.dsh_image = request.FILES.get('profile_pic')
+            admin_DHB.save()
+
+            success_msg= 'Success! Profile Data Updated Successfully'
+            admin_DHB=Dashboard_Register.objects.get(id=admid)
+
+            content={'admin_DHB':admin_DHB,
+                 'success_msg':success_msg,
+                 'approvels':approvels,
+                 'approve_count':approve_count
+                 }
+
+            return render(request,'Admin/Admin_Account.html',content)
+        
+        else:
+            error_msg='Oops! Something Went Wrong'
+
+            content={'admin_DHB':admin_DHB,
+                 'error_msg':error_msg,
+                 'approvels':approvels,
+                 'approve_count':approve_count
+                 }
+
+            return render(request,'Admin/Admin_Account.html',content)
+
+    else:
+            return redirect('/')
+
     
 
 def admin_password_changeing(request):
@@ -3115,20 +3136,55 @@ def admin_password_changeing(request):
         else:
             return redirect('/')
         
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+        reg1=Register.objects.filter(reg_status=1)
+        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+        
         if request.method=='POST':
-            username=request.POST['adurname']
-            password=request.POST['adpsw']
 
-            user=User.objects.get(id=admid)
-            if username:
-                user.username=username
+            oldpassword=request.POST['oldpsw']
+            newpassword=request.POST['newpsw']
+
+           
+            if oldpassword == admin_DHB.dsh_password:
+
+                admin_DHB.dsh_password=newpassword
+                admin_DHB.save()
+
+                success_msg= 'Success! Password Updated Successfully'
+                admin_DHB=Dashboard_Register.objects.get(id=admid)
+
+                content={'admin_DHB':admin_DHB,
+                         'success_msg':success_msg,
+                 'approvels':approvels,
+                 'approve_count':approve_count
+                 }
+                return render(request,'Admin/Admin_Account.html',content)
+            
             else:
-                user.username= user.username
-            user.set_password(password)
-            user.save()
-            msg=1
-        return render(request,'Admin/Admin_Account.html',{'user':user,'msg':msg})
 
+                error_msg = 'Opps! Old Password and New Password not maching'
+                content={'admin_DHB':admin_DHB,
+                 'error_msg':error_msg,
+                 'approvels':approvels,
+                 'approve_count':approve_count
+                 }
+                return render(request,'Admin/Admin_Account.html',content)
+
+        else:
+                error_msg = 'Opps! Something Went Wrong'
+                content={'admin_DHB':admin_DHB,
+                 'error_msg':error_msg,
+                 'approvels':approvels,
+                 'approve_count':approve_count
+                 }  
+
+                return render(request,'Admin/Admin_Account.html',content)
+
+
+            
+        
     else:
         return redirect('/')
 
@@ -3141,6 +3197,8 @@ def admin_dashboard(request):
             admid = request.session['admid']
         else:
             return redirect('/')
+
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
         
         reg=Register.objects.filter(reg_status=0)
         payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).count
@@ -3258,7 +3316,8 @@ def admin_dashboard(request):
                 i.fixed_date=fr_date
                 i.save()
 
-        content={'payhis':payhis,
+        content={'admin_DHB':admin_DHB,
+                 'payhis':payhis,
                          'payhis_list':payhis_list,
                          'approve_count':approve_count,
                          'states':states,'approvels':approvels}
@@ -3788,8 +3847,6 @@ def admin_incompleted_payments(request):
         return redirect('/')
     
 
-
-
 def adminpaysearch(request):
 
     if 'admid' in request.session:
@@ -3937,7 +3994,6 @@ def admin_remove_dept(request,pk):
         return redirect('/')
 
 
-    
 
 # Admin Accounts Section 
 
@@ -4487,6 +4543,8 @@ def admin_analysis(request):
         else:
             return redirect('/')
         
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+
         # current month 
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
@@ -4650,36 +4708,54 @@ def admin_analysis(request):
         current_date = datetime.now().date()
         # Calculate the first day of the previous month
         first_day_previous_month = current_date.replace(day=1) - timedelta(days=1)
-        first_day_previous_month = first_day_previous_month.replace(day=1)
+        previousfr_date = first_day_previous_month.replace(day=1)
       
         
         # Calculate the last day of the month corresponding to first_day_previous_month
-        last_day_previous_month = first_day_previous_month.replace(day=1) + timedelta(days=31)
-        last_day_previous_month = last_day_previous_month - timedelta(days=1)
+        last_day_previous_month = previousfr_date.replace(day=1) + timedelta(days=31)
+        preto_date = last_day_previous_month - timedelta(days=1)
 
 
-        pincome_total=0
-        exp_total=0
+        previosincome_total=0
+        previosexp_total=0
 
-        income_value = IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date,exin_typ=1)
+        income_value = IncomeExpence.objects.filter(exin_date__gte=previousfr_date,exin_date__lte=preto_date,exin_typ=1)
         for i in income_value:
-            income_total=income_total+int(i.exin_amount)
+            previosincome_total=previosincome_total+int(i.exin_amount)
        
 
-        expence_value = IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date,exin_typ=2)
+        expence_value = IncomeExpence.objects.filter(exin_date__gte=previousfr_date,exin_date__lte=preto_date,exin_typ=2)
         for i in expence_value:
-            exp_total=exp_total+int(i.exin_amount)
+            previosexp_total=previosexp_total+int(i.exin_amount)
+
+        prebala_value= previosincome_total - previosexp_total
+        # calculating how much increment achieved in current month compare to previous month
+
+        income_precentage= ((income_total - previosincome_total)/previosincome_total)
+        expence_precentage= ((exp_total - previosexp_total)/previosexp_total)
+        balance_precentage= ((bala_value - prebala_value)/prebala_value)
+
+        # Making the digit to 2 decimal points 
+        income_precentage=round(income_precentage, 2)
+        expence_precentage=round(expence_precentage, 2)
+        balance_precentage=round(balance_precentage, 2)
        
         
-        bala_value= income_total - exp_total
+       
         #--------------------------------------------------------------------
 
         content={
-           
+                 'admin_DHB':admin_DHB,
                  'next_month_income':next_month_income,'next_month_exp':next_month_exp,'next_balans':next_balans,
                  'income':income,
                  'expence':expence,
                  'balans':balans,
+                 'income_precentage':income_precentage,
+                 'expence_precentage':expence_precentage,
+                 'balance_precentage':balance_precentage,
+                 'previosincome_total':previosincome_total,
+                 'previosexp_total':previosexp_total,
+                 'prebala_value':prebala_value,
                  'bal_pr':bal_pr,
                  'exp_pr':exp_pr,
                  'cur_date':cur_date,

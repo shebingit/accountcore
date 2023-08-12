@@ -3,14 +3,35 @@
 {% block body %}
 
 
-
-
+    <!--=========================== Admin Dashboard  ========================-->
 
     <div class="content-wrapper">
+       <!-- ============= Login Success Message =======================-->
+            
+       <div class="d-flex align-items-center justify-content-end ">
+        {% if success_msg %}
+          <div class="messageBox-container" id="message-container">
+          
+                  <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                  <p class="text-center success-text">{{success_msg}}</p>
+          </div>
+        {% elif error_msg %}
+          <div class="messageBox-container" id="message-container">
+                  <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                  <p class="text-center error-text">{{error_msg}}</p>
+          </div>
+        {% endif %}
+      </div>
+       
+
+      <!---=================================================================-->
+
+      <!-- ======================= Main Section =============================-->
+      
       <div class="row">
         <div class="col-sm-12">
           <div class="home-tab">
-            
+
             <div class="tab-content tab-content-basic">
               <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
                 <div class="row">
@@ -128,6 +149,8 @@
           </div>
         </div>
       </div>
+
+      <!---=================================================================-->
     </div>
 
     <!-- content-wrapper ends -->

@@ -31376,7 +31376,7 @@ background: #ffffff;
 .messageBox-container
 {
   background: #ffffff;
-  padding: 10px 15px;
+  padding: 8px 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31385,6 +31385,7 @@ background: #ffffff;
   margin-bottom: 0.30rem;
   transition: opacity 1s ease-in-out; /* Add a transition for opacity */
   opacity: 1; /* Set initial opacity to fully visible */
+  z-index: 9999;
   
 }
 .messageicon-Box 
@@ -31441,14 +31442,7 @@ background: #ffffff;
 {
   color: #0c63e4;
 }
-.profile-edit button
-{
-  border: none;
-  background: transparent;
-  outline: none;
-  color: #0c63e4;
 
-}
 .profile-pic
 {
   height: 10vh;
@@ -31473,6 +31467,15 @@ background: #ffffff;
 {
   padding-left: 1rem;
   padding-top: 1rem;
+}
+
+.error-border {
+  border-color: red !important;
+}
+.text-sm
+{
+  font-size: 0.75rem;
+  padding-left: 0.15rem;
 }
 
 

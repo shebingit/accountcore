@@ -5,7 +5,7 @@ from django.conf import settings
 
 
 urlpatterns = [
-    path('go',views.go,name='go'),
+   
     path('',views.login_page,name='login_page'),
     path('Login-Dashboard',views.login_dashboard,name='login_dashboard'),
     path('Admin-Dashboard',views.admin_dashboard,name='admin_dashboard'),
@@ -159,6 +159,7 @@ urlpatterns = [
     #========================== Admin ==============================================
     
     path('Admin-Profile',views.admin_account,name='admin_account'),
+    path('Admin-Profile-Details-Save',views.admin_account_details_save,name='admin_account_details_save'),
     path('Admin-Password-Save',views.admin_password_changeing,name='admin_password_changeing'),
     
 

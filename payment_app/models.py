@@ -3,11 +3,67 @@ from datetime import date
 
 
 
-
-
+# Department Table handle all the department details
 class Department(models.Model):
     department = models.CharField(max_length=255)
     dpt_Status = models.IntegerField(default=0)
+
+
+#Employee Table handle all the employee details
+class EmployeeRegister(models.Model):
+    empdept_id=models.ForeignKey(Department, on_delete=models.CASCADE, null=True,default='')
+    empdesignation=  models.CharField(max_length=255,default='')
+    empfullName = models.CharField(max_length=255)
+    empidreg= models.CharField(max_length=200,default='')
+    empPhone = models.CharField(max_length=15)
+    empemail = models.EmailField()
+    empdofj = models.DateField(auto_now_add=False,null=True)
+    empconfirmsalary =  models.IntegerField(default=0,null=True)
+    empfirst_salry= models.IntegerField(default=0)
+    emptol_salary=models.IntegerField(default=0)
+    emp_salary_status=models.IntegerField(default=0)
+    emp_status = models.IntegerField(default=0)
+
+
+
+class Dashboard_Register(models.Model):
+    dsh_name = models.CharField(max_length=255,default='',null=True,blank=True)
+    dsh_email = models.EmailField(max_length=255,default='email@gmail.com',null=True,blank=True)
+    dsh_phone = models.CharField(max_length=100,default='',null=True,blank=True)
+    dsh_image = models.FileField(upload_to='profiles',default='')
+    dsh_username = models.CharField(max_length=255,default='',null=True,blank=True)
+    dsh_password = models.CharField(max_length=255,default='',null=True,blank=True)
+    dsh_date = models.DateField(auto_now_add=False,null=True)
+    active_status = models.IntegerField(default=0)
+
+
+# State table include all state and alocation ids
+class Register_State(models.Model):
+    state_name= models.CharField(max_length=255,default='',null=True,blank=True)
+    state_id= models.CharField(max_length=255,default='',null=True,blank=True)
+    state_status= models.CharField(max_length=255,default='0',null=True,blank=True)
+    allocateid= models.ForeignKey(EmployeeRegister, on_delete=models.CASCADE, null=True,default='')
+    allocate_status= models.CharField(max_length=255,default='0',null=True,blank=True)
+
+
+
+
+class EmployeeSalary(models.Model):
+    empreg_id=models.ForeignKey(EmployeeRegister, on_delete=models.CASCADE, null=True,default='')
+    empsalary_month=models.CharField(max_length=55,default='')
+    empslaray_date = models.DateField(auto_now_add=False,null=True)
+    emppaid_amt =models.IntegerField(default=0)
+    empfull_leave =models.IntegerField(default=0)
+    emphalf_leave =models.IntegerField(default=0)
+    empfull_leave_amt =models.IntegerField(default=0)
+    emphalf_leave_amt =models.IntegerField(default=0)
+    emp_delay =models.IntegerField(default=0)
+    emp_delay_amt =models.IntegerField(default=0)
+    emp_othe_head=models.CharField(max_length=100,default='')
+    emp_other_amt =models.IntegerField(default=0)
+    emp_other_damt=models.IntegerField(default=0)
+    emp_paidstatus = models.IntegerField(default=0)
+
 
 
 
@@ -28,6 +84,7 @@ class Register(models.Model):
     payprogress = models.IntegerField(default=10)
     payment_status = models.IntegerField(default=0)
 
+
 class PaymentHistory(models.Model):
     reg_id=models.ForeignKey(Register, on_delete=models.CASCADE, null=True,default='')
     paydofj   = models.DateField(auto_now_add=False,null=True)
@@ -38,36 +95,6 @@ class PaymentHistory(models.Model):
     pay_status = models.IntegerField(default=0)
     admin_payconfirm = models.IntegerField(default=0)
 
-
-class EmployeeRegister(models.Model):
-    empdept_id=models.ForeignKey(Department, on_delete=models.CASCADE, null=True,default='')
-    empdesignation=  models.CharField(max_length=255,default='')
-    empfullName = models.CharField(max_length=255)
-    empidreg= models.CharField(max_length=200,default='')
-    empPhone = models.CharField(max_length=15)
-    empemail = models.EmailField()
-    empdofj = models.DateField(auto_now_add=False,null=True)
-    empconfirmsalary =  models.IntegerField(default=0,null=True)
-    empfirst_salry= models.IntegerField(default=0)
-    emptol_salary=models.IntegerField(default=0)
-    emp_salary_status=models.IntegerField(default=0)
-    emp_status = models.IntegerField(default=0)
-
-class EmployeeSalary(models.Model):
-    empreg_id=models.ForeignKey(EmployeeRegister, on_delete=models.CASCADE, null=True,default='')
-    empsalary_month=models.CharField(max_length=55,default='')
-    empslaray_date = models.DateField(auto_now_add=False,null=True)
-    emppaid_amt =models.IntegerField(default=0)
-    empfull_leave =models.IntegerField(default=0)
-    emphalf_leave =models.IntegerField(default=0)
-    empfull_leave_amt =models.IntegerField(default=0)
-    emphalf_leave_amt =models.IntegerField(default=0)
-    emp_delay =models.IntegerField(default=0)
-    emp_delay_amt =models.IntegerField(default=0)
-    emp_othe_head=models.CharField(max_length=100,default='')
-    emp_other_amt =models.IntegerField(default=0)
-    emp_other_damt=models.IntegerField(default=0)
-    emp_paidstatus = models.IntegerField(default=0)
 
 
 class Receipt_Data(models.Model):
@@ -108,10 +135,5 @@ class Company_Holidays(models.Model):
     ch_workno = models.IntegerField(default=0,null=True)
 
 
-class Register_State(models.Model):
-    state_name= models.CharField(max_length=255,default='',null=True,blank=True)
-    state_id= models.CharField(max_length=255,default='',null=True,blank=True)
-    state_status= models.CharField(max_length=255,default='0',null=True,blank=True)
-    allocateid= models.ForeignKey(EmployeeRegister, on_delete=models.CASCADE, null=True,default='')
-    allocate_status= models.CharField(max_length=255,default='0',null=True,blank=True)
+
    
