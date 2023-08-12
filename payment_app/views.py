@@ -218,6 +218,7 @@ def login_dashboard(request):
 
                         reg1=Register.objects.filter(reg_status=1)
                         payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+                        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
                         approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
                         
                         msg_succes=1
@@ -226,7 +227,8 @@ def login_dashboard(request):
                                    'payhis_list':payhis_list,
                                    'approve_count':approve_count,
                                    'msg_succes':msg_succes,
-                                   'states':states
+                                   'states':states,
+                                   'approvels':approvels
                                    }
                         
                         return render(request,'Admin/Admin_dashboard.html',content)
@@ -3144,6 +3146,7 @@ def admin_dashboard(request):
         payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).count
         reg1=Register.objects.filter(reg_status=1)
         payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
         approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
 
         states = Register_State.objects.filter(allocate_status=1)
@@ -3258,7 +3261,7 @@ def admin_dashboard(request):
         content={'payhis':payhis,
                          'payhis_list':payhis_list,
                          'approve_count':approve_count,
-                         'states':states}
+                         'states':states,'approvels':approvels}
 
         return render(request,'Admin/Admin_dashboard.html',content)
     
@@ -3816,10 +3819,13 @@ def admin_department_form(request):
         else:
             return redirect('/')
         
+        # content load to base page
         states = Register_State.objects.filter(allocate_status=1)
         reg1=Register.objects.filter(reg_status=1)
         approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
         approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+        #------------------------------
+
         dept=Department.objects.all().order_by('-id')
         dept_count=Department.objects.all().count()
 
@@ -4488,8 +4494,12 @@ def admin_analysis(request):
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
 
-
+        #content loaded to base page -----------
         states = Register_State.objects.filter(allocate_status=1)
+        reg1=Register.objects.filter(reg_status=1)
+        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+        #-------------------------------------
 
         next_month = cur_date.replace(day=28) + timedelta(days=4)  # get the next month by adding 4 days to the 28th day
         next_month_start = next_month.replace(day=1)  # get the first day of the next month
@@ -4605,6 +4615,7 @@ def admin_analysis(request):
         #emp_salary_count=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).count()
 
 
+        #current monthe income expence calculations
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
@@ -4627,11 +4638,41 @@ def admin_analysis(request):
 
         if income_total >= exp_total:
             bala_value_chart= income_total - exp_total
-            print('val:',bala_value_chart)
+            
         else:
             bala_value_chart= exp_total - income_total
-            print('val:',bala_value_chart)
+           
 
+
+        #---------------Previous month income and expence -------------------
+        # Get the current date
+
+        current_date = datetime.now().date()
+        # Calculate the first day of the previous month
+        first_day_previous_month = current_date.replace(day=1) - timedelta(days=1)
+        first_day_previous_month = first_day_previous_month.replace(day=1)
+      
+        
+        # Calculate the last day of the month corresponding to first_day_previous_month
+        last_day_previous_month = first_day_previous_month.replace(day=1) + timedelta(days=31)
+        last_day_previous_month = last_day_previous_month - timedelta(days=1)
+
+
+        pincome_total=0
+        exp_total=0
+
+        income_value = IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date,exin_typ=1)
+        for i in income_value:
+            income_total=income_total+int(i.exin_amount)
+       
+
+        expence_value = IncomeExpence.objects.filter(exin_date__gte=fr_date,exin_date__lte=to_date,exin_typ=2)
+        for i in expence_value:
+            exp_total=exp_total+int(i.exin_amount)
+       
+        
+        bala_value= income_total - exp_total
+        #--------------------------------------------------------------------
 
         content={
            
@@ -4648,6 +4689,8 @@ def admin_analysis(request):
                  'bala_value':bala_value,
                  'bala_value_chart':bala_value_chart,
                  'states':states,
+                 'approvels':approvels,
+                 'approve_count':approve_count,
                 #  'reg':reg,'reg_c':reg_c,'reg_c_amt':reg_c_amt,
                 #  'reg_ojt_amt':reg_ojt_amt,'reg_pending':reg_pending,'reg_complete':reg_complete,
                 #  'reg_p_amt':reg_p_amt,'reg_c_amt':reg_c_amt,'reg_in_amt':reg_in_amt,'reg_incomplete':reg_incomplete,'reg_upaid_c':reg_upaid_c,'reg_upaid':reg_upaid,
