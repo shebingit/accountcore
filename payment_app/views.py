@@ -9,11 +9,16 @@ from datetime import datetime,timedelta
 from django.conf import settings
 from django.http import HttpResponse
 from django.template.loader import get_template
-
+from .utils import *
 import calendar
 from django.db.models import Sum
 from django.core.mail import send_mail
 from django.db.models import Q
+
+
+#===============comman views===============
+
+
 
 
 
@@ -92,13 +97,14 @@ def login_dashboard(request):
                         
                         admin_DHB=Dashboard_Register.objects.get(id=admid)
                         success_msg = 'Authentication Success!'
+                        new_reg=Register.objects.filter(reg_status=0).count()
 
                         cur_date=datetime.now().date()
                         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
                         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
                         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
-                        states = Register_State.objects.filter(allocate_status=1)
+                        #states = Register_State.objects.filter(allocate_status=1)
 
                         #Income adding to IncomeExpence Table
                         if PaymentHistory.objects.exists():
@@ -195,23 +201,18 @@ def login_dashboard(request):
 
                         
 
-                        reg1=Register.objects.filter(reg_status=1)
-                        payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-                        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-                        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
                         
-                        msg_succes=1
+                        common_data = nav_data(request)
+
 
                         content = {'admin_DHB':admin_DHB,
                                    'success_msg':success_msg,
-                                   'payhis':payhis,
-                                   'payhis_list':payhis_list,
-                                   'approve_count':approve_count,
-                                   'msg_succes':msg_succes,
-                                   'states':states,
-                                   'approvels':approvels
+                                   'new_reg':new_reg
+                                   
                                    }
-                        
+                        # Merge the two dictionaries
+                        content = {**content, **common_data}
+
                         return render(request,'Admin/Admin_dashboard.html',content)
                     
                     else:
@@ -220,7 +221,7 @@ def login_dashboard(request):
                 
                 else:
                     request.session["uid"]=user.id
-                    login(request, user)
+                   
 
                     if request.session.has_key('uid'):
                         uid = request.session['uid']
@@ -3200,14 +3201,9 @@ def admin_dashboard(request):
 
         admin_DHB=Dashboard_Register.objects.get(id=admid)
         
-        reg=Register.objects.filter(reg_status=0)
-        payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).count
-        reg1=Register.objects.filter(reg_status=1)
-        payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+        new_reg=Register.objects.filter(reg_status=0).count()
+        
 
-        states = Register_State.objects.filter(allocate_status=1)
 
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
@@ -3219,7 +3215,7 @@ def admin_dashboard(request):
             try:
                 inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
                 payhist=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-                #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
+              
                 
                 if payhist:
                                 
@@ -3316,17 +3312,53 @@ def admin_dashboard(request):
                 i.fixed_date=fr_date
                 i.save()
 
-        content={'admin_DHB':admin_DHB,
-                 'payhis':payhis,
-                         'payhis_list':payhis_list,
-                         'approve_count':approve_count,
-                         'states':states,'approvels':approvels}
+       
+
+        common_data = nav_data(request)
+
+        content={'admin_DHB':admin_DHB,'new_reg':new_reg}
+        # Merge the two dictionaries
+        content = {**content, **common_data}
 
         return render(request,'Admin/Admin_dashboard.html',content)
     
     else:
         return redirect('/')
     
+
+def newpay_confirm_list(request):
+
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+
+ 
+            
+        reg=Register.objects.filter(reg_status=0)
+        new_reg_count = Register.objects.filter(reg_status=0).count()
+        firstpayhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).first
+        payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg)
+        
+        common_data = nav_data(request)
+
+        content={'admin_DHB':admin_DHB,
+                 'payhis':payhis,
+                 'firstpayhis':firstpayhis,
+                 'new_reg_count':new_reg_count}
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+
+        return render(request,'Admin/newpayment_list.html',content)
+            
+    else:
+        return redirect('/')
+
 
 def admin_trackPayments(request):
     if 'admid' in request.session:
@@ -3516,9 +3548,23 @@ def view_details(request,pk):
         else:
             return redirect('/')
         
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+
+
+
+        
+        reg=Register.objects.filter(reg_status=0)
         firstpayhis=PaymentHistory.objects.get(id=pk)
-        payhis=PaymentHistory.objects.filter(admin_payconfirm=0)
-        return render(request,'Admin/newpayment_list.html',{'payhis':payhis,'firstpayhis':firstpayhis})
+        payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg)
+
+        common_data = nav_data(request)
+
+        content={'admin_DHB':admin_DHB,'payhis':payhis,'firstpayhis':firstpayhis}
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/newpayment_list.html',content)
             
     else:
         return redirect('/')
@@ -3532,6 +3578,8 @@ def admin_approve(request,pk):
             admid = request.session['admid']
         else:
             return redirect('/')
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
         
         pay_aprove=PaymentHistory.objects.get(id=pk)
         pay_aprove.admin_payconfirm=1
@@ -3619,7 +3667,26 @@ def admin_approve(request,pk):
             print('No Data')
      
 
-        return redirect('newpay_confirm_list')
+        success_msg="Success! OJT Registration successfull."
+
+        reg=Register.objects.filter(reg_status=0)
+        new_reg_count = Register.objects.filter(reg_status=0).count()
+        firstpayhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).first
+        payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg)
+        
+        common_data = nav_data(request)
+
+        content={'admin_DHB':admin_DHB,
+                 'payhis':payhis,
+                 'firstpayhis':firstpayhis,
+                 'new_reg_count':new_reg_count,
+                 'success_msg':success_msg}
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+
+        return render(request,'Admin/newpayment_list.html',content)
             
     else:
         return redirect('/')
@@ -3633,6 +3700,8 @@ def admin_confirm(request,pk):
             admid = request.session['admid']
         else:
             return redirect('/')
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
             
         pay_aprove=PaymentHistory.objects.get(id=pk)
         pay_aprove.admin_payconfirm=1
@@ -3648,26 +3717,19 @@ def admin_confirm(request,pk):
         reg.payprogress=progres
         reg.save()
 
-        #next payment calculation
-
-        #cal=int(reg.regtotal_amt / 3)
-        #cal2=int(cal) * 2
+       
         
         if reg.fixed_intial_amt == pay_aprove.payintial_amt:
             reg.next_pat_amt = int(reg.regbalance_amt)
             reg.fixed_intial_amt = int(reg.regbalance_amt)
 
         elif reg.fixed_intial_amt >  pay_aprove.payintial_amt:
-            #amt =  int(reg.next_pat_amt) - int(pay_aprove.payintial_amt)
-
-            #if  reg.next_pat_amt < cal and reg.reg_payedtotal < cal2 :
-                #reg.next_pat_amt =  cal + amt
-            #else:
+           
             reg.next_pat_amt = int(reg.fixed_intial_amt) - int(pay_aprove.payintial_amt)
             reg.fixed_intial_amt = int(reg.fixed_intial_amt) - int(pay_aprove.payintial_amt)
 
         elif  reg.fixed_intial_amt <  pay_aprove.payintial_amt:
-            #amt= int(pay_aprove.payintial_amt) -   int(reg.next_pat_amt) 
+           
             reg.next_pat_amt = int(reg.regbalance_amt)
             reg.fixed_intial_amt = int(reg.regbalance_amt)
 
@@ -3729,8 +3791,8 @@ def admin_confirm(request,pk):
             print('No Data')
 
 
-
         return redirect('admin_dashboard')
+     
         
     else:
         return redirect('/')
@@ -3744,14 +3806,34 @@ def admin_remove(request,pk):
             admid = request.session['admid']
         else:
             return redirect('/')
-            
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+
         payhis=PaymentHistory.objects.get(id=pk)
         reg=Register.objects.get(id=payhis.reg_id.id)
         payhis.delete()
         reg.delete()
-        firstpayhis=PaymentHistory.objects.filter(admin_payconfirm=0).first
-        payhis=PaymentHistory.objects.filter(admin_payconfirm=0)
-        return render(request,'Admin/newpayment_list.html',{'payhis':payhis,'firstpayhis':firstpayhis})
+
+        error_msg="Opps! Registration data and Payment data are removed."
+
+        reg=Register.objects.filter(reg_status=0)
+        new_reg_count = Register.objects.filter(reg_status=0).count()
+        firstpayhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg).first
+        payhis=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg)
+        
+        common_data = nav_data(request)
+
+        content={'admin_DHB':admin_DHB,
+                 'payhis':payhis,
+                 'firstpayhis':firstpayhis,
+                 'new_reg_count':new_reg_count,
+                 'error_msg':error_msg}
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+
+        return render(request,'Admin/newpayment_list.html',content)
             
     else:
         return redirect('/')
@@ -4552,19 +4634,14 @@ def admin_analysis(request):
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
 
-        #content loaded to base page -----------
-        states = Register_State.objects.filter(allocate_status=1)
-        reg1=Register.objects.filter(reg_status=1)
-        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
-        #-------------------------------------
-
+        
         next_month = cur_date.replace(day=28) + timedelta(days=4)  # get the next month by adding 4 days to the 28th day
         next_month_start = next_month.replace(day=1)  # get the first day of the next month
         next_month_end = next_month_start.replace(day=28) - timedelta(days=1)  # get the last day of the next month by subtracting 1 day from the 28th day
       
         income=IncomeExpence.objects.filter(exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
         expence=IncomeExpence.objects.filter(exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        
         if not income:
             income=1
         if not expence:
@@ -4598,81 +4675,7 @@ def admin_analysis(request):
         # ========================= income expence section  End =========================
 
 
-        # ==============================OJT section Start =============================
-
-       
-
-        # reg=Register.objects.filter(reg_status=1).count()
-        # reg_c=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date).count()
-        # reg_c_amt=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date,).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
-        # reg_ojt_amt=Register.objects.filter(reg_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
-
-        # reg_pending=Register.objects.filter(reg_status=1,payment_status=0).count()
-        # reg_complete=Register.objects.filter(reg_status=1,payment_status=1).count()
-        # reg_incomplete=Register.objects.filter(reg_status=1,payment_status=2).count()
-        # reg_p_amt=Register.objects.filter(reg_status=1,payment_status=0).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
-        # reg_c_amt=Register.objects.filter(reg_status=1,payment_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
-        # reg_in_amt=Register.objects.filter(reg_status=1,payment_status=2).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
-
-        # after_6_days = fr_date + timedelta(days=6)  
-        # after_8_days = fr_date + timedelta(days=7)  
-        # after_15days = fr_date + timedelta(days=14) 
-
-        # payhistory1=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
-        # payhistory8=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
-        # payhistory15=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
-        # payhistory1_c=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).count()
-        # payhistory8_c=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).count()
-        # payhistory15_c=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).count()
-      
-        # unpaidhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1)
-        # reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).count()
-        # reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
-        # next_reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).count()
-        # next_reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
-
-       
-
-
-        # ==============================End OJT section  =============================
-
-
-        # ============================== Employee section Start =============================
-
-        # emp_reg=EmployeeRegister.objects.all().count()
-       
-        # emp_reg_act=EmployeeRegister.objects.filter(emp_status=1).count()
-        # emp_reg_sal=EmployeeRegister.objects.filter(emp_salary_status=0).count()
-        # emp_reg_actsal=EmployeeRegister.objects.filter(emp_salary_status=1).count()
-        # emp_reg_tsal=EmployeeRegister.objects.all().aggregate(Sum('emptol_salary'))['emptol_salary__sum']
-
-        # emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
-        # emp_sal=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-        
-        # emp_con_sal=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1).count()
-        # emp_con_sal_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
-        # emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
-        # emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
-        # emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
-
-        # after_14_days = fr_date + timedelta(days=14)  
-        # after_15_days = fr_date + timedelta(days=15)  
-       
-
-        # empsalc_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).count()
-        # empsal_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-        # empsalc_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).count()
-        # empsal_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-
-        
-        
-
-        # ==============================End Employee section  =============================
-
-        #=EmployeeRegister.objects.filter(emp_status=1).count()
-        #emp_salary_count=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).count()
-
-
+     
         #current monthe income expence calculations
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
@@ -4744,9 +4747,14 @@ def admin_analysis(request):
        
         #--------------------------------------------------------------------
 
+        common_data = nav_data(request)
+
+
         content={
                  'admin_DHB':admin_DHB,
-                 'next_month_income':next_month_income,'next_month_exp':next_month_exp,'next_balans':next_balans,
+                 'next_month_income':next_month_income,
+                 'next_month_exp':next_month_exp,
+                 'next_balans':next_balans,
                  'income':income,
                  'expence':expence,
                  'balans':balans,
@@ -4764,26 +4772,19 @@ def admin_analysis(request):
                  'exp_total':exp_total,
                  'bala_value':bala_value,
                  'bala_value_chart':bala_value_chart,
-                 'states':states,
-                 'approvels':approvels,
-                 'approve_count':approve_count,
-                #  'reg':reg,'reg_c':reg_c,'reg_c_amt':reg_c_amt,
-                #  'reg_ojt_amt':reg_ojt_amt,'reg_pending':reg_pending,'reg_complete':reg_complete,
-                #  'reg_p_amt':reg_p_amt,'reg_c_amt':reg_c_amt,'reg_in_amt':reg_in_amt,'reg_incomplete':reg_incomplete,'reg_upaid_c':reg_upaid_c,'reg_upaid':reg_upaid,
-                #  'emp_reg_tsal':emp_reg_tsal,'emp_reg':emp_reg,'emp_reg_act':emp_reg_act,'emp_reg_sal':emp_reg_sal,'emp_reg_actsal':emp_reg_actsal,
-                #  'emp_sal':emp_sal,'emp_sal_count':emp_sal_count,'emp_unpaid':emp_unpaid,'emp_unp_amt':emp_unp_amt,'emp_con_sal':emp_con_sal,'emp_con_sal_amt':emp_con_sal_amt,
-                #  'empsalc_1to7':empsalc_1to7,'empsal_1to7':empsal_1to7,'empsalc_15to':empsalc_15to,'empsal_15to':empsal_15to,
-                #  'payhistory1':payhistory1,'payhistory8':payhistory8,'payhistory15':payhistory15,'payhistory1_c':payhistory1_c,'payhistory8_c':payhistory8_c,'payhistory15_c':payhistory15_c,
-                #  'next_reg_upaid_c':next_reg_upaid_c,'next_reg_upaid':next_reg_upaid,
-                 }
+                
+                }
+         # Merge the two dictionaries
+        content = {**content, **common_data}
+
   
-       
         return render(request,'Admin/admin_analysis.html',content)
+    
     else:
         return redirect('/')
-    
+ 
 
-# 10/08/23 -Createrd for detaild view of Income and Expence 
+#Createrd for detaild view of Income and Expence 
 
 def admin_analysis_income_expence_details(request):
     if 'admid' in request.session:
@@ -4791,6 +4792,8 @@ def admin_analysis_income_expence_details(request):
             admid = request.session['admid']
         else:
             return redirect('/')
+
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
 
         # current month  start date and end date 
         cur_date=datetime.now().date()
@@ -4803,14 +4806,273 @@ def admin_analysis_income_expence_details(request):
         inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(intol=Sum('exin_amount'))['intol']
         expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(exptol=Sum('exin_amount'))['exptol']
         balans=inco-expe
-        content={'inco':inco,'expe':expe,'balans':balans}
-        return render(request,'Admin/admin_analysis_income_expence_details.html',{'exp_income':exp_income,'exp_income_count':exp_income_count,'content':content})
+
+        common_data = nav_data(request)
+
+        content={
+                'admin_DHB':admin_DHB,'inco':inco,
+                'expe':expe,
+                'balans':balans,
+                'exp_income':exp_income,
+                'exp_income_count':exp_income_count,
+                }
+        
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+      
+        return render(request,'Admin/admin_analysis_income_expence_details.html',content)
         
     else:
         return redirect('/')
 
 
+def admin_analysis_OJT_details(request):
+ 
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+
+        # --------------------Current month --------------------
+
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+
+        #------------------ Next Month----------------------------
+
+        next_month = cur_date.replace(day=28) + timedelta(days=4)  # get the next month by adding 4 days to the 28th day
+        next_month_start = next_month.replace(day=1)  # get the first day of the next month
+        next_month_end = next_month_start.replace(day=28) - timedelta(days=1)  # get the last day of the next month by subtracting 1 day from the 28th day
     
+
+        if request.method=='POST':
+            
+            if request.POST['start_date']:
+
+                start_date = request.POST['start_date'] 
+            else:
+                start_date = fr_date
+            
+            if request.POST['end_date']:
+                
+                end_date = request.POST['end_date'] 
+            else:
+                end_date = to_date
+
+            if  request.POST['search_select'] == '0':
+                new_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date)
+            else:
+                sid=request.POST['search_select']
+                state_id = Register_State.objects.get(id=sid)
+                new_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id)
+
+        else:
+            new_reg=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date)
+
+        # ==============================OJT section Start =============================
+
+
+        reg=Register.objects.filter(reg_status=1).count()
+        reg_ojt_amt=Register.objects.filter(reg_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        
+        reg_c=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date).count()
+        reg_c_amt=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date,).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+       
+
+        reg_pending=Register.objects.filter(reg_status=1,payment_status=0).count()
+        reg_complete=Register.objects.filter(reg_status=1,payment_status=1).count()
+        reg_incomplete=Register.objects.filter(reg_status=1,payment_status=2).count()
+        reg_p_amt=Register.objects.filter(reg_status=1,payment_status=0).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        reg_c_amt=Register.objects.filter(reg_status=1,payment_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        reg_in_amt=Register.objects.filter(reg_status=1,payment_status=2).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+
+        after_6_days = fr_date + timedelta(days=6)  
+        after_8_days = fr_date + timedelta(days=7)  
+        after_15days = fr_date + timedelta(days=14) 
+
+        payhistory1=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        payhistory8=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        payhistory15=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        payhistory1_c=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).count()
+        payhistory8_c=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).count()
+        payhistory15_c=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).count()
+      
+        unpaidhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1)
+        reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).count()
+        reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        next_reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).count()
+        next_reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+
+        # ==============================End OJT section  =============================
+    
+        common_data = nav_data(request)
+
+        content = {'admin_DHB':admin_DHB,'new_reg':new_reg,'reg':reg,'reg_c':reg_c,'reg_c_amt':reg_c_amt,
+                 'reg_ojt_amt':reg_ojt_amt,'reg_pending':reg_pending,'reg_complete':reg_complete,
+                 'reg_p_amt':reg_p_amt,'reg_c_amt':reg_c_amt,'reg_in_amt':reg_in_amt,'reg_incomplete':reg_incomplete,
+                 'reg_upaid_c':reg_upaid_c,'reg_upaid':reg_upaid,'payhistory1':payhistory1,'payhistory8':payhistory8,
+                 'payhistory15':payhistory15,'payhistory1_c':payhistory1_c,'payhistory8_c':payhistory8_c,
+                 'payhistory15_c':payhistory15_c,'next_reg_upaid_c':next_reg_upaid_c,'next_reg_upaid':next_reg_upaid,
+                 }
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+
+        return render(request,'Admin/admin_analysis_OJT.html',content)
+    else:
+        return redirect('/')
+
+def admin_ojt_registration_all_states(request):
+    
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+
+       
+        #-----------------------------------------------
+        if request.method=='POST':
+            
+            if request.POST['start_date'] and request.POST['end_date'] and  request.POST['search_select'] == '0':
+
+                start_date = request.POST['start_date'] 
+                end_date = request.POST['end_date'] 
+                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_status=1)
+                all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_status=1).count()
+
+            elif  request.POST['search_select'] == '0'  :
+                all_ojt_reg=Register.objects.filter(reg_status=1)
+                all_ojt_reg_count=Register.objects.filter(reg_status=1).count()
+
+            elif  request.POST['search_select']:
+
+                sid=request.POST['search_select']
+                state_id = Register_State.objects.get(id=sid)
+                all_ojt_reg=Register.objects.filter(reg_state=state_id,reg_status=1)
+                all_ojt_reg_count=Register.objects.filter(reg_state=state_id,reg_status=1).count()
+
+            elif request.POST['start_date'] and request.POST['end_date'] and  request.POST['search_select']:
+
+                sid=request.POST['search_select']
+                start_date = request.POST['start_date'] 
+                end_date = request.POST['end_date'] 
+                state_id = Register_State.objects.get(id=sid)
+                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,reg_status=1)
+                all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,reg_status=1).count()
+           
+
+        else:
+            all_ojt_reg=Register.objects.filter(reg_status=1)
+            all_ojt_reg_count=Register.objects.filter(reg_status=1).count()
+
+
+        common_data = nav_data(request)
+
+
+        content={
+                 'admin_DHB':admin_DHB,
+                 'all_ojt_reg':all_ojt_reg,
+                 'all_ojt_reg_count':all_ojt_reg_count
+                }
+
+         # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/admin_ojt_all_registration.html',content)
+
+
+    else:
+        return redirect('/')
+
+
+
+def admin_analysis_employee_details(request):
+     
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+
+        # --------------------Current month --------------------
+
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+
+        #------------------ Next Month----------------------------
+
+        next_month = cur_date.replace(day=28) + timedelta(days=4)  # get the next month by adding 4 days to the 28th day
+        next_month_start = next_month.replace(day=1)  # get the first day of the next month
+        next_month_end = next_month_start.replace(day=28) - timedelta(days=1)  # get the last day of the next month by subtracting 1 day from the 28th day
+    
+
+
+    # ============================== Employee section Start =============================
+
+        emp_reg=EmployeeRegister.objects.all().count()
+       
+        emp_reg_act=EmployeeRegister.objects.filter(emp_status=1).count()
+        emp_reg_sal=EmployeeRegister.objects.filter(emp_salary_status=0).count()
+        emp_reg_actsal=EmployeeRegister.objects.filter(emp_salary_status=1).count()
+        emp_reg_tsal=EmployeeRegister.objects.all().aggregate(Sum('emptol_salary'))['emptol_salary__sum']
+
+        emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
+        emp_sal=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        
+        emp_con_sal=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1).count()
+        emp_con_sal_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+        emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+        emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+        after_14_days = fr_date + timedelta(days=14)  
+        after_15_days = fr_date + timedelta(days=15)  
+       
+
+        empsalc_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).count()
+        empsal_1to7=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=after_14_days,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        empsalc_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).count()
+        empsal_15to=EmployeeSalary.objects.filter(empslaray_date__gte=after_15_days,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+
+        # ============================== Employee section End =============================
+
+        common_data = nav_data(request)
+
+        content = {'admin_DHB':admin_DHB,
+            'emp_reg_tsal':emp_reg_tsal,'emp_reg':emp_reg,
+            'emp_reg_act':emp_reg_act,'emp_reg_sal':emp_reg_sal,
+            'emp_reg_actsal':emp_reg_actsal,'emp_sal':emp_sal,
+            'emp_sal_count':emp_sal_count,'emp_unpaid':emp_unpaid,
+            'emp_unp_amt':emp_unp_amt,'emp_con_sal':emp_con_sal,
+            'emp_con_sal_amt':emp_con_sal_amt,'empsalc_1to7':empsalc_1to7,
+            'empsal_1to7':empsal_1to7,'empsalc_15to':empsalc_15to,
+            'empsal_15to':empsal_15to,
+        }
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+
+        return render(request,'Admin/admin_analysis_employee.html',content)
+    else:
+        return redirect('/')
+
 
 def admin_analysis_months(request):
     if 'admid' in request.session:
@@ -4949,34 +5211,7 @@ def admin_analysis_search(request):
 
 
 #11/08/23--------------------------------------------
-    
-def admin_state_form(request):
-    if 'admid' in request.session:
-        if request.session.has_key('admid'):
-            admid = request.session['admid']
-        else:
-            return redirect('/')
-        
-        depart = Department.objects.get(department='ACCOUNTS',dpt_Status=1)
-        reg_emps = EmployeeRegister.objects.filter(empdept_id__id=depart.id)
-
-        try:
-            reg_states = Register_State.objects.filter(state_status=1).order_by('-id')
-            reg_states_count = Register_State.objects.filter(state_status=1).count()
-
-        except Register_State.DoesNotExist:
-
-            reg_states=None
-            reg_states_count=0
-        
-
-        content={'reg_emps':reg_emps,'reg_states':reg_states,
-                 'reg_states_count':reg_states_count
-                 }
-
-        return render(request,'Admin/admin_state_assign.html',content)
-    else:
-        return redirect('/')
+ 
 
 
 def admin_employee_register_form(request):
@@ -5046,6 +5281,41 @@ def admin_employee_register(request):
         return redirect('/')
 
 
+   
+def admin_state_form(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+        
+        depart = Department.objects.get(department='ACCOUNTS',dpt_Status=1)
+        reg_emps = EmployeeRegister.objects.filter(empdept_id__id=depart.id)
+
+        try:
+            reg_states = Register_State.objects.filter(state_status=1).order_by('-id')
+            reg_states_count = Register_State.objects.filter(state_status=1).count()
+
+        except Register_State.DoesNotExist:
+
+            reg_states=None
+            reg_states_count=0
+        
+        common_data = nav_data(request)
+
+        content={'admin_DHB':admin_DHB,'reg_emps':reg_emps,'reg_states':reg_states,
+                 'reg_states_count':reg_states_count
+                 }
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+        
+        return render(request,'Admin/admin_state_assign.html',content)
+    else:
+        return redirect('/')
+
 
 def admin_state_register(request):
     if 'admid' in request.session:
@@ -5053,6 +5323,8 @@ def admin_state_register(request):
             admid = request.session['admid']
         else:
             return redirect('/')
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
         
         depart = Department.objects.get(department='ACCOUNTS',dpt_Status=1)
         reg_emps = EmployeeRegister.objects.filter(empdept_id__id=depart.id)
@@ -5081,25 +5353,31 @@ def admin_state_register(request):
             reg_states = Register_State.objects.filter(state_status=1).order_by('-id')
             reg_states_count = Register_State.objects.filter(state_status=1).count()
 
+            common_data = nav_data(request)
 
-            content={'reg_emps':reg_emps,'reg_states':reg_states,
+            content={'admin_DHB':admin_DHB,'reg_emps':reg_emps,'reg_states':reg_states,
                      'reg_states_count':reg_states_count,
                      'success_msg':success_msg}
+            
+            # Merge the two dictionaries
+            content = {**content, **common_data}
 
             return render(request,'Admin/admin_state_assign.html',content)
 
         else:
-
+            common_data = nav_data(request)
             error_msg= 'Opps! Something went wrong'
-            content={'reg_emps':reg_emps,'reg_states':reg_states,
+            content={'admin_DHB':admin_DHB,'reg_emps':reg_emps,'reg_states':reg_states,
                      'reg_states_count':reg_states_count,
                      'error_msg':error_msg}
+            
+            # Merge the two dictionaries
+            content = {**content, **common_data}
 
             return render(request,'Admin/admin_state_assign.html',content)
 
     else:
         return redirect('/')
-
 
 
 def admin_state_allocation(request):
@@ -5108,6 +5386,8 @@ def admin_state_allocation(request):
             admid = request.session['admid']
         else:
             return redirect('/')
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
         
         depart = Department.objects.get(department='ACCOUNTS',dpt_Status=1)
         reg_emps = EmployeeRegister.objects.filter(empdept_id__id=depart.id)
@@ -5123,12 +5403,26 @@ def admin_state_allocation(request):
         
         if request.method == 'POST':
 
+
             reg_state = Register_State.objects.get(id=int(request.POST['state_rowid']))
             
-          
-            reg_state.allocateid = EmployeeRegister.objects.get(id=int(request.POST['stateName']))
+            emp = EmployeeRegister.objects.get(id=int(request.POST['empName']))
+            reg_state.allocateid = emp
             
             reg_state.allocate_status = 1
+            reg_state.save()
+
+            #Dashboard creation
+
+            dashb = Dashboard_Register()
+            dashb.dsh_name = emp.empfullName
+            dashb.dsh_email = emp.empemail
+            dashb.dsh_username = reg_state.state_id
+            dashb.dsh_password = reg_state.state_id
+            dashb.active_status = 2
+            dashb.save()
+
+            reg_state.allocate_dash = dashb
             reg_state.save()
             
             success_msg= 'Success! State allocated successfully'
@@ -5136,25 +5430,30 @@ def admin_state_allocation(request):
             reg_states = Register_State.objects.filter(state_status=1).order_by('-id')
             reg_states_count = Register_State.objects.filter(state_status=1).count()
 
+            common_data = nav_data(request)
 
-            content={'reg_emps':reg_emps,'reg_states':reg_states,
+            content={'admin_DHB':admin_DHB,'reg_emps':reg_emps,'reg_states':reg_states,
                         'reg_states_count':reg_states_count,
                         'success_msg':success_msg}
+            
+            # Merge the two dictionaries
+            content = {**content, **common_data}
 
             return render(request,'Admin/admin_state_assign.html',content)
 
         else:
-
+            common_data = nav_data(request)
             error_msg= 'Opps! Something went wrong'
-            content={'reg_emps':reg_emps,'reg_states':reg_states,
+            content={'admin_DHB':admin_DHB,'reg_emps':reg_emps,'reg_states':reg_states,
                      'reg_states_count':reg_states_count,
                      'error_msg':error_msg}
+            # Merge the two dictionaries
+            content = {**content, **common_data}
 
             return render(request,'Admin/admin_state_assign.html',content)
 
     else:
         return redirect('/')
-
 
 
 def admin_state_reallocation(request):
@@ -5164,6 +5463,8 @@ def admin_state_reallocation(request):
         else:
             return redirect('/')
         
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+
         depart = Department.objects.get(department='ACCOUNTS',dpt_Status=1)
         reg_emps = EmployeeRegister.objects.filter(empdept_id__id=depart.id)
 
@@ -5180,30 +5481,43 @@ def admin_state_reallocation(request):
 
             reg_state = Register_State.objects.get(id=int(request.POST['restate_rowid']))
             
-          
-            reg_state.allocateid = EmployeeRegister.objects.get(id=int(request.POST['re-allocateName']))
+            emp = EmployeeRegister.objects.get(id=int(request.POST['re-allocateName']))
+            reg_state.allocateid = emp 
             
             reg_state.allocate_status = 1
             reg_state.save()
+
+            dashb = Dashboard_Register.objects.get(id=reg_state.allocate_dash.id)
+            dashb.dsh_name = emp.empfullName
+            dashb.dsh_email = emp.empemail
+            dashb.dsh_username = reg_state.state_id
+            dashb.dsh_password = reg_state.state_id
+            dashb.active_status = 2
+            dashb.save()
             
             success_msg= 'Success! State Re-allocated successfully'
 
             reg_states = Register_State.objects.filter(state_status=1).order_by('-id')
             reg_states_count = Register_State.objects.filter(state_status=1).count()
 
+            common_data = nav_data(request)
 
-            content={'reg_emps':reg_emps,'reg_states':reg_states,
+            content={'admin_DHB':admin_DHB,'reg_emps':reg_emps,'reg_states':reg_states,
                         'reg_states_count':reg_states_count,
                         'success_msg':success_msg}
+            # Merge the two dictionaries
+            content = {**content, **common_data}
 
             return render(request,'Admin/admin_state_assign.html',content)
 
         else:
-
+            common_data = nav_data(request)
             error_msg= 'Opps! Something went wrong'
-            content={'reg_emps':reg_emps,'reg_states':reg_states,
+            content={'admin_DHB':admin_DHB,'reg_emps':reg_emps,'reg_states':reg_states,
                      'reg_states_count':reg_states_count,
                      'error_msg':error_msg}
+            # Merge the two dictionaries
+            content = {**content, **common_data}
 
             return render(request,'Admin/admin_state_assign.html',content)
 
@@ -5211,7 +5525,78 @@ def admin_state_reallocation(request):
         return redirect('/')
 
 
+# ------------State Analysis section------------------
 
+def admin_states_analysis(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+        common_data = nav_data(request)
+           
+        content={'admin_DHB':admin_DHB}
+        
+            # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/admin_states_analysis.html',content)
+
+    else:
+        return redirect('/')
+
+
+#---------------- State Track Payments --------------
+
+def admin_states_track_payments(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+        common_data = nav_data(request)
+           
+        content={'admin_DHB':admin_DHB}
+        
+            # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/admin_states_track_payments.html',content)
+
+    else:
+        return redirect('/')
+
+
+
+
+
+#------------ State Account Section ---------------------
+def admin_states_account(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB=Dashboard_Register.objects.get(id=admid)
+        common_data = nav_data(request)
+           
+        content={'admin_DHB':admin_DHB}
+        
+            # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/admin_states_account.html',content)
+
+    else:
+        return redirect('/')
+
+
+#--------------------------------------------------
 # =========================== End Admin Module Section ======================================
 
 

@@ -163,7 +163,7 @@ urlpatterns = [
     path('Admin-Password-Save',views.admin_password_changeing,name='admin_password_changeing'),
     
 
-    
+    path('New-Payments-List',views.newpay_confirm_list,name='newpay_confirm_list'),
     path('Payment-Track',views.admin_trackPayments,name='admin_trackPayments'),
     path('Admin-Upcoming-Payments',views.adminupcomingPayments,name='adminupcomingPayments'),
     path('Admin-Payments-View',views.admin_paymentsview,name='admin_paymentsview'),
@@ -226,13 +226,34 @@ urlpatterns = [
 
     # Admin Analysis section 
     
+    #----------------Company Analysis----------------------
     path('Admin-Analysis',views.admin_analysis,name='admin_analysis'),
     path('Admin-Analysis-On_Months',views.admin_analysis_months,name='admin_analysis_months'),
     path('Admin-Analysis-On_Months-Search',views.admin_analysis_search,name='admin_analysis_search'),
+    path('Company-Income-Expence-analysis',views.admin_analysis_income_expence_details,name='admin_analysis_income_expence_details'),
+    path('Analysis-OJT',views.admin_analysis_OJT_details,name='admin_analysis_OJT_details'),
+    path('Analysis-OJT-All-Registration',views.admin_ojt_registration_all_states,name='admin_ojt_registration_all_states'),
+    path('Analysis-Employee',views.admin_analysis_employee_details,name='admin_analysis_employee_details'),
+    
+
+    #------------------State Analyis section --------------------------
+    path('Analysis-State-List',views.admin_states_analysis,name='admin_states_analysis'),
 
 
-    #10/08/23----------------
-    path('Admin-Analysis-Income-Expence',views.admin_analysis_income_expence_details,name='admin_analysis_income_expence_details'),
+
+    # ----------------State Track Payments section -----------------
+    path('State-Track-Payments',views.admin_states_track_payments,name='admin_states_track_payments'),
+
+
+
+
+    #-----------== State  Account section -------------------
+    
+    path('State-Account',views.admin_states_account,name='admin_states_account'),
+
+
+
+
     path('Admin-State-Assign',views.admin_state_form,name='admin_state_form'),
     path('Admin-Employee-Register-Form',views.admin_employee_register_form,name='admin_employee_register_form'),
     path('Admin-Employee-Register',views.admin_employee_register,name='admin_employee_register'),

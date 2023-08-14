@@ -1,0 +1,31 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+
+    <!--=========================== Admin States Track payments section  ========================-->
+
+    <div class="content-wrapper">
+        <div class="row">
+            {% for state in states %}
+            <div class="col-md-4 grid-margin stretch-card">
+              <a href="#">
+                  <div class="card">
+                  <div class="card-body">
+                      <h4 class="card-title">{{state.state_name}} -&nbsp; OJT Payments</h4>
+                      <div class="media">
+                      <i class="mdi mdi-magnify icon-md text-info d-flex align-self-start me-3"></i>
+                      <div class="media-body">
+                          <p class="card-text">Providing the information about OJT payments and payments status of {{state.state_name}}. </p>
+                      </div>
+                      </div>
+                  </div>
+                  </div>
+              </a>
+            </div>
+            {% endfor %}
+        </div>
+               
+    </div>
+
+{% endblock %}

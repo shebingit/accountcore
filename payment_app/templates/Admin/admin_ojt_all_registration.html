@@ -1,0 +1,167 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+<!--- OJT Registration View Section -->
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 d-flex flex-column">
+        
+        <div class="row flex-grow">
+            <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+                <div class="card-body">
+                <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                    <h4 class="card-title card-title-dash">Registrations </h4>
+                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{all_ojt_reg_count}}</span>  registrations</p>
+                    </div>
+                    <div>
+                        <form class="search-form" action="{% url 'admin_ojt_registration_all_states' %}" method="post">
+                            {% csrf_token %}
+                           
+                            <div class="searchBox">
+                                
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                            </div>
+                           
+                            <div class="w-box" >
+                                <select name="search_select" class="search-select">
+                                   
+                                    <option value="0"> All states </option>
+                                    {% for state in states %}
+                                    <option value="{{state.id}}">{{state.state_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="start_date">
+                            </div>
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="end_date">
+                            </div>
+                            <div>
+                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
+                <div class="table-responsive  mt-1">
+                    <table class="table select-table" id="OJT-register">
+                    <thead>
+                        <tr>
+                            <th>Date of join</th>
+                            <th>Full Name</th>
+                            <th>Department</th>
+                            <th>state</th>
+                            <th>Referenced By</th>
+                            <th>Reg. Status</th>
+                           
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for newreg in all_ojt_reg %}
+                        <tr>
+                            <td>{{newreg.dofj}}</td>
+                            <td>
+                                <div class="d-flex ">
+                                <div><h6>{{newreg.fullName}}</h6></div>
+                                </div>
+                            </td>
+                            <td><h6>{{newreg.dept_id.department}}</h6> </td>
+                            <td><div><h6>{{newreg.reg_state.state_name}}</h6></div></td>
+                            <td><div><h6>{{newreg.refrence}}</h6></div></td>
+                            <td>
+                                {% if newreg.reg_status == 1 %}
+                                <div class="badge badge-opacity-success">Approved</div>
+                                {% else %}
+                                <div class="badge badge-opacity-warning">wating for approve</div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                    </table>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        </div>
+    
+    </div>
+       
+
+
+    
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const ojtTable = document.getElementById('OJT-register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = ojtTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const empnameCell = rows[i].getElementsByTagName('td')[1];
+            const departmentCell = rows[i].getElementsByTagName('td')[2];
+            const state = rows[i].getElementsByTagName('td')[3];
+            const reffer = rows[i].getElementsByTagName('td')[4];
+            const statusCell = rows[i].getElementsByTagName('td')[5];
+
+            if (empnameCell || departmentCell || state || reffer || statusCell ) {
+
+                const empname = empnameCell.textContent || empnameCell.innerText;
+                const dept = departmentCell.textContent || departmentCell.innerText;
+                const states = state.textContent || state.innerText;
+                const refferns = reffer.textContent || reffer.innerText;
+                const status_emp = statusCell.textContent || statusCell.innerText;
+               
+
+                if (states.toLowerCase().includes(filterValue) || empname.toLowerCase().includes(filterValue) || dept.toLowerCase().includes(filterValue) || refferns.toLowerCase().includes(filterValue)|| status_emp.toLowerCase().includes(filterValue)) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+
+</div>
+
+
+{% endblock %}

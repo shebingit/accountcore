@@ -28,23 +28,24 @@ class EmployeeRegister(models.Model):
 
 class Dashboard_Register(models.Model):
     dsh_name = models.CharField(max_length=255,default='',null=True,blank=True)
-    dsh_email = models.EmailField(max_length=255,default='email@gmail.com',null=True,blank=True)
+    dsh_email = models.EmailField(max_length=255,default='email@gmail.com')
     dsh_phone = models.CharField(max_length=100,default='',null=True,blank=True)
     dsh_image = models.FileField(upload_to='profiles',default='')
     dsh_username = models.CharField(max_length=255,default='',null=True,blank=True)
     dsh_password = models.CharField(max_length=255,default='',null=True,blank=True)
-    dsh_date = models.DateField(auto_now_add=False,null=True)
+    dsh_date = models.DateField(auto_now_add=True,null=True)
     active_status = models.IntegerField(default=0)
 
 
 # State table include all state and alocation ids
 class Register_State(models.Model):
+    allocate_dash=models.ForeignKey(Dashboard_Register, on_delete=models.CASCADE, null=True,default='')
+    allocateid= models.ForeignKey(EmployeeRegister, on_delete=models.CASCADE, null=True,default='')
     state_name= models.CharField(max_length=255,default='',null=True,blank=True)
     state_id= models.CharField(max_length=255,default='',null=True,blank=True)
     state_status= models.CharField(max_length=255,default='0',null=True,blank=True)
     allocateid= models.ForeignKey(EmployeeRegister, on_delete=models.CASCADE, null=True,default='')
     allocate_status= models.CharField(max_length=255,default='0',null=True,blank=True)
-
 
 
 
@@ -83,6 +84,7 @@ class Register(models.Model):
     reg_status = models.IntegerField(default=0)
     payprogress = models.IntegerField(default=10)
     payment_status = models.IntegerField(default=0)
+    reg_state=models.ForeignKey(Register_State, on_delete=models.CASCADE, null=True,default='')
 
 
 class PaymentHistory(models.Model):

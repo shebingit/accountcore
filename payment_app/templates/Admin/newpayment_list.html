@@ -1,0 +1,272 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+
+    <!--=========================== Admin New OJT Registration List Section  ========================-->
+
+    <div class="content-wrapper">
+
+        <div class="content-wrapper">
+            <!-- ============= Success Message =======================-->
+                 
+            <div class="d-flex align-items-center justify-content-end ">
+             {% if success_msg %}
+               <div class="messageBox-container" id="message-container">
+               
+                       <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                       <p class="text-center success-text">{{success_msg}}</p>
+               </div>
+             {% elif error_msg %}
+               <div class="messageBox-container" id="message-container">
+                       <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                       <p class="text-center error-text">{{error_msg}}</p>
+               </div>
+             {% endif %}
+           </div>
+            
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-lg-12 d-flex flex-column">
+                    
+                      <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                          <div class="card card-rounded">
+                            <div class="card-body">
+                              <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                  <h4 class="card-title card-title-dash">New OJT Registrations  </h4>
+                                 <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{new_reg_count}}</span> new registration requests</p>
+                                </div>
+                                <div>
+                                    <div class="searchBox">
+                                
+                                        <input type="text" class="form-control small-text" id="search-data" placeholder="By State / Reference ">
+                                        <button type="button" class="close-btn" id="closeBtn">
+                                             <i class="mdi mdi-close"></i>
+                                        </button>
+                                        
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="table-responsive  mt-1">
+                                <table class="table select-table" id="OJT-Newregister">
+                                  <thead>
+                                    <tr>
+                                       <th>Remove / Approve</th>
+                                        <th>Full Name</th>
+                                        <th>Phone Number</th>
+                                        <th>State</th>
+                                        <th>Date Of Payed</th>
+                                        <th>Payed Amount</th>
+                                        <th>Total Amount</th>
+                                        <th>Reference </th>
+                                        <th> Staus</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for i in payhis %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'admin_remove' i.id %}" class="badge badge-danger text-danger me-0"><i class="mdi mdi-close-circle"></i> Delete</a>
+                                            <a href="{% url 'admin_approve' i.id %}" class="badge badge-success text-success me-0"><i class="icon-check"></i> Aprove</a>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex ">
+                                            <div><h6>{{i.reg_id.fullName}}</h6></div>
+                                            </div>
+                                        </td>
+                                        <td><h6>{{i.reg_id.Phone}}</h6></td>
+                                        <td><h6>{{i.reg_id.reg_state.state_name}}</h6></td>
+                                        <td><h6>{{i.paydofj}}</h6></td>
+                                        <td><h6>{{i.payintial_amt}}</h6></td>
+                                        <td><h6>{{i.paytotal_amt}}</h6></td> 
+                                        <td><h6>{{i.reg_id.refrence}}</h6></td> 
+                                        <td><div class="badge badge-opacity-warning">wating for approve</div></td>
+                                        <td>
+                                    
+                                            <div class="btn-wrapper">
+                                                
+                                            </div>
+                            
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                     
+                    </div>
+                   
+                  </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+   
+        const inputField = document.getElementById('search-data');
+        const closeBtn = document.getElementById('closeBtn');
+        const ojtTable = document.getElementById('OJT-Newregister');
+    
+        inputField.addEventListener('input', function() {
+            filterTable();
+        });
+    
+        function filterTable() {
+            const filterValue = inputField.value.toLowerCase();
+            const rows = ojtTable.getElementsByTagName('tr');
+    
+            for (let i = 1; i < rows.length; i++) {
+                
+                const state = rows[i].getElementsByTagName('td')[3];
+                const reffer = rows[i].getElementsByTagName('td')[7];
+              
+                if ( state || reffer ) {
+    
+                    const states = state.textContent || state.innerText;
+                    const refferns = reffer.textContent || reffer.innerText;
+
+                    if (states.toLowerCase().includes(filterValue) || refferns.toLowerCase().includes(filterValue)) 
+                    {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+    
+         // To display the close button and hide the close button based on the search input 
+        inputField.addEventListener('input', function() {
+        if (inputField.value == '') {
+            closeBtn.style.display = 'none';
+           
+        } else {
+            closeBtn.style.display = 'block';
+            
+        }
+        });
+    
+        closeBtn.addEventListener('click', function() {
+        inputField.value = '';
+        closeBtn.style.display = 'none';
+        filterTable(); // Display the full table data
+        });
+    </script>
+
+
+{% endblock %}
+
+
+    
+    <main>
+        <section id="register-box">
+            <div class="contaier-fluid">
+                <div class="register-details">
+                    <h4>Registeration Details</h4>
+                    <div class="line"></div>
+                   
+                    <form>
+                      
+                        <div class="input-group-box" >
+                            <label>Full Name</label>
+                            <input type="text" name="name" value="{{firstpayhis.reg_id.fullName}}" readonly>
+                        </div>
+                        <div class="input-group-box">
+                            <label>Date Of Joing</label>
+                            <input type="text" name="dfj"  value="{{firstpayhis.reg_id.dofj}}" readonly>
+                        </div>
+                        <div class="input-group-box">
+                            <label>Phone Number</label>
+                            <input type="text" name="phno"  value="{{firstpayhis.reg_id.Phone}}" readonly>
+                        </div>
+                        <div class="input-group-box">
+                            <label>Referenced By</label>
+                            <input type="text" name="refby"  value="{{firstpayhis.reg_id.refrence}}"readonly >
+                        </div>
+                        <div class="input-group-box">
+                            <label>Department</label>
+                            <input type="text" name="refby"  value="{{firstpayhis.reg_id.dept_id.department}}"readonly>
+                            
+                        </div>
+                        <div class="input-group-box">
+                            <label>Payed Amount</label>
+                            <input type="text" name="init_amunt"  value="{{firstpayhis.payintial_amt}}" readonly>
+                        </div>
+                        <div class="input-group-box">
+                            <label>Balance Amount</label>
+                            <input type="text" name="init_amunt"  value="{{firstpayhis.reg_id.regbalance_amt}}" readonly>
+                        </div>
+                        <div class="input-group-box">
+                            <label>Total Amount</label>
+                            <input type="text" name="tot_amount"  value="{{firstpayhis.paytotal_amt}}" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="register-details-table">
+                    <h4>Registeration And Payments Details</h4>
+                    <div class="line"></div>
+                    <div class="container">
+    
+                        <table id="register-details" class="display" >
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Full Name</th>
+                                    <th>Date Of Payed</th>
+                                    <th>Payed Amount</th>
+                                    <th>Balance Amount</th>
+                                    <th>Total Amount</th>
+                                    <th> Staus</th>
+                                    <th>Action</th>
+    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in payhis %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'admin_remove' i.id %}" class="notcheck"><i class="bi bi-x-circle-fill"></i>delete</a>
+                                    </td>
+                                    <td > <a href="{% url 'view_details' i.id %}" style="font-size: 0.94em; color:#000">{{i.reg_id.fullName}}</a></td>
+                                    <td>{{i.paydofj}}</td>
+                                    
+                                    <td class="warning">{{i.payintial_amt}}</td>
+                                   
+                                    <td>{{i.paybalance_amt}}</td> 
+                                    
+                                    <td>{{i.paytotal_amt}}</td> 
+                                    <td><a href="#" class="wating"><i class="bi bi-exclamation-triangle-fill"></i><span>Wating..</span></a></td>
+                                    <td>
+                                        <a href="{% url 'admin_approve' i.id %}" class="check">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            <span style="font-size:0.85em ;">Approve</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                              
+                            </tbody>
+                           
+                        </table>
+    
+                    </div>
+                </div>
+               
+            </div>
+        </section>
+    
+        <!-- Meaage Box fead Out -->
+    
+    
+    </main>

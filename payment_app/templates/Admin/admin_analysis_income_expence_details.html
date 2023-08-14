@@ -2,6 +2,8 @@
 {% load static %}
 {% block body %}
 
+
+
 <div class="content-wrapper">
     <div class="row">
         <div class="col-sm-12">
@@ -14,7 +16,15 @@
                              
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="card-title text-success">Income - <i class="mdi mdi-currency-inr icon-sm"></i> {{content.inco}}  </h4>
+                                        <h4 class="card-title text-success">Income - <i class="mdi mdi-currency-inr icon-sm"></i> {{inco}} -
+                                            {% if balans > 0 %}
+                                               <span class="text-normal">{% now "F" %}</span><span class="text-success text-sm"> ( Profit )</span>
+                                            {% elif balans < 0%}
+                                            <span class="text-normal"> {% now "F" %}</span><span class="text-danger text-sm"> ( Loss )</span>
+                                            {% else %}
+                                            <span class="text-normal"> {% now "F" %}</span><span class="text-primary text-sm"> ( Equal )</span>
+                                            {% endif %}
+                                         </h4>
                                         <div class="media">
                                         <i class="mdi mdi-plus icon-md text-info d-flex align-self-start me-3"></i>
                                         <div class="media-body">
@@ -29,7 +39,7 @@
                             
                                 <div class="card">
                                   <div class="card-body">
-                                      <h4 class="card-title text-danger">Expence - <i class="mdi mdi-currency-inr icon-sm"></i> {{content.expe}} </h4>
+                                      <h4 class="card-title text-danger">Expence - <i class="mdi mdi-currency-inr icon-sm"></i> {{expe}} </h4>
                                       <div class="media">
                                       <i class="mdi mdi-minus icon-md text-info d-flex align-self-center me-3"></i>
                                       <div class="media-body">
@@ -44,7 +54,7 @@
                              
                                 <div class="card">
                                     <div class="card-body">
-                                      <h4 class="card-title">Balance - <i class="mdi mdi-currency-inr icon-sm"></i> {{content.balans}}</h4>
+                                      <h4 class="card-title">Balance - <i class="mdi mdi-currency-inr icon-sm"></i> {{balans}}</h4>
                                       <div class="media">
                                       <i class="mdi mdi-contrast icon-md text-info d-flex align-self-end me-3"></i>
                                       <div class="media-body">
@@ -62,6 +72,7 @@
         </div>
     </div>
 
+    
     <style>
         .search-form
         {
