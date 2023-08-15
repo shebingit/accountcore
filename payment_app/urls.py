@@ -232,7 +232,9 @@ urlpatterns = [
     path('Admin-Analysis-On_Months-Search',views.admin_analysis_search,name='admin_analysis_search'),
     path('Company-Income-Expence-analysis',views.admin_analysis_income_expence_details,name='admin_analysis_income_expence_details'),
     path('Analysis-OJT',views.admin_analysis_OJT_details,name='admin_analysis_OJT_details'),
+    path('OJT-Payments-Details/<int:pk>',views.admin_registartion_ojt_payment_details,name="admin_registartion_ojt_payment_details"),
     path('Analysis-OJT-All-Registration',views.admin_ojt_registration_all_states,name='admin_ojt_registration_all_states'),
+    path('Analysis-OJT-Upcoming-Payments',views.admin_ojt_current_upcoming_payments,name='admin_ojt_current_upcoming_payments'),
     path('Analysis-Employee',views.admin_analysis_employee_details,name='admin_analysis_employee_details'),
     
 

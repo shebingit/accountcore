@@ -71,7 +71,7 @@
                             <td>{{newreg.dofj}}</td>
                             <td>
                                 <div class="d-flex ">
-                                <div><h6>{{newreg.fullName}}</h6></div>
+                                <div><a href="{% url 'admin_registartion_ojt_payment_details' newreg.id  %}"><h6>{{newreg.fullName}}</h6></a></div>
                                 </div>
                             </td>
                             <td><h6>{{newreg.dept_id.department}}</h6> </td>

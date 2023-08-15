@@ -1,0 +1,594 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+<!--- State Add & Asssign to Accountant  -->
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active ps-0"  data-bs-toggle="tab" href="#payments-current" role="tab" aria-controls="register-employee" aria-selected="true">
+                          <span class="badge bg-light text-dark align-items-center">
+                              <i class="icon-calendar"></i> &nbsp;{% now "F" %}
+                          </span>
+                      </a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link  ps-0"  data-bs-toggle="tab" href="#payments-1-to-7" role="tab" aria-controls="register-employee" aria-selected="true">
+                        <span class="badge bg-light text-dark align-items-center">
+                            <i class="icon-calendar"></i>&nbsp; 1 &nbsp;To &nbsp;7 &nbsp;Days 
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#payments-8-to-15" role="tab" aria-selected="false">
+                    <span class="badge bg-light text-dark align-items-center">
+                        <i class="icon-calendar"></i>&nbsp; 8 &nbsp;To &nbsp;15 &nbsp;Days 
+                    </span>
+                 </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="" data-bs-toggle="tab" href="#payments-16-to-end" role="tab" aria-selected="false">
+                        <span class="badge bg-light text-dark align-items-center">
+                            <i class="icon-calendar"></i>&nbsp; 16 &nbsp;To &nbsp;End &nbsp;Of &nbsp;{% now "F" %}
+                        </span> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="" data-bs-toggle="tab" href="#payments-next-month" role="tab" aria-selected="false">
+                        <span class="badge bg-light text-dark align-items-center">
+                            <i class="icon-calendar"></i> &nbsp;Next Month
+                        </span> 
+                    </a>
+                </li>
+                
+              </ul>
+              
+              
+            </div>
+            <div class="tab-content tab-content-basic">
+                <div class="tab-pane fade show active" id="payments-current" role="tabpanel" aria-labelledby="payments-1-to-7"> 
+                
+                    <div class="row">
+                        <div class="col-lg-12 d-flex flex-column">
+                        
+                        <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                            <div class="card card-rounded">
+                                <div class="card-body">
+                                <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                    <h4 class="card-title card-title-dash">Upcoming payments on {% now "F" %}
+                                        {% if stateName %}
+                                        - &nbsp; {{stateName.state_name}}
+                                    {% endif %}
+                                    </h4>
+                                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay_current_count}}</span> payments - 
+                                        <span class="count-value">Total-  {{pay_current_amt}}</span> </p>
+                                    </div>
+                                    <div>
+                                        <form class="search-form" action="#" method="post">
+                                            {% csrf_token %}
+                                           
+                                            <div class="searchBox">
+                                                
+                                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                                <button type="button" class="close-btn" id="closeBtn">
+                                                     <i class="mdi mdi-close"></i>
+                                                </button>
+                                                
+                                            </div>
+                                           
+                                            <div class="w-box" >
+                                                <select name="search_select" class="search-select">
+                                                   
+                                                    <option value="0"> All states </option>
+                                                    {% for state in states %}
+                                                    <option value="{{state.id}}">{{state.state_name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+                                </div>
+                                <div class="table-responsive  mt-1">
+                                    <table class="table select-table" id="OJT-register">
+                                    <thead>
+                                        <tr>
+                                            <th>Full Name</th>
+                                            <th>Department</th>
+                                            <th>state</th>
+                                            <th>Referenced By</th>
+                                            <th>Next pay date</th>
+                                            <th>Next payment</th>
+                                           
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for pay in pay_current %}
+                                        <tr>
+                                           
+                                            <td>
+                                                <div class="d-flex ">
+                                                    <div>
+                                                        <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
+                                                            <h6>{{pay.fullName}}</h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><h6>{{pay.dept_id.department}}</h6> </td>
+                                            <td><div><h6>{{pay.reg_state.state_name}}</h6></div></td>
+                                            <td><div><h6>{{pay.refrence}}</h6></div></td>
+                                            <td><h6>{{pay.next_pay_date}}</h6></td>
+                                            <td><h6>{{pay.next_pat_amt}}</h6></td>
+                                        </tr>
+                                        {% endfor %}
+                                        
+                                    </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        
+                        </div>
+                    
+                    </div>
+                       
+    
+                  </div>
+    
+              <div class="tab-pane fade " id="payments-1-to-7" role="tabpanel" aria-labelledby="payments-1-to-7"> 
+                
+                <div class="row">
+                    <div class="col-lg-12 d-flex flex-column">
+                    
+                    <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                            <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                <h4 class="card-title card-title-dash">Upcoming payments on {% now "F" %}
+                                    {% if stateName %}
+                                        - &nbsp; {{stateName.state_name}}
+                                    {% endif %}
+                                </h4>
+                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay1_7_count}}</span> payments - 
+                                    <span class="count-value">Total-  {{pay1_7_amt}}</span> </p>
+                                </div>
+                                <div>
+                                    <form class="search-form" action="#" method="post">
+                                        {% csrf_token %}
+                                       
+                                        <div class="searchBox">
+                                            
+                                            <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                            <button type="button" class="close-btn" id="closeBtn">
+                                                 <i class="mdi mdi-close"></i>
+                                            </button>
+                                            
+                                        </div>
+                                       
+                                        <div class="w-box" >
+                                            <select name="search_select" class="search-select">
+                                               
+                                                <option value="0"> All states </option>
+                                                {% for state in states %}
+                                                <option value="{{state.id}}">{{state.state_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                            </div>
+                            <div class="table-responsive  mt-1">
+                                <table class="table select-table" id="OJT-register">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Department</th>
+                                        <th>state</th>
+                                        <th>Referenced By</th>
+                                        <th>Next pay date</th>
+                                        <th>Next payment</th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pay in pay1_7 %}
+                                    <tr>
+                                       
+                                        <td>
+                                            <div class="d-flex ">
+                                                <div>
+                                                    <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
+                                                        <h6>{{pay.fullName}}</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><h6>{{pay.dept_id.department}}</h6> </td>
+                                        <td><div><h6>{{pay.reg_state.state_name}}</h6></div></td>
+                                        <td><div><h6>{{pay.refrence}}</h6></div></td>
+                                        <td><h6>{{pay.next_pay_date}}</h6></td>
+                                        <td><h6>{{pay.next_pat_amt}}</h6></td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                
+                </div>
+
+              </div>
+              <div class="tab-pane fade" id="payments-8-to-15" role="tabpanel" aria-labelledby="payments-8-to-15"> 
+                <div class="row">
+                    <div class="col-lg-12 d-flex flex-column">
+                    
+                    <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                            <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                <h4 class="card-title card-title-dash">Upcoming payments on {% now "F" %}
+                                    {% if stateName %}
+                                        - &nbsp; {{stateName.state_name}}
+                                    {% endif %}
+                                </h4>
+                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay8_15_count}}</span> payments - 
+                                    <span class="count-value">Total-  {{pay8_15_amt}}</span> </p>
+                                </div>
+                                <div>
+                                    <form class="search-form" action="#" method="post">
+                                        {% csrf_token %}
+                                       
+                                        <div class="searchBox">
+                                            
+                                            <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                            <button type="button" class="close-btn" id="closeBtn">
+                                                 <i class="mdi mdi-close"></i>
+                                            </button>
+                                            
+                                        </div>
+                                       
+                                        <div class="w-box" >
+                                            <select name="search_select" class="search-select">
+                                               
+                                                <option value="0"> All states </option>
+                                                {% for state in states %}
+                                                <option value="{{state.id}}">{{state.state_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                            </div>
+                            <div class="table-responsive  mt-1">
+                                <table class="table select-table" id="OJT-register">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Department</th>
+                                        <th>state</th>
+                                        <th>Referenced By</th>
+                                        <th>Next pay date</th>
+                                        <th>Next payment</th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pay in pay8_15 %}
+                                    <tr>
+                                       
+                                        <td>
+                                            <div class="d-flex ">
+                                                <div>
+                                                    <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
+                                                        <h6>{{pay.fullName}}</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><h6>{{pay.dept_id.department}}</h6> </td>
+                                        <td><div><h6>{{pay.reg_state.state_name}}</h6></div></td>
+                                        <td><div><h6>{{pay.refrence}}</h6></div></td>
+                                        <td><h6>{{pay.next_pay_date}}</h6></td>
+                                        <td><h6>{{pay.next_pat_amt}}</h6></td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                
+                </div>                  
+    
+              </div>
+              <div class="tab-pane fade" id="payments-16-to-end" role="tabpanel" aria-labelledby="payments-16-to-end"> 
+                
+                <div class="row">
+                    <div class="col-lg-12 d-flex flex-column">
+                    
+                    <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                            <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                <h4 class="card-title card-title-dash">Upcoming payments on {% now "F" %}
+                                    {% if stateName %}
+                                        - &nbsp; {{stateName.state_name}}
+                                    {% endif %}
+                                </h4>
+                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay15_end_count}}</span> payments - 
+                                    <span class="count-value">Total-  {{pay15_end_amt}}</span> </p>
+                                </div>
+                                <div>
+                                    <form class="search-form" action="#" method="post">
+                                        {% csrf_token %}
+                                       
+                                        <div class="searchBox">
+                                            
+                                            <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                            <button type="button" class="close-btn" id="closeBtn">
+                                                 <i class="mdi mdi-close"></i>
+                                            </button>
+                                            
+                                        </div>
+                                       
+                                        <div class="w-box" >
+                                            <select name="search_select" class="search-select">
+                                               
+                                                <option value="0"> All states </option>
+                                                {% for state in states %}
+                                                <option value="{{state.id}}">{{state.state_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                            </div>
+                            <div class="table-responsive  mt-1">
+                                <table class="table select-table" id="OJT-register">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Department</th>
+                                        <th>state</th>
+                                        <th>Referenced By</th>
+                                        <th>Next pay date</th>
+                                        <th>Next payment</th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pay in pay15_end %}
+                                    <tr>
+                                       
+                                        <td>
+                                            <div class="d-flex ">
+                                                <div>
+                                                    <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
+                                                        <h6>{{pay.fullName}}</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><h6>{{pay.dept_id.department}}</h6> </td>
+                                        <td><div><h6>{{pay.reg_state.state_name}}</h6></div></td>
+                                        <td><div><h6>{{pay.refrence}}</h6></div></td>
+                                        <td><h6>{{pay.next_pay_date}}</h6></td>
+                                        <td><h6>{{pay.next_pat_amt}}</h6></td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                
+                </div>
+                   
+                
+              </div>
+              <div class="tab-pane fade" id="payments-next-month" role="tabpanel" aria-labelledby="payments-next-month"> 
+                
+                <div class="row">
+                    <div class="col-lg-12 d-flex flex-column">
+                    
+                    <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                            <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                <h4 class="card-title card-title-dash">Upcoming payments on next month
+                                    {% if stateName %}
+                                        - &nbsp; {{stateName.state_name}}
+                                    {% endif %}
+                                </h4>
+                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{paynext_count}}</span> payments - 
+                                    <span class="count-value">Total-  {{paynext_amt}}</span> </p>
+                                </div>
+                                <div>
+                                    <form class="search-form" action="#" method="post">
+                                        {% csrf_token %}
+                                       
+                                        <div class="searchBox">
+                                            
+                                            <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                            <button type="button" class="close-btn" id="closeBtn">
+                                                 <i class="mdi mdi-close"></i>
+                                            </button>
+                                            
+                                        </div>
+                                       
+                                        <div class="w-box" >
+                                            <select name="search_select" class="search-select">
+                                               
+                                                <option value="0"> All states </option>
+                                                {% for state in states %}
+                                                <option value="{{state.id}}">{{state.state_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                            </div>
+                            <div class="table-responsive  mt-1">
+                                <table class="table select-table" id="OJT-register">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Department</th>
+                                        <th>state</th>
+                                        <th>Referenced By</th>
+                                        <th>Next pay date</th>
+                                        <th>Next payment</th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pay in paynext %}
+                                    <tr>
+                                       
+                                        <td>
+                                            <div class="d-flex ">
+                                                <div>
+                                                    <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
+                                                        <h6>{{pay.fullName}}</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><h6>{{pay.dept_id.department}}</h6> </td>
+                                        <td><div><h6>{{pay.reg_state.state_name}}</h6></div></td>
+                                        <td><div><h6>{{pay.refrence}}</h6></div></td>
+                                        <td><h6>{{pay.next_pay_date}}</h6></td>
+                                        <td><h6>{{pay.next_pat_amt}}</h6></td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const employeeTable = document.getElementById('employee-details');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = employeeTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const empidCell = rows[i].getElementsByTagName('td')[0];
+            const empnameCell = rows[i].getElementsByTagName('td')[1];
+            const departmentCell = rows[i].getElementsByTagName('td')[2];
+            const designationCell = rows[i].getElementsByTagName('td')[3];
+            const statusCell = rows[i].getElementsByTagName('td')[6];
+
+            if (empidCell || empnameCell || departmentCell || designationCell || statusCell ) {
+                const id = empidCell.textContent || empidCell.innerText;
+                const empname = empnameCell.textContent || empnameCell.innerText;
+                const dept = departmentCell.textContent || departmentCell.innerText;
+                const desig = designationCell.textContent || designationCell.innerText;
+                const status_emp = statusCell.textContent || statusCell.innerText;
+               
+
+                if (id.toLowerCase().includes(filterValue) || empname.toLowerCase().includes(filterValue) || dept.toLowerCase().includes(filterValue) || desig.toLowerCase().includes(filterValue)|| status_emp.toLowerCase().includes(filterValue)) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+{% endblock %}

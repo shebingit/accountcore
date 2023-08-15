@@ -31563,7 +31563,18 @@ background: #ffffff;
    
   }
 }
+.pay-success-bg
+{
+  background: rgba(39, 243, 39, 0.716);
+}
+.pay-progress-bg
+{
+  background: rgba(230, 255, 8, 0.716);
+}
        
-
+.pay-danger-bg
+{
+  background: rgba(240, 21, 21, 0.716); 
+}
 
        

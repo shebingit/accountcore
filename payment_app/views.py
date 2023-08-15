@@ -4868,59 +4868,70 @@ def admin_analysis_OJT_details(request):
 
             if  request.POST['search_select'] == '0':
                 new_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date)
+                reg_c=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date).count()
             else:
                 sid=request.POST['search_select']
                 state_id = Register_State.objects.get(id=sid)
+                reg_c=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id).count()
                 new_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id)
 
         else:
             new_reg=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date)
+            reg_c=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date).count()
 
         # ==============================OJT section Start =============================
 
 
         reg=Register.objects.filter(reg_status=1).count()
-        reg_ojt_amt=Register.objects.filter(reg_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+
+        #upcoming payments count
+        upcoming_payment_count=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,reg_status=1).count()
+
+        # reg_ojt_amt=Register.objects.filter(reg_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
         
-        reg_c=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date).count()
-        reg_c_amt=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date,).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        # reg_c_amt=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date,).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
        
 
-        reg_pending=Register.objects.filter(reg_status=1,payment_status=0).count()
-        reg_complete=Register.objects.filter(reg_status=1,payment_status=1).count()
-        reg_incomplete=Register.objects.filter(reg_status=1,payment_status=2).count()
-        reg_p_amt=Register.objects.filter(reg_status=1,payment_status=0).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
-        reg_c_amt=Register.objects.filter(reg_status=1,payment_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
-        reg_in_amt=Register.objects.filter(reg_status=1,payment_status=2).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        # reg_pending=Register.objects.filter(reg_status=1,payment_status=0).count()
+        # reg_complete=Register.objects.filter(reg_status=1,payment_status=1).count()
+        # reg_incomplete=Register.objects.filter(reg_status=1,payment_status=2).count()
+        # reg_p_amt=Register.objects.filter(reg_status=1,payment_status=0).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        # reg_c_amt=Register.objects.filter(reg_status=1,payment_status=1).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
+        # reg_in_amt=Register.objects.filter(reg_status=1,payment_status=2).aggregate(Sum('regtotal_amt'))['regtotal_amt__sum']
 
-        after_6_days = fr_date + timedelta(days=6)  
-        after_8_days = fr_date + timedelta(days=7)  
-        after_15days = fr_date + timedelta(days=14) 
+        # after_6_days = fr_date + timedelta(days=6)  
+        # after_8_days = fr_date + timedelta(days=7)  
+        # after_15days = fr_date + timedelta(days=14) 
 
-        payhistory1=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
-        payhistory8=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
-        payhistory15=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
-        payhistory1_c=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).count()
-        payhistory8_c=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).count()
-        payhistory15_c=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).count()
+        # payhistory1=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        # payhistory8=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        # payhistory15=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        # payhistory1_c=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,).count()
+        # payhistory8_c=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,).count()
+        # payhistory15_c=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,).count()
       
-        unpaidhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1)
-        reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).count()
-        reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
-        next_reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).count()
-        next_reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        # unpaidhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1)
+        # reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).count()
+        # reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=fr_date,next_pay_date__lte=to_date).exclude(id__in=unpaidhis.values_list('reg_id', flat=True)).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        # next_reg_upaid_c=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).count()
+        # next_reg_upaid=Register.objects.filter(reg_status=1,payment_status=0,next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
 
         # ==============================End OJT section  =============================
     
         common_data = nav_data(request)
 
-        content = {'admin_DHB':admin_DHB,'new_reg':new_reg,'reg':reg,'reg_c':reg_c,'reg_c_amt':reg_c_amt,
-                 'reg_ojt_amt':reg_ojt_amt,'reg_pending':reg_pending,'reg_complete':reg_complete,
-                 'reg_p_amt':reg_p_amt,'reg_c_amt':reg_c_amt,'reg_in_amt':reg_in_amt,'reg_incomplete':reg_incomplete,
-                 'reg_upaid_c':reg_upaid_c,'reg_upaid':reg_upaid,'payhistory1':payhistory1,'payhistory8':payhistory8,
-                 'payhistory15':payhistory15,'payhistory1_c':payhistory1_c,'payhistory8_c':payhistory8_c,
-                 'payhistory15_c':payhistory15_c,'next_reg_upaid_c':next_reg_upaid_c,'next_reg_upaid':next_reg_upaid,
+        content = {'admin_DHB':admin_DHB,
+                   'new_reg':new_reg,
+                   'reg':reg,'reg_c':reg_c,
+                   'upcoming_payment_count':upcoming_payment_count
                  }
+        
+        # 'reg_c_amt':reg_c_amt,
+        #          'reg_ojt_amt':reg_ojt_amt,'reg_pending':reg_pending,'reg_complete':reg_complete,
+        #          'reg_p_amt':reg_p_amt,'reg_c_amt':reg_c_amt,'reg_in_amt':reg_in_amt,'reg_incomplete':reg_incomplete,
+        #          'reg_upaid_c':reg_upaid_c,'reg_upaid':reg_upaid,'payhistory1':payhistory1,'payhistory8':payhistory8,
+        #          'payhistory15':payhistory15,'payhistory1_c':payhistory1_c,'payhistory8_c':payhistory8_c,
+        #          'payhistory15_c':payhistory15_c,'next_reg_upaid_c':next_reg_upaid_c,'next_reg_upaid':next_reg_upaid,
 
         # Merge the two dictionaries
         content = {**content, **common_data}
@@ -4996,6 +5007,32 @@ def admin_ojt_registration_all_states(request):
         return redirect('/')
 
 
+def admin_registartion_ojt_payment_details(request,pk):
+     if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+
+       
+        #-----------------------------------------------
+
+        OJT_payments = OJT_payments_details(request,pk)
+        common_data = nav_data(request)
+
+
+        content={
+                 'admin_DHB':admin_DHB,
+                 
+                }
+
+         # Merge the two dictionaries
+        content = {**content, **common_data, **OJT_payments}
+
+        return render(request,'Admin/admin_ojt_payments_view.html',content)
+
 
 def admin_analysis_employee_details(request):
      
@@ -5070,6 +5107,41 @@ def admin_analysis_employee_details(request):
 
 
         return render(request,'Admin/admin_analysis_employee.html',content)
+    else:
+        return redirect('/')
+
+
+def admin_ojt_current_upcoming_payments(request):
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+
+        if request.method=='POST':
+
+            if request.POST['search_select'] == '0':
+                
+                up_payments = upcoming_payments(request)
+            
+            else:
+                state_id=Register_State.objects.get(id=int(request.POST['search_select']))
+                up_payments = upcoming_state_payments(request,state_id)   
+        
+        else:
+
+            up_payments = upcoming_payments(request)
+
+
+        common_data = nav_data(request)
+
+        content={'admin_DHB':admin_DHB}
+            # Merge the two dictionaries
+        content = {**content, **common_data, **up_payments}
+
+        return render(request,'Admin/admin_ojt_upcoming_payments.html',content)
     else:
         return redirect('/')
 

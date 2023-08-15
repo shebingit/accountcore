@@ -28,14 +28,14 @@
                         </a>
                         </div>
                         <div class="col-md-4 grid-margin stretch-card">
-                            <a href="#">
+                            <a href="{% url 'admin_ojt_current_upcoming_payments' %}">
                                 <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title"></h4>
+                                    <h4 class="card-title">Upcoming Payments <span>( {{upcoming_payment_count}})</span></h4>
                                     <div class="media">
                                     <i class="mdi mdi-cube-outline icon-md text-info d-flex align-self-center me-3"></i>
                                     <div class="media-body">
-                                        <p class="card-text">Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque.</p>
+                                        <p class="card-text">Total number of upcoming payments in {% now "F" %} for OJT ( it include all state )</p>
                                     </div>
                                     </div>
                                 </div>
@@ -134,7 +134,11 @@
                             <td>{{newreg.dofj}}</td>
                             <td>
                                 <div class="d-flex ">
-                                <div><h6>{{newreg.fullName}}</h6></div>
+                                    <div>
+                                        <a href="{% url 'admin_registartion_ojt_payment_details' newreg.id  %}">
+                                            <h6>{{newreg.fullName}}</h6>
+                                        </a>
+                                    </div>
                                 </div>
                             </td>
                             <td><h6>{{newreg.dept_id.department}}</h6> </td>
