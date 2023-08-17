@@ -1,0 +1,523 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+<!--- State Add & Asssign to Accountant  -->
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active ps-0"  data-bs-toggle="tab" href="#payments-allpending" role="tab" aria-controls="pending-employee" aria-selected="true">
+                       All Payments
+                         
+                      </a>
+                  </li>
+                <li class="nav-item">
+                    <a class="nav-link "  data-bs-toggle="tab" href="#payments-pending" role="tab" aria-controls="pending-employee" aria-selected="false">
+                       Pending Payments
+                         
+                      </a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link "  data-bs-toggle="tab" href="#payments-completed" role="tab" aria-controls="register-employee" aria-selected="false">
+                    Completed  Payments
+                
+                    </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link"  data-bs-toggle="tab" href="#payments-incompleted" role="tab" aria-selected="false">
+                     Incomplete Payments
+                    
+                 </a>
+                </li>
+                
+              </ul>
+            
+            </div>
+
+            <div class="tab-content tab-content-basic">
+
+                <div class="tab-pane fade show active" id="payments-allpending" role="tabpanel" aria-labelledby="payments-allpending"> 
+                
+                    <div class="row">
+                        <div class="col-lg-12 d-flex flex-column">
+                        
+                        <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                            <div class="card card-rounded">
+                                <div class="card-body">
+                                <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h4 class="card-title card-title-dash">All payments </h4>
+                                        <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{all_pending_reg_count}}</span> payment status. 
+                                            
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <form class="search-form" action="#" method="post">
+                                            {% csrf_token %}
+                                           
+                                            <div class="searchBox">
+                                                
+                                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                                <button type="button" class="close-btn" id="closeBtn">
+                                                     <i class="mdi mdi-close"></i>
+                                                </button>
+                                                
+                                            </div>
+                                           
+                                            <div class="w-box" >
+                                                <select name="search_select" class="search-select">
+                                                   
+                                                    <option value="0"> All states </option>
+                                                    {% for state in states %}
+                                                    <option value="{{state.id}}">{{state.state_name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+                                </div>
+                                <div class="table-responsive  mt-1">
+                                    <table class="table select-table" id="OJT-register">
+                                    <thead>
+                                        <tr>
+                                            <th>Full Name</th>
+                                            <th>Date of join</th>
+                                            <th>Department</th>
+                                            <th>state</th>
+                                            <th>Referenced By</th>
+                                            <th>Progress</th>
+                                           
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for pay in all_pending_reg %}
+                                        <tr>
+                                           
+                                            <td>
+                                                <div class="d-flex ">
+                                                    <div>
+                                                        <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
+                                                            <h6>{{pay.fullName}}</h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{pay.dofj}}</td>
+                                            <td><h6>{{pay.dept_id.department}}</h6> </td>
+                                            <td><div><h6>{{pay.reg_state.state_name}}</h6></div></td>
+                                            <td><div><h6>{{pay.refrence}}</h6></div></td>
+                                            <td>
+                                                {% if pay.payment_status == 0 %}
+                                                <div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                      <p class="text-warning">{{pay.payprogress}}%</p>
+                                                    </div>
+                                                
+                                                    <div class="progress progress-md">
+                                                        <div class="progress-bar bg-warning" role="progressbar" style="width:{{pay.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                                {% elif pay.payment_status == 1 %}
+                                                <div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                      <p class="text-success">{{pay.payprogress}}%</p>
+                                                    </div>
+                                                
+                                                    <div class="progress progress-md">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width:{{pay.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                                {% else %}
+                                                <div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                      <p class="text-danger">{{pay.payprogress}}%</p>
+                                                    </div>
+                                                
+                                                    <div class="progress progress-md">
+                                                        <div class="progress-bar bg-danger" role="progressbar" style="width:{{pay.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </td>
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                        
+                                    </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        
+                        </div>
+                    
+                    </div>
+                       
+    
+                  </div>
+
+                <div class="tab-pane fade" id="payments-pending" role="tabpanel" aria-labelledby="payments-pending"> 
+                
+                    <div class="row">
+                        <div class="col-lg-12 d-flex flex-column">
+                        
+                        <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                            <div class="card card-rounded">
+                                <div class="card-body">
+                                <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h4 class="card-title card-title-dash">Pending payments </h4>
+                                        <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pending_reg_count}}</span> pending payments - 
+                                            <span class="count-value">Need to get -  {{pending_amt.regbalance_amt__sum}}</span> 
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <form class="search-form" action="#" method="post">
+                                            {% csrf_token %}
+                                           
+                                           
+                                           
+                                            <div class="w-box" >
+                                                <select name="search_select" class="search-select">
+                                                   
+                                                    <option value="0"> All states </option>
+                                                    {% for state in states %}
+                                                    <option value="{{state.id}}">{{state.state_name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+                                </div>
+                                <div class="table-responsive  mt-1">
+                                    <table class="table select-table" id="OJT-register">
+                                    <thead>
+                                        <tr>
+                                            <th>Full Name</th>
+                                            <th>Date of join</th>
+                                            <th>Department</th>
+                                            <th>state</th>
+                                            <th>Referenced By</th>
+                                            <th>Progress</th>
+                                           
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for pay in pending_reg %}
+                                        <tr>
+                                           
+                                            <td>
+                                                <div class="d-flex ">
+                                                    <div>
+                                                        <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
+                                                            <h6>{{pay.fullName}}</h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{pay.dofj}}</td>
+                                            <td><h6>{{pay.dept_id.department}}</h6> </td>
+                                            <td><div><h6>{{pay.reg_state.state_name}}</h6></div></td>
+                                            <td><div><h6>{{pay.refrence}}</h6></div></td>
+                                            <td>
+                                                <div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                      <p class="text-warning">{{pay.payprogress}}%</p>
+                                                    </div>
+                                                
+                                                    <div class="progress progress-md">
+                                                        <div class="progress-bar bg-warning" role="progressbar" style="width:{{pay.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                        
+                                    </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        
+                        </div>
+                    
+                    </div>
+                       
+    
+                  </div>
+    
+              <div class="tab-pane fade " id="payments-completed" role="tabpanel" aria-labelledby="payments-completed"> 
+                
+                <div class="row">
+                    <div class="col-lg-12 d-flex flex-column">
+                    
+                    <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                            <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                    <h4 class="card-title card-title-dash">Complete payments </h4>
+                                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{complete_regcount}}</span>Completed payments - 
+                                        <span class="count-value">Total-  {{complete_reg_amt.regtotal_amt__sum}}</span> 
+                                    </p>
+                                </div>
+                                <div>
+                                    <form class="search-form" action="#" method="post">
+                                        {% csrf_token %}
+                                    
+                                       
+                                        <div class="w-box" >
+                                            <select name="search_select" class="search-select">
+                                               
+                                                <option value="0"> All states </option>
+                                                {% for state in states %}
+                                                <option value="{{state.id}}">{{state.state_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                            </div>
+                            <div class="table-responsive  mt-1">
+                                <table class="table select-table" id="OJT-register">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Date of Join</th>
+                                        <th>Department</th>
+                                        <th>state</th>
+                                        <th>Referenced By</th>
+                                        <th>Progress</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pay in complete_reg %}
+                                    <tr>
+                                       
+                                        <td>
+                                            <div class="d-flex ">
+                                                <div>
+                                                    <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
+                                                        <h6>{{pay.fullName}}</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{pay.dofj}}</td>
+                                        <td><h6>{{pay.dept_id.department}}</h6> </td>
+                                        <td><div><h6>{{pay.reg_state.state_name}}</h6></div></td>
+                                        <td><div><h6>{{pay.refrence}}</h6></div></td>
+                                        <td>
+                                            <div>
+                                                <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                  <p class="text-success">{{pay.payprogress}}%</p>
+                                                </div>
+                                            
+                                                <div class="progress progress-md">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width:{{pay.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                       
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                
+                </div>
+
+              </div>
+              <div class="tab-pane fade" id="payments-incompleted" role="tabpanel" aria-labelledby="payments-incompleted"> 
+                <div class="row">
+                    <div class="col-lg-12 d-flex flex-column">
+                    
+                    <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                            <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                <h4 class="card-title card-title-dash">Incomplete payments </h4>
+                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{incomplete_reg_count}}</span>incomplete payments - 
+                                    <span class="count-value">Total-  {{incomplete_reg_amt.regtotal_amt__sum}}</span> </p>
+                                </div>
+                                <div>
+                                    <form class="search-form" action="#" method="post">
+                                        {% csrf_token %}
+                                       
+                                   
+                                       
+                                        <div class="w-box" >
+                                            <select name="search_select" class="search-select">
+                                               
+                                                <option value="0"> All states </option>
+                                                {% for state in states %}
+                                                <option value="{{state.id}}">{{state.state_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                            </div>
+                            <div class="table-responsive  mt-1">
+                                <table class="table select-table" id="OJT-register-incomplete">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>date of Join</th>
+                                        <th>Department</th>
+                                        <th>state</th>
+                                        <th>Referenced By</th>
+                                        <th>Progress</th>
+                                    
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pay in incomplete_reg %}
+                                    <tr>
+                                       
+                                        <td>
+                                            <div class="d-flex ">
+                                                <div>
+                                                    <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
+                                                        <h6>{{pay.fullName}}</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{pay.dofj}}</td>
+                                        <td><h6>{{pay.dept_id.department}}</h6> </td>
+                                        <td><div><h6>{{pay.reg_state.state_name}}</h6></div></td>
+                                        <td><div><h6>{{pay.refrence}}</h6></div></td>
+                                        <td>
+                                            <div>
+                                                <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                  <p class="text-danger">{{pay.payprogress}}%</p>
+                                                </div>
+                                            
+                                                <div class="progress progress-md">
+                                                    <div class="progress-bar bg-danger" role="progressbar" style="width:{{pay.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                
+                </div>                  
+    
+              </div>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const OJT_registerTable = document.getElementById('OJT-register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = OJT_registerTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const data1 = rows[i].getElementsByTagName('td')[0];
+            const data2 = rows[i].getElementsByTagName('td')[2];
+            const data3 = rows[i].getElementsByTagName('td')[3];
+            const data4 = rows[i].getElementsByTagName('td')[4];
+           
+
+            if (data1 || data2 || data3 || data4) {
+                const d1 = data1.textContent || data1.innerText;
+                const d2 = data2.textContent || data2.innerText;
+                const d3 = data3.textContent || data3.innerText;
+                const d4 = data4.textContent || data4.innerText;
+               
+
+                if (d1.toLowerCase().includes(filterValue) || d2.toLowerCase().includes(filterValue) || d3.toLowerCase().includes(filterValue) || d4.toLowerCase().includes(filterValue)) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+
+{% endblock %}

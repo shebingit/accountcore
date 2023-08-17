@@ -4,6 +4,176 @@
 
 <!--- OJT Section -->
 <div class="content-wrapper">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="home-tab">
+
+                <div class="tab-content tab-content-basic">
+                  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
+                    <div class="row">
+                        <div class="col-md-4 grid-margin stretch-card">
+                        <a href="{% url 'admin_employee_analyis_registration_all_states' %}">
+                            <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Employee - Registrations <span>({{emp_reg_count}})</span> </h4>
+                                <div class="media">
+                                <i class="mdi mdi-account-multiple icon-md text-info d-flex align-self-start me-3"></i>
+                                <div class="media-body">
+                                    <p class="card-text">Total number of employee registrations  ( it include all state )  </p>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </a>
+                        </div>
+                        <div class="col-md-4 grid-margin stretch-card">
+                            <a href="{% url 'admin_emp_salary_paid_list' %}">
+                                <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Salary Paid <span>( {{emp_sal_count}})</span></h4>
+                                    <div class="media">
+                                    <i class="mdi mdi-checkbox-marked-circle-outline icon-md text-info d-flex align-self-center me-3"></i>
+                                    <div class="media-body">
+                                        <p class="card-text">Total number of salary payments in {% now "F" %} for OJT ( it include all state )</p>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 grid-margin stretch-card">
+                            <a href="{% url 'admin_emp_salary_unpaid_list' %}">
+                                <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Salary Pending <span>( {{emp_unpaid}})</span></h4>
+                                    <div class="media">
+                                    <i class="mdi mdi-close-circle-outline icon-md text-info d-flex align-self-end me-3"></i>
+                                    <div class="media-body">
+                                        <p class="card-text">Total number of pending salary  in {% now "F" %} of all states.</p>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 grid-margin stretch-card">
+                            <a href="{% url 'admin_emp_deactive_salary_account_list' %}">
+                                <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Salary Ac / Deactive <span>( {{emp_sal_acc_deative}})</span></h4>
+                                    <div class="media">
+                                    <i class="mdi mdi-account-off icon-md text-info d-flex align-self-end me-3"></i>
+                                    <div class="media-body">
+                                        <p class="card-text">List of all deactive salary accounts in all states.</p>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    <div class="row">
+        <div class="col-lg-12 d-flex flex-column">
+        
+        <div class="row flex-grow">
+            <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+                <div class="card-body">
+                <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                    <h4 class="card-title card-title-dash">Registration on {% now "F" %}</h4>
+                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{emp_reg_current_count}}</span> new registrations</p>
+                    </div>
+                    <div>
+                        <form class="search-form" action="#" method="post">
+                            {% csrf_token %}
+                           
+                            <div class="searchBox">
+                                
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                            </div>
+                           
+                            <div class="w-box" >
+                                <select name="search_select" class="search-select">
+                                   
+                                    <option value="0"> All states </option>
+                                    {% for state in states %}
+                                    <option value="{{state.id}}">{{state.state_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                          
+                            <div>
+                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
+                <div class="table-responsive  mt-1">
+                    <table class="table select-table" id="OJT-register">
+                    <thead>
+                        <tr>
+                            <th>Date of join</th>
+                            <th>Full Name</th>
+                            <th>Department</th>
+                            <th>state</th>
+                            <th>Referenced By</th>
+                            <th>Reg. Status</th>
+                           
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for newreg in emp_reg_current %}
+                        <tr>
+                            <td>{{newreg.dofj}}</td>
+                            <td>
+                                <div class="d-flex ">
+                                    <div>
+                                        <a href="{% url 'admin_registartion_ojt_payment_details' newreg.id  %}">
+                                            <h6>{{newreg.fullName}}</h6>
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><h6>{{newreg.dept_id.department}}</h6> </td>
+                            <td><div><h6>{{newreg.reg_state.state_name}}</h6></div></td>
+                            <td><div><h6>{{newreg.refrence}}</h6></div></td>
+                            <td>
+                                {% if newreg.reg_status == 1 %}
+                                <div class="badge badge-opacity-success">Approved</div>
+                                {% else %}
+                                <div class="badge badge-opacity-warning">wating for approve</div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                    </table>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        </div>
+    
+    </div>
 </div>
 
 {% endblock %}

@@ -18,7 +18,7 @@
                       </a>
                   </li>
                 <li class="nav-item">
-                  <a class="nav-link  ps-0"  data-bs-toggle="tab" href="#payments-1-to-7" role="tab" aria-controls="register-employee" aria-selected="true">
+                  <a class="nav-link  ps-0"  data-bs-toggle="tab" href="#payments-1-to-7" role="tab" aria-controls="register-employee" aria-selected="false">
                         <span class="badge bg-light text-dark align-items-center">
                             <i class="icon-calendar"></i>&nbsp; 1 &nbsp;To &nbsp;7 &nbsp;Days 
                         </span>
@@ -538,7 +538,7 @@
    
     const inputField = document.getElementById('search-data');
     const closeBtn = document.getElementById('closeBtn');
-    const employeeTable = document.getElementById('employee-details');
+    const ojt_Table = document.getElementById('OJT-register');
 
     inputField.addEventListener('input', function() {
         filterTable();
@@ -546,24 +546,22 @@
 
     function filterTable() {
         const filterValue = inputField.value.toLowerCase();
-        const rows = employeeTable.getElementsByTagName('tr');
+        const rows = ojt_Table.getElementsByTagName('tr');
 
         for (let i = 1; i < rows.length; i++) {
-            const empidCell = rows[i].getElementsByTagName('td')[0];
-            const empnameCell = rows[i].getElementsByTagName('td')[1];
-            const departmentCell = rows[i].getElementsByTagName('td')[2];
-            const designationCell = rows[i].getElementsByTagName('td')[3];
-            const statusCell = rows[i].getElementsByTagName('td')[6];
+            const empnameCell = rows[i].getElementsByTagName('td')[0];
+            const departmentCell = rows[i].getElementsByTagName('td')[1];
+            const state = rows[i].getElementsByTagName('td')[2];
+            const reffer = rows[i].getElementsByTagName('td')[3];
 
-            if (empidCell || empnameCell || departmentCell || designationCell || statusCell ) {
-                const id = empidCell.textContent || empidCell.innerText;
+            if (reffer || empnameCell || departmentCell || state ) {
                 const empname = empnameCell.textContent || empnameCell.innerText;
                 const dept = departmentCell.textContent || departmentCell.innerText;
-                const desig = designationCell.textContent || designationCell.innerText;
-                const status_emp = statusCell.textContent || statusCell.innerText;
+                const states = state.textContent || state.innerText;
+                const refferen = reffer.textContent || reffer.innerText;
                
 
-                if (id.toLowerCase().includes(filterValue) || empname.toLowerCase().includes(filterValue) || dept.toLowerCase().includes(filterValue) || desig.toLowerCase().includes(filterValue)|| status_emp.toLowerCase().includes(filterValue)) 
+                if (refferen.toLowerCase().includes(filterValue) || empname.toLowerCase().includes(filterValue) || dept.toLowerCase().includes(filterValue) || states.toLowerCase().includes(filterValue)) 
                 {
                     rows[i].style.display = '';
                 } else {

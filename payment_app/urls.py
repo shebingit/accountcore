@@ -235,8 +235,13 @@ urlpatterns = [
     path('OJT-Payments-Details/<int:pk>',views.admin_registartion_ojt_payment_details,name="admin_registartion_ojt_payment_details"),
     path('Analysis-OJT-All-Registration',views.admin_ojt_registration_all_states,name='admin_ojt_registration_all_states'),
     path('Analysis-OJT-Upcoming-Payments',views.admin_ojt_current_upcoming_payments,name='admin_ojt_current_upcoming_payments'),
+    path('Analysis-OJT-Analyis-Payments-Status',views.admin_ojt_analysis_payment_status,name='admin_ojt_analysis_payment_status'),
     path('Analysis-Employee',views.admin_analysis_employee_details,name='admin_analysis_employee_details'),
-    
+    path('Analysis-All-Employee',views.admin_employee_analyis_registration_all_states,name='admin_employee_analyis_registration_all_states'),
+    path('Analysis-Employee-Paid-Salary',views.admin_emp_salary_paid_list,name='admin_emp_salary_paid_list'),
+    path('Analysis-UnPaid-Salary',views.admin_emp_salary_unpaid_list,name='admin_emp_salary_unpaid_list'),
+    path('Analysis-Deactive-Salary-Account',views.admin_emp_deactive_salary_account_list,name='admin_emp_deactive_salary_account_list'),
+    path('Analysis-EmployeeSalary-Payments-Details/<int:emp_id>',views.admin_emp_salary_pay_details,name='admin_emp_salary_pay_details'),
 
     #------------------State Analyis section --------------------------
     path('Analysis-State-List',views.admin_states_analysis,name='admin_states_analysis'),

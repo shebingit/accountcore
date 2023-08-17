@@ -1,0 +1,112 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+<!--- OJT Registration View Section -->
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 d-flex flex-column">
+        
+        <div class="row flex-grow">
+            <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+                <div class="card-body">
+                <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                    <h4 class="card-title card-title-dash">Salart Paid on {% now "F" %} </h4>
+                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{emp_sal_paid_count}}</span>  salary payments - ( {{emp_sal_paid_amt|default_if_none:"0"}} )</p>
+                    </div>
+                    <div>
+                        <form class="search-form" action="#" method="post">
+                            {% csrf_token %}
+                           
+                           
+                            <div class="w-box" >
+                                <select name="search_select" class="search-select">
+                                   
+                                    <option value="0"> All states </option>
+                                    {% for state in states %}
+                                    <option value="{{state.id}}">{{state.state_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="start_date">
+                            </div>
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="end_date">
+                            </div>
+                            <div>
+                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
+                <div class="table-responsive  mt-1">
+                    <table class="table select-table" id="OJT-register">
+                    <thead>
+                        <tr>
+                          
+                            <th>Full Name</th>
+                            <th>Department</th>
+                            <th>state</th>
+                            <th>Confirm Salary</th>
+                            <th>Salary Paid Date</th>
+                            <th>Salary month</th>
+                            <th>Salary paid</th>
+                            <th>acc.Status</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sal in emp_sal_paid %}
+                        <tr>
+                           
+                            <td>
+                                <div class="d-flex ">
+                                    <div>
+                                        <a href="{% url 'admin_emp_salary_pay_details' sal.empreg_id.id  %}"><h6>{{sal.empreg_id.empfullName}}</h6>
+                                        <p><span>{{sal.empreg_id.empdesignation}}</span>
+                                            
+                                        </p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><h6>{{sal.empreg_id.empdept_id.department}}</h6></td>
+    
+                            <td><h6>{{sal.empreg_id.empstate}}</h6> </td>
+                            <td><h6>{{sal.empreg_id.empconfirmsalary}}</h6></td>
+                            <td>{{sal.empslaray_date}}</td>
+                            <td>{{sal.empsalary_month}}</td>
+                            <td>{{sal.emppaid_amt}}</td>
+                            <td>
+                                {% if sal.empreg_id.emp_salary_status == 1 %}
+                                <div class="badge badge-opacity-success">Active</div>
+                                {% else %}
+                                <div class="badge badge-opacity-danger">Deactive</div>
+                                {% endif %}
+                            </td>
+                           
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                    </table>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        </div>
+    
+    </div>
+       
+
+
+</div>
+
+
+{% endblock %}

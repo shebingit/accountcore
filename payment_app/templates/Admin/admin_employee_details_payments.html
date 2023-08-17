@@ -1,0 +1,197 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+<!--- State Add & Asssign to Accountant  -->
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active ps-0"  data-bs-toggle="tab" href="#employee-details" role="tab" aria-controls="employee" aria-selected="true">
+                       Employee Details
+                         
+                      </a>
+                  </li>
+                <li class="nav-item">
+                    <a class="nav-link "  data-bs-toggle="tab" href="#employee-salary-list" role="tab" aria-controls="employee" aria-selected="false">
+                       Salary Payments
+                         
+                      </a>
+                  </li>
+        
+                
+              </ul>
+            
+            </div>
+
+            <div class="tab-content tab-content-basic">
+
+                <div class="tab-pane fade show active" id="employee-details" role="tabpanel" aria-labelledby="employee-details"> 
+                
+                   <div class="row ">
+                    <div class="col-md-12 grid-margin stretch-card">
+                        <div class="card">
+                          <div class="card-body">
+                            <h4 class="card-title">Basic Informations</h4>
+                            <p class="card-description">
+                             
+                            </p>
+                            <div class="row mt-4">
+                              <div class="col-md-4">
+                                <address class="text-primary">
+                            
+                                  <h5 class="fw-bold mb-3">{{employee.empfullName}}</h5>
+                                  <p class="fw-bold mb-3">
+                                    E-mail : {{employee.empemail}}
+                                  </p>
+                                  
+                                  <p class="fw-bold mb-3">
+                                    Phone Number :{{employee.empPhone}}
+                                  </p>
+                                  
+                                  <p class="fw-bold mb-3">
+                                   Date of join :  {{employee.empdofj}}
+                                  </p>
+                                  <p class="fw-bold">
+                                    State : &nbsp; {{stateName.state_name}}
+                                   </p>
+                                
+                                 
+                                </address>
+                              </div>
+                              <div class="col-md-4">
+                                <address class="text-primary" >
+                                    <p class="mb-2 fw-bold">
+                                      Employee Id : &nbsp; {{employee.empidreg}}
+                                       </p>
+                                       <p class="mb-2 fw-bold">
+                                         Designation : &nbsp;{{employee.empdesignation}}
+                                       </p>
+                                       <p class="fw-bold mb-2">
+                                        Department : &nbsp; {{employee.empdept_id.department}}
+                                       </p>
+                                       <p class="fw-bold mb-3">
+                                        Confirm Salary : &nbsp; {{employee.empconfirmsalary}}
+                                       </p>
+                                       <p class="fw-bold">
+                                        Accountant : &nbsp; {{stateName.allocateid.empfullName}}
+                                       </p>
+                                </address>
+                              </div>
+                              <div class="col-md-4">
+                                <address class="text-info fw-bold" >
+                                    <p class="mb-3">
+                                        Registration Status :  &nbsp;
+                                        {% if employee.emp_status == 1 %} 
+                                            <button type="button" class="btn btn-rounded  btn-outline-success">Active </button>
+                                        {% elif  employee.emp_status == 0 %}
+                                            <button type="button" class="btn btn-rounded btn-outline-danger">Deactive </button>
+                                        {% endif %}
+                                       </p>
+                                       <p>
+                                        Salary Account Status :  &nbsp; 
+                                        {% if employee.emp_salary_status == 1 %} 
+                                            <button type="button" class="btn btn-rounded  btn-outline-success">Active </button>
+                                        {% elif employee.emp_salary_status == 0 %}
+                                            <button type="button" class="btn btn-rounded btn-outline-danger">Deactive </button>
+                                        {% endif %}
+                                      
+                                       </p>
+                                      
+                                </address>
+                              </div>
+                            </div>
+                          </div>
+                          
+                        </div>
+                      </div>
+                   </div>
+                       
+    
+                </div>
+
+                <div class="tab-pane fade" id="employee-salary-list" role="tabpanel" aria-labelledby="employee-salary-list"> 
+                
+                    <div class="row">
+                        <div class="col-lg-12 d-flex flex-column">
+                        
+                            <div class="row flex-grow">
+                                <div class="col-12 grid-margin stretch-card">
+                                    <div class="card card-rounded">
+                                        <div class="card-body">
+                                            <div class="d-sm-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h4 class="card-title card-title-dash">Salary payments </h4>
+                                                    
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="table-responsive  mt-1">
+                                                <table class="table select-table" id="OJT-register">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Full NAME</th>
+                                                            <th>Salary Paid on</th>
+                                                            <th>Salary month</th>
+                                                            <th>lEAVE - FULL</th>
+                                                            <th>AMOUNT</th>
+                                                            <th>lEAVE - HALF</th>
+                                                            <th>AMOUNT</th>
+                                                            <th>DELAY</th>
+                                                            <th>AMOUNT</th>
+                                                            <th>OTHER</th>
+                                                            <th>AMOUNT</th>
+                                                            <th>DEDUCTION AMOUNT</th>
+                                                            <th>PAID SALARY</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for pay in emp_salary %}
+                                                        <tr>
+                                                        
+                                                            <td><h6>{{pay.empreg_id.empfullName}}</h6></td>
+                                                            <td>{{pay.empslaray_date}}</td>
+                                                            <td><h6>{{pay.empsalary_month}}</h6> </td>
+                                                            <td><h6>{{pay.empfull_leave}}</h6></td>
+                                                            <td><h6>{{pay.empfull_leave_amt}}</h6></td>
+                                                            <td><h6>{{pay.emphalf_leave}}</h6></td>
+                                                            <td><h6>{{pay.emphalf_leave_amt}}</h6></td>
+                                                            <td><h6>{{pay.emp_delay}}</h6></td>
+                                                            <td><h6>{{pay.emp_delay_amt}}</h6></td>
+                                                            <td><h6>{{pay.emp_othe_head}}</h6></td>
+                                                            <td><h6>{{pay.emp_other_amt}}</h6></td>
+                                                            <td><h6>{{pay.emp_other_damt}}</h6></td>
+                                                            <td><h6>{{pay.emppaid_amt}}</h6></td>
+                                                            
+                                                        </tr>
+                                                        {% endfor %}
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                        </div>
+                    
+                    </div>
+                       
+                  </div>
+    
+            </div>
+          </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+{% endblock %}

@@ -9,23 +9,6 @@ class Department(models.Model):
     dpt_Status = models.IntegerField(default=0)
 
 
-#Employee Table handle all the employee details
-class EmployeeRegister(models.Model):
-    empdept_id=models.ForeignKey(Department, on_delete=models.CASCADE, null=True,default='')
-    empdesignation=  models.CharField(max_length=255,default='')
-    empfullName = models.CharField(max_length=255)
-    empidreg= models.CharField(max_length=200,default='')
-    empPhone = models.CharField(max_length=15)
-    empemail = models.EmailField()
-    empdofj = models.DateField(auto_now_add=False,null=True)
-    empconfirmsalary =  models.IntegerField(default=0,null=True)
-    empfirst_salry= models.IntegerField(default=0)
-    emptol_salary=models.IntegerField(default=0)
-    emp_salary_status=models.IntegerField(default=0)
-    emp_status = models.IntegerField(default=0)
-
-
-
 class Dashboard_Register(models.Model):
     dsh_name = models.CharField(max_length=255,default='',null=True,blank=True)
     dsh_email = models.EmailField(max_length=255,default='email@gmail.com')
@@ -37,10 +20,29 @@ class Dashboard_Register(models.Model):
     active_status = models.IntegerField(default=0)
 
 
+#Employee Table handle all the employee details
+class EmployeeRegister(models.Model):
+    empdept_id=models.ForeignKey(Department, on_delete=models.CASCADE, null=True,default='')
+    acc_dashid=models.ForeignKey(Dashboard_Register, on_delete=models.CASCADE, null=True,default='')
+    empdesignation=  models.CharField(max_length=255,default='')
+    empfullName = models.CharField(max_length=255)
+    empidreg= models.CharField(max_length=200,default='')
+    empstate= models.CharField(max_length=200,default='')
+    empPhone = models.CharField(max_length=15)
+    empemail = models.EmailField()
+    empdofj = models.DateField(auto_now_add=False,null=True)
+    empconfirmsalary =  models.IntegerField(default=0,null=True)
+    empfirst_salry= models.IntegerField(default=0)
+    emptol_salary=models.IntegerField(default=0)
+    emp_salary_status=models.IntegerField(default=0)
+    emp_status = models.IntegerField(default=0)
+
+
+
+
 # State table include all state and alocation ids
 class Register_State(models.Model):
     allocate_dash=models.ForeignKey(Dashboard_Register, on_delete=models.CASCADE, null=True,default='')
-    allocateid= models.ForeignKey(EmployeeRegister, on_delete=models.CASCADE, null=True,default='')
     state_name= models.CharField(max_length=255,default='',null=True,blank=True)
     state_id= models.CharField(max_length=255,default='',null=True,blank=True)
     state_status= models.CharField(max_length=255,default='0',null=True,blank=True)
