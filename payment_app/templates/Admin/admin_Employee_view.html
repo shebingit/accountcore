@@ -3,410 +3,126 @@
 {% block body %}
 
 
-<style>
+<!--- All Employees   -->
+<div class="content-wrapper">
 
-/* message-information style */
-
-.message-information
-
-{
-    padding: 1.2em;
-    background: #efefff;
-    text-align: center;
-}
-.message-information ul li{
-    list-style: none;
-    font-size: 0.99em;
-    font-weight: 600;
-
-}
-
-/*Register Box Register-details  Style */
-
-    #register-box .contaier-fluid
-    {
-        display: grid;
-        grid-template-columns: 2.3fr;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-       
-       
-    }
-    .register-details
-    {
-      
-        background: #ffff;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-       
-    }
-
-    .register-details h4, .register-details-table h4{
-      
-        margin-top: 1.1em;
-        font-size: 1.35em;
-        margin-left: 0.40em;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color:rgb(38, 17, 63);
-       
-        
-    }
-    .register-details .line,  .register-details-table .line
-    {
-        width: 60px;
-        height: 3px;
-        border-bottom: 3px solid #000;
-        margin-left: 0.60em;
-
-    }
-
-    /* Search Box */
-
-     .search-box
-    {
-        display: flex;
-       flex-wrap: wrap;
-       flex-direction: row;
-       align-items: center;
-       margin-bottom: 1em;
-       justify-content: center;
-       gap: 2em;
-    }
-      .search-box .input-date-box
-    {
-        padding: 0.80em .50em;
-    }
-  .search-box .input-date-box label
-    {
-        font-size: 0.92em;
-        font-weight: 600;
-        margin-right: 0.40em;
-    }
-   .search-box .input-date-box input{
-       padding: 0.30em;
-      
-       border: 1px solid #0c1846;
-       margin: none;
-    }
-      .search-box button
-    { background: #0c1846;
-       border: none;
-       margin: none;
-       cursor: pointer;
-       box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-       padding: 0.30em 0.70em;
-       color: #fff;
-    }
-     .search-box button:hover{
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-        background: #040f3b;
-        
-       
-    }
-
-
-
-
-    /* Alert box */
-
-    .register-details .message-bx,  .register-details .message-bx-confirm
-    {
-       
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details .message-bx
-    {
-        background: #e8e340;
-    }
-    .register-details .message-bx-confirm
-    {
-        background: #6fc146;
-    }
-  
-    .register-details .message-bx-delete
-    {
-        background: #f7684c;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em;
-       
-    }
-    .register-details form{
-        padding:0.50em 1em;
-        background: #fafafa;
-    }
-    .register-details form .input-group-box
-    {
-        margin-top: 1.5em;
-    }
-    .input-group-box label
-    {
-        width: 35%;
-        font-size: 0.90em;
-        font-weight: 600;
-        padding: 0.40em;
-    }
-    .input-group-box input, select{
-      width: 55%;
-      padding: 0.20em;
-      border: 1px solid #828181;
-      font-size: 0.90em;
-     
-    }
-    .input-group-box input:focus, select:focus
-    {
-        border:0.01rem solid #111158;
-        outline: none;
-        border-radius: 3px;
-    }
-    .input-group-box select option{
-        font-size: 0.90em;
-        padding: 1em 0em;
-    }
-    .submit_button
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 15vh;
-        background: #fafafa;
-        margin-top: 1em;
-    }
-    .submit_button button
-    {
-        padding: 0.40em 1.4em;
-        font-weight: 600;
-        background: #261b52;
-        color: #ffff;
-        margin:none ;
-        border: none;
-        letter-spacing: 0.04em;
-    }
-    #register-details a
-    {
-        padding: 0em 0.40em;
-        font-size: 1.1em;
-    
-    }
-    #register-details .stus span{
-        font-size: 0.85em;
-    }
-    #register-details .edit
-    {
-        font-size: 0.95em;
-    }
-    #register-details .edit:nth-child(1)
-    {
-      
-        color: #1b126f; 
-    }
-    #register-details .check
-    {
-      
-        color: #3da309; 
-    }
-    #register-details .wating
-    {
-        color: #fff308;
-    }
-    #register-details .wating span
-    {
-        color: #d3c90d;
-        font-size: 0.85em;
-        font-weight: 600;
-    }
-    #register-details .notcheck
-    {
-        color: #ec0909;
-    }
-    #register-details .confirmbtn
-    {
-        font-size: 0.89em;
-        font-weight: 600;
-        border: none;
-        padding: 0.40em 0.80em;
-        background: #111158;
-        color: #ffff;
-    }
-    .actionbtns
-    {
-        font-size: 0.85em;
-    }
-    .actionbtns a:nth-child(1) i{
-        color: #e61010;
-        margin-bottom: 0.40em;
-    }
-    /* Media Query*/
-    @media(max-width:964px)
-    {
-        #register-box .contaier-fluid
-        {
-        grid-template-columns:repeat(1,1fr) ;
-        }
-        .register-details
-        {
-            height: auto;
-        }
-        
-    }
-    /*Register Box Register-details End Style */
-
-     /*Register Box Register-details Table Style */
-     .register-details-table .container
-     {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        height: 70vh;
-        margin-top: 1.4em;
-        padding-top:2em ;
-     }
-     #register-details
-     {
-        font-size: 0.90em;
-     }
-      /* Media Query*/
-    @media(max-width:964px)
-    {
-    
-        .register-details-table .container
-        {
-            height: auto;
-            overflow-x: scroll;
-          
-           
-        }
-        #register-details
-        {
-          width: 100%; 
-        }
-        .register-details-table 
-        {
-            overflow-x: scroll;
-        }
-    }
-</style>
-
-
-<main>
-    <section id="register-box">
-         <!-- Message Infomation Display-->
-
-         <div class="message-information"  id="msgbox">
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </div>
-
-       
-        <div class="contaier-fluid">
-            
-           
-
-            <div class="register-details-table">
-                <h4> Employeee Registeration Details</h4>
-                <div class="line"></div>
-
-                <form action="{% url 'admin_register_search' %}" method="post">
-                    {% csrf_token %}
-                    <p class="text-center mb-4 mt-2"><span style="color: #f83b3b;"> Note :</span> Search Data By Joing Date </p>
-                       
-                    <div class="search-box">
+    <div class="row flex-grow">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+                <div class="card-body">
+                    <div class="d-sm-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 class="card-title card-title-dash">Employess    </h4>
+                            <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{emp_reg_count}}</span> Employess. 
+                                
+                            </p>
+                        </div>
+                        <div>
+                            <form class="search-form" action="#" method="post">
+                                {% csrf_token %}
+                            
+                                <div class="searchBox">
+                                    
+                                    <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                    <button type="button" class="close-btn" id="closeBtn">
+                                        <i class="mdi mdi-close"></i>
+                                    </button>
+                                    
+                                </div>
+                            
+                                <div class="w-box" >
+                                    <select name="search_select" class="search-select">
+                                    
+                                        <option value="0"> All states </option>
+                                        {% for state in states %}
+                                        <option value="{{state.id}}">{{state.state_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div>
+                                    <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                </div>
+                            </form>
+                        </div>
                         
-                        <div class="input-date-box">
-                            <label>From Date :</label>
-                            <input type="date" name="adregfr_data">
-                        </div>
-                        <div class="input-date-box">
-                            <label>To Date :</label>
-                            <input type="date" name="adregto_date">
-                        </div>
-                        <div class="submit-box">
-                            <button type="submit"><i class="bi bi-search"></i></button>
-                        </div>
                     </div>
-                </form>
-
-                <div class="container">
-                    <table id="register-details" class="display" >
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th>Full Name</th>
-                                <th>Date Of Joing</th>
-                                <th>Department</th>
-                                <th>Designation</th>
-                                <th>Employee Id</th>
-                                <th>Confirmed Salary</th>
-                                <th>Total Salary</th>
-                                <th>Reg. Status</th>
-                                <th>Salary Status</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for i in emp_reg %}
-                            <tr>
-                                <td class="actionbtns">
-                                    <a href="{% url 'admin_emp_reg_delete' i.id  %}"><i class="bi bi-x-circle-fill"></i></a>
-                                  
-
-                                </td>
-                                <td>{{forloop.counter}} </td>
-                                <td><a href="{% url 'admin_employee_salary_details' i.id %}" style="font-size: 0.91em;">{{i.empfullName}}</a></td>
-                                <td>{{i.empdofj}}</td>
+                    <div class="table-responsive  mt-1">
+                        <table class="table select-table" id="OJT-register">
+                            <thead>
+                                <tr>
+                                    <th>Remove</th>
+                                    <th>Date Of Joing</th>
+                                    <th>Employee Id</th>
+                                    <th>Full Name</th>
+                                    <th>Designation</th>
+                                    <th>Department</th>
+                                    <th>Confirmed Salary</th>
+                    
+                                    <th>State</th>
+                                    <th>Reg. Status</th>
+                                   
+                                   
+                                    <th>Salary Status</th>
+                                   
                                 
-                                <td>{{i.empdept_id.department}}</td>
-                                <td>{{i.empdesignation}}</td>
-                                <td>{{i.empidreg}}</td>
-                                <td>{{i.empconfirmsalary}}</td>
-                                <td>{{i.emptol_salary}}</td>
-                                <td class="stus">
-                                    {% if i.emp_status == 1 %}
-                                    <a href="{% url 'admin_emp_reg_deactive' i.id %}"><span style="color: #061459;font-weight: 600;">Reg-active </span></a>
-                                    {% else %}
-                                    <a href="{% url 'admin_emp_reg_reactive' i.id %}"><span style="color: #f61212;font-weight: 600;">De-active </span></a>
-                                    {% endif %}
-                                </td>
-                                <td class="stus">
-                                    {% if i.emp_salary_status == 1 %}
-                                    <a href="{% url 'admin_emp_salary_deactive' i.id %}"><span style="color: #6bdb33;font-weight: 600;"> Salary-active </span></a>
-                                    {% else %}
-                                    <a href="{% url 'admin_emp_salary_active' i.id %}"><span style="color: #f02121;font-weight: 600;">De-active </span></a>
-                                    {% endif %}
-                                </td>
-                                
-                            </tr>
-                            {% endfor %}
-                          
-                        </tbody>
-                       
-                    </table>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in emp_reg %}
+                                <tr>
+                                    <td >
+                                        <a href="{% url 'admin_emp_reg_delete' i.id  %}" class="text-danger"><i class="mdi mdi-account-remove mdi-18px"></i> </a>
 
+                                    </td>
+                                    <td>{{i.empdofj}}</td>
+                                    <td>{{i.empidreg}}</td>
+                                    
+                                    <td><a href="{% url 'admin_employee_salary_details' i.id %}" style="font-size: 0.91em;">{{i.empfullName}}</a></td>
+                                    <td>{{i.empdesignation}}</td>
+                                    
+                                    <td>{{i.empdept_id.department}}</td>
+                                    <td class="text-center">{{i.empconfirmsalary}}</td>
+                                    
+                                    <td>{{i.empstate}}</td>
+    
+                                    <td class="text-center">
+                                        {% if i.emp_status == 1 %}
+                                        <a href="{% url 'admin_emp_reg_deactive' i.id %}"><span style="color: #0c8825;"><i  class="mdi mdi-account-check mdi-18px"></i> </span></a>
+                                        {% else %}
+                                        <a href="{% url 'admin_emp_reg_reactive' i.id %}"><span style="color: #f61212;font-weight: 600;">De-active </span></a>
+                                        {% endif %}
+                                    </td>
+                                   
+                                   
+                                   
+                                    <td class="text-center">
+                                        {% if i.emp_salary_status == 1 %}
+                                        <a href="{% url 'admin_emp_salary_deactive' i.id %}"><span style="color:  #0c8825;"><i  class="mdi mdi-account-check mdi-18px"></i> </span></a>
+                                        {% else %}
+                                        <a href="{% url 'admin_emp_salary_active' i.id %}"><span style="color: #f02121;font-weight: 600;">De-active </span></a>
+                                        {% endif %}
+                                    </td>
+                                    
+                                   
+                                    
+                                </tr>
+                                {% endfor %}
+                              
+                            </tbody>
+                           
+                        
+                        </table>
+                    </div>
                 </div>
             </div>
-           
         </div>
-    </section>
+    </div>
+    
+</div>
 
-    <!-- Meaage Box fead Out -->
 
 
-</main>
 
 {% endblock %}
+
+

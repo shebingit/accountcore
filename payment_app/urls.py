@@ -167,6 +167,7 @@ urlpatterns = [
     path('Payment-Track',views.admin_trackPayments,name='admin_trackPayments'),
     path('Admin-Upcoming-Payments',views.adminupcomingPayments,name='adminupcomingPayments'),
     path('Admin-Payments-View',views.admin_paymentsview,name='admin_paymentsview'),
+    
     path('Admin-Payments-FullView',views.adminpaymentfull_view,name='adminpaymentfull_view'),
     path('Admin-Payments-Search',views.adminsearch_data_full,name='adminsearch_data_full'),
     

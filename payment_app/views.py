@@ -3335,7 +3335,7 @@ def newpay_confirm_list(request):
             return redirect('/')
         
         admin_DHB=Dashboard_Register.objects.get(id=admid)
-
+        #------------------------------------------------
  
             
         reg=Register.objects.filter(reg_status=0)
@@ -3367,9 +3367,31 @@ def admin_trackPayments(request):
         else:
             return redirect('/')
         
-        reg=Register.objects.filter(reg_status=1,payment_status=0)
-        cur_date=datetime.now().date()
-        return render(request,'Admin/admintrack_Payments.html',{'reg':reg,'cur_date':cur_date})
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+        #------------------------------------------------
+
+        if request.method=='POST':
+
+            if request.POST['search_select'] == '0':
+                
+                up_payments = upcoming_payments(request)
+            
+            else:
+                state_id=Register_State.objects.get(id=int(request.POST['search_select']))
+                up_payments = upcoming_state_payments(request,state_id)   
+        
+        else:
+
+            up_payments = upcoming_payments(request)
+
+
+        common_data = nav_data(request)
+
+        content={'admin_DHB':admin_DHB}
+            # Merge the two dictionaries
+        content = {**content, **common_data, **up_payments}
+
+        return render(request,'Admin/admintrack_Payments.html',content)
     
     else:
         return redirect('/')
@@ -3495,13 +3517,57 @@ def admin_paymentsview(request):
         else:
             return redirect('/')
         
-        reg=Register.objects.filter(reg_status=1)
-        payhis=PaymentHistory.objects.all()
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+       
+        #---------------------------------------------------
+
+        reg=Register.objects.all()
         payhis_count=PaymentHistory.objects.all().count()
-        return render(request,'Admin/adminpayments_history.html',{'reg':reg,'payhis':payhis,'payhis_count':payhis_count})
+
+        if request.method=='POST':
+
+            sdate= request.POST['start_date']
+            edate= request.POST['end_date']
+            
+            if request.POST['search_select'] == '0' and sdate and edate:
+              
+                reg=Register.objects.filter(dofj__gte=sdate,dofj__lte=edate)
+               
+
+            elif request.POST['search_select'] and sdate and edate:
+               
+               state = Register_State.objects.get(id=int(request.POST['search_select']))
+               reg=Register.objects.filter(dofj__gte=sdate,dofj__lte=edate,reg_state=state)
+              
+            
+            elif request.POST['search_select'] != '0' :
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                reg=Register.objects.filter(reg_state=state)
+
+            else:
+                reg=Register.objects.all()
+                
+
+           
+        payhis_count=PaymentHistory.objects.filter(reg_id__in=reg).count()
+        payhis=PaymentHistory.objects.all()
+
+        common_data = nav_data(request)
+
+        content = {'admin_DHB':admin_DHB,
+                   'reg':reg,'payhis':payhis,
+                   'payhis_count':payhis_count,
+                  
+                   }
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/adminpayments_history.html',content)
             
     else:
         return redirect('/')
+
 
 
 def adminpaymentfull_view(request):
@@ -3888,9 +3954,54 @@ def admin_pending_payments(request):
         else:
             return redirect('/')
         
-        reg=Register.objects.filter(payment_status=0)
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+        #----------------------------------------------------
+
+        if request.method=='POST':
+            if request.POST['search_select'] == '0':
+
+                pay_reg=Register.objects.filter(payment_status=0)
+                pay_reg_count=Register.objects.filter(payment_status=0).count()
+                pay_amt=Register.objects.filter(payment_status=0).aggregate(Sum('regbalance_amt'))
+
+               
+
+            else:
+
+                state_id=Register_State.objects.get(id=int(request.POST['search_select']))
+
+              
+
+                #pending payment
+                pay_reg=Register.objects.filter(payment_status=0,reg_state=state_id)
+                pay_reg_count=Register.objects.filter(payment_status=0).count()
+                pay_amt=Register.objects.filter(payment_status=0,reg_state=state_id).aggregate(Sum('regbalance_amt'))
+
+               
+        else:
+        
+           
+            pay_reg=Register.objects.filter(payment_status=0)
+            pay_reg_count=Register.objects.filter(payment_status=0).count()
+            pay_amt=Register.objects.filter(payment_status=0).aggregate(Sum('regbalance_amt'))
+
+           
+
+        common_data = nav_data(request)
+
+        head_name = 'Pending' 
+
         cur_date=datetime.now().date()
-        return render(request,'Admin/adminallpaymets.html',{'reg':reg,'cur_date':cur_date})
+        
+        content={'admin_DHB':admin_DHB,
+                 'pay_reg':pay_reg,
+                 'pay_reg_count':pay_reg_count,
+                 'payamt':pay_amt,
+                 'head_name':head_name,'cur_date':cur_date
+                 }
+            # Merge the two dictionaries
+        content = {**content, **common_data}
+        return render(request,'Admin/adminallpaymets.html',content)
             
     else:
         return redirect('/')
@@ -3904,9 +4015,52 @@ def admin_completed_payments(request):
         else:
             return redirect('/')
         
-        reg=Register.objects.filter(payment_status=1)
-        cur_date=datetime.now().date()
-        return render(request,'Admin/adminallpaymets.html',{'reg':reg,'cur_date':cur_date})
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+        #----------------------------------------------------
+
+        if request.method=='POST':
+            if request.POST['search_select'] == '0':
+
+               
+                pay_reg=Register.objects.filter(payment_status=1)
+                pay_reg_count=Register.objects.filter(payment_status=1).count()
+                pay_amt=Register.objects.filter(payment_status=1).aggregate(Sum('regtotal_amt'))
+
+   
+            else:
+
+                state_id=Register_State.objects.get(id=int(request.POST['search_select']))
+
+                
+                pay_reg=Register.objects.filter(payment_status=1,reg_state=state_id)
+                pay_reg_count=Register.objects.filter(payment_status=1,reg_state=state_id).count()
+                pay_amt=Register.objects.filter(payment_status=1,reg_state=state_id).aggregate(Sum('regtotal_amt'))
+
+               
+        else:
+        
+           
+
+            pay_reg=Register.objects.filter(payment_status=1)
+            pay_reg_count=Register.objects.filter(payment_status=1).count()
+            pay_amt=Register.objects.filter(payment_status=1).aggregate(Sum('regtotal_amt'))
+
+           
+
+        common_data = nav_data(request)
+
+        head_name = 'Completed'
+
+        content={'admin_DHB':admin_DHB,
+                 'pay_reg':pay_reg,
+                 'pay_reg_count':pay_reg_count,
+                 'payamt':pay_amt,
+                 'head_name':head_name
+                 }
+            # Merge the two dictionaries
+        content = {**content, **common_data}
+        
+        return render(request,'Admin/adminallpaymets.html',content)
             
     else:
         return redirect('/')
@@ -3921,9 +4075,46 @@ def admin_incompleted_payments(request):
         else:
             return redirect('/')
         
-        reg=Register.objects.filter(payment_status=2)
-        cur_date=datetime.now().date()
-        return render(request,'Admin/adminallpaymets.html',{'reg':reg,'cur_date':cur_date})
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+        #----------------------------------------------------
+
+        if request.method=='POST':
+            if request.POST['search_select'] == '0':
+
+
+                pay_reg=Register.objects.filter(payment_status=2)
+                pay_reg_count=Register.objects.filter(payment_status=2).count()
+                pay_amt=Register.objects.filter(payment_status=2).aggregate(Sum('regtotal_amt'))
+
+
+            else:
+
+                state_id=Register_State.objects.get(id=int(request.POST['search_select']))
+
+               
+                pay_reg=Register.objects.filter(payment_status=2,reg_state=state_id)
+                pay_reg_count=Register.objects.filter(payment_status=2,reg_state=state_id).count()
+                pay_amt=Register.objects.filter(payment_status=2,reg_state=state_id).aggregate(Sum('regtotal_amt'))
+        else:
+        
+           
+            pay_reg=Register.objects.filter(payment_status=2)
+            pay_reg_count=Register.objects.filter(payment_status=2).count()
+            pay_amt=Register.objects.filter(payment_status=2).aggregate(Sum('regtotal_amt'))
+
+        common_data = nav_data(request)
+
+        head_name = 'Incompleted'
+
+        content={'admin_DHB':admin_DHB,
+                 'pay_reg':pay_reg,
+                 'pay_reg_count':pay_reg_count,
+                 'payamt':pay_amt,
+                 'head_name':head_name
+                 }
+            # Merge the two dictionaries
+        content = {**content, **common_data}
+        return render(request,'Admin/adminallpaymets.html',content)
             
     else:
         return redirect('/')
@@ -4141,10 +4332,35 @@ def admin_emp_Register_view(request):
             admid = request.session['admid']
         else:
             return redirect('/')
-        dept=Department.objects.filter(dpt_Status=1)
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
        
-        emp_reg=EmployeeRegister.objects.all()
-        return render(request,'Admin/admin_Employee_view.html',{'dept':dept,'emp_reg':emp_reg})
+        #---------------------------------------------------
+
+        if request.method == 'POST':
+            
+            if request.POST['search_select']=='0':
+
+                emp_reg=EmployeeRegister.objects.all()
+                emp_reg_count=EmployeeRegister.objects.all().count()
+            else:
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                emp_reg=EmployeeRegister.objects.filter(empstate=state.state_name)
+                emp_reg_count=EmployeeRegister.objects.filter(empstate=state.state_name).count()
+        else:
+       
+            emp_reg=EmployeeRegister.objects.all()
+            emp_reg_count=EmployeeRegister.objects.all().count()
+
+        common_data = nav_data(request)
+
+        content = {'admin_DHB':admin_DHB,
+                   'emp_reg':emp_reg,'emp_reg_count':emp_reg_count
+                   }
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+        return render(request,'Admin/admin_Employee_view.html',content)
         
     else:
             return redirect('/')
@@ -4175,12 +4391,52 @@ def admin_income_expence(request):
         else:
             return redirect('/')
         
-        exp_income=IncomeExpence.objects.filter(exin_status=1,).order_by('-id')
-        inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1).aggregate(intol=Sum('exin_amount'))['intol']
-        expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2).aggregate(exptol=Sum('exin_amount'))['exptol']
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
        
-        content={'inco':inco,'expe':expe}
-        return render(request,'Admin/admin_income_expence.html',{'exp_income':exp_income,'content':content})
+        #---------------------------------------------------
+
+        if request.method == 'POST':
+
+            sdate=request.POST['start_date']
+            edate=request.POST['end_date']
+
+
+            if request.POST['search_select'] == '0' and sdate and edate :
+                 
+                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate).count()
+       
+            elif request.POST['search_select'] and sdate and edate :
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).count()
+            
+            elif  request.POST['search_select'] != '0':
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=state).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=state).count()
+            
+            else:
+                exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1).count()
+
+        
+        else:
+            exp_income=IncomeExpence.objects.filter(exin_status=1,).order_by('-id')
+            exp_income_count=IncomeExpence.objects.filter(exin_status=1,).count()
+
+    
+        common_data = nav_data(request)
+
+        content = {'admin_DHB':admin_DHB,
+                  'exp_income':exp_income,
+                  'exp_income_count':exp_income_count
+                   }
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/admin_income_expence.html',content)
     else:
         return redirect('/')
     
@@ -4192,22 +4448,55 @@ def admin_income_expence_add(request):
         else:
             return redirect('/')
         
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+       
+        #---------------------------------------------------
+        
         if request.method =='POST':
+
+            if request.POST['emp_state'] == '0':
+                state=None
+            else:
+                state= Register_State.objects.get(id=int(request.POST['emp_state']))
+
             ex_in=IncomeExpence()
             ex_in.exin_head_name=request.POST['adexin_head_name'].upper()
             ex_in.exin_date=request.POST['adexin_date']
             ex_in.exin_amount=request.POST['adexin_amt']
             ex_in.exin_dese=request.POST['adexin_dese']
             ex_in.exin_typ=request.POST['adexin_type']
+            ex_in.exin_state=state
             ex_in.exin_status=1
             ex_in.save()
-            msg=1
-        exp_income=IncomeExpence.objects.filter(exin_status=1,).order_by('-exin_date')
-        inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1).aggregate(intol=Sum('exin_amount'))['intol']
-        expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2).aggregate(exptol=Sum('exin_amount'))['exptol']
-       
-        content={'inco':inco,'expe':expe}
-        return render(request,'Admin/admin_income_expence.html',{'exp_income':exp_income,'content':content,'msg':msg})
+            success_msg='Success! Income/Expence recorded.'
+
+            exp_income=IncomeExpence.objects.filter(exin_status=1,).order_by('-exin_date')
+            exp_income_count=IncomeExpence.objects.filter(exin_status=1,).count()
+    
+
+            content = {'admin_DHB':admin_DHB,
+                    'exp_income':exp_income,
+                    'success_msg':success_msg,
+                    'exp_income_count':exp_income_count
+                    }
+
+        else:
+            error_msg = 'Opps ! Somethin wrong.'
+
+            exp_income=IncomeExpence.objects.filter(exin_status=1,).order_by('-exin_date')
+            exp_income_count=IncomeExpence.objects.filter(exin_status=1,).count()
+
+            content = {'admin_DHB':admin_DHB,
+                    'exp_income':exp_income,
+                    'error_msg':error_msg,
+                    'exp_income_count':exp_income_count
+                    }
+            
+        common_data = nav_data(request)
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/admin_income_expence.html',content)
     else:
         return redirect('/')
 
@@ -4428,15 +4717,48 @@ def admin_fixed_expence(request):
         else:
             return redirect('/')
         
-        fixededit=FixedExpence.objects.all()
-
-        if fixededit:
-
-            fixededit=None   
-
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+       
+        #---------------------------------------------------
+        
+    
         fixedexp=FixedExpence.objects.all()
-        content=''
-        return render(request,'Admin/admin_fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+        fixedexp_count=FixedExpence.objects.all().count()
+
+        if request.method=='POST':
+            sdate=request.POST['start_date']
+            edate=request.POST['end_date']
+
+            if request.POST['search_select'] == '0' and sdate and edate:
+                fixedexp=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate)
+                fixedexp_count=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate).count()
+            
+            elif request.POST['search_select'] and sdate and edate:
+                state=Register_State.objects.get(id=int(request.POST['search_select']))
+                fixedexp=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate,fixed_state=state)
+                fixedexp_count=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate,fixed_state=state).count()
+
+            elif request.POST['search_select'] !='0':
+                state=Register_State.objects.get(id=int(request.POST['search_select']))
+                fixedexp=FixedExpence.objects.filter(fixed_state=state)
+                fixedexp_count=FixedExpence.objects.filter(fixed_state=state).count()
+
+            else:
+                fixedexp=FixedExpence.objects.all()
+                fixedexp_count=FixedExpence.objects.all().count()
+
+
+        content = {'admin_DHB':admin_DHB,
+                    'fixedexp':fixedexp,
+                    'fixedexp_count':fixedexp_count
+                    }
+            
+        common_data = nav_data(request)
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/admin_fixed_expence.html',content)
     else:
         return redirect('/')
     
@@ -4447,39 +4769,46 @@ def admin_fixed_expence_add(request):
         else:
             return redirect('/')
         
-        if request.POST['fixed_id']:
-
-            fixededit=FixedExpence.objects.get(fixed_status=1,id=int(request.POST['fixed_id']))
-            fixededit.fixed_head_name=request.POST.get('fixed_head_name').upper()
-
-            if request.POST.get('fixed_date'):
-                fixededit.fixed_date=request.POST.get('fixed_date')
-            else:
-                fixededit.fixed_date= fixededit.fixed_date
-
-            fixededit.fixed_amount=request.POST.get('fixed_amt')
-            fixededit.fixed_dese=request.POST.get('fixed_dese')
-            msg=3
-            fixededit.save()
-
-        else:
-        
-            if request.method =='POST':
-                fixedexp_reg=FixedExpence()
-                fixedexp_reg.fixed_head_name=request.POST['fixed_head_name'].upper()
-                fixedexp_reg.fixed_date=request.POST['fixed_date']
-                fixedexp_reg.fixed_amount=request.POST['fixed_amt']
-                fixedexp_reg.fixed_dese=request.POST['fixed_dese']
-                fixedexp_reg.fixed_status=1
-              
-                fixedexp_reg.save()
-                msg=1
-
-        fixededit=''
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
        
-        fixedexp=FixedExpence.objects.all()
-        content={'msg':msg}
-        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+        #---------------------------------------------------
+
+        if request.method =='POST':
+
+            if request.POST['fixed_state'] == '0':
+                state=None
+
+            else:
+                state= Register_State.objects.get(id=int(request.POST['fixed_state']))
+
+            fixedexp_reg=FixedExpence()
+            fixedexp_reg.fixed_head_name=request.POST['fixed_head_name'].upper()
+            fixedexp_reg.fixed_date=request.POST['fixed_date']
+            fixedexp_reg.fixed_amount=request.POST['fixed_amt']
+            fixedexp_reg.fixed_dese=request.POST['fixed_dese']
+            fixedexp_reg.fixed_state=state
+            fixedexp_reg.fixed_status=1
+              
+            fixedexp_reg.save()
+
+            success_msg='Success! Fixed expence added.'
+            fixedexp=FixedExpence.objects.all()
+            fixedexp_count=FixedExpence.objects.all().count()
+        
+            content = {'admin_DHB':admin_DHB,
+                            'fixedexp':fixedexp,
+                            'fixedexp_count':fixedexp_count,
+                            'success_msg':success_msg
+                            }
+
+     
+            
+            common_data = nav_data(request)
+
+            # Merge the two dictionaries
+            content = {**content, **common_data}
+        
+            return render(request,'Admin/admin_fixed_expence.html',content)
     else:
         return redirect('/')
     
@@ -4548,8 +4877,48 @@ def admin_company_holoidays(request):
         else:
             return redirect('/')
         
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+       
+        #---------------------------------------------------
+        
         comp_holidays=Company_Holidays.objects.all()
-        return render(request,'Admin/admin_company_holidays.html',{'comp_holidays':comp_holidays})
+        comp_holidays_count=Company_Holidays.objects.all().count()
+
+        if request.method=='POST':
+            sdate=request.POST['start_date']
+            edate=request.POST['end_date']
+
+            if request.POST['search_select'] == '0' and sdate and edate :
+                comp_holidays=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate)
+                comp_holidays_count=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate).count()
+
+            elif request.POST['search_select']  and sdate and edate :
+                state=Register_State.objects.get(id=int(request.POST['search_select'] ))
+                comp_holidays=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate,ch_state=state)
+                comp_holidays_count=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate,ch_state=state).count()
+            
+            elif request.POST['search_select'] != '0':
+                state=Register_State.objects.get(id=int(request.POST['search_select'] ))
+                comp_holidays=Company_Holidays.objects.filter(ch_state=state)
+                comp_holidays_count=Company_Holidays.objects.filter(ch_state=state).count()
+            
+            else:
+                comp_holidays=Company_Holidays.objects.all()
+                comp_holidays_count=Company_Holidays.objects.all().count()
+
+
+
+        common_data = nav_data(request)
+
+        content = {'admin_DHB':admin_DHB,
+                  'comp_holidays':comp_holidays,
+                  'comp_holidays_count':comp_holidays_count
+                   }
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/admin_company_holidays.html',content)
     else:
         return redirect('/')
     
@@ -4560,6 +4929,10 @@ def admin_company_holiday_add(request):
             admid = request.session['admid']
         else:
             return redirect('/')
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+       
+        #---------------------------------------------------
         
         if request.method =='POST':
             
@@ -4580,11 +4953,17 @@ def admin_company_holiday_add(request):
                 msg=3
 
             else:
+
+                if request.POST['holiday_state'] == '0':
+                    state=None
+                else:
+                    state=Register_State.objects.get(id=int(request.POST['holiday_state']))
             
                 comp_holiday=Company_Holidays()
                 comp_holiday.ch_sdate=request.POST['cmphsdate']
                 comp_holiday.ch_edate=request.POST['cmphedate']
                 comp_holiday.ch_no=request.POST['cmphno']
+                comp_holiday.ch_state=state
 
                 #company workdays Calculations
                 e = datetime.strptime(request.POST['cmphedate'], '%Y-%m-%d')
@@ -4594,9 +4973,21 @@ def admin_company_holiday_add(request):
                 comp_holiday.ch_workno=int(month_days) - int(request.POST['cmphno'])
             
                 comp_holiday.save()
-                msg=1
+                success_msg='Success! Holiday Data added.'
             comp_holidays=Company_Holidays.objects.all()
-        return render(request,'Admin/admin_company_holidays.html',{'comp_holidays':comp_holidays,'msg':msg})
+            comp_holidays_count=Company_Holidays.objects.all().count()
+
+        common_data = nav_data(request)
+
+        content = {'admin_DHB':admin_DHB,
+                  'comp_holidays':comp_holidays,
+                  'comp_holidays_count':comp_holidays_count,
+                  'success_msg':success_msg
+                   }
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+        return render(request,'Admin/admin_company_holidays.html',content)
     else:
         return redirect('/')
 
@@ -5598,7 +5989,8 @@ def admin_employee_register_form(request):
         depart=Department.objects.all()
         reg_emps= EmployeeRegister.objects.all().order_by('-id')
         reg_emps_count= EmployeeRegister.objects.count()
-        content={'depart':depart,'reg_emps':reg_emps,'reg_emps_count':reg_emps_count}
+        states= Register_State.objects.all()
+        content={'depart':depart,'reg_emps':reg_emps,'reg_emps_count':reg_emps_count,'states':states}
         return render(request,'Admin/admin_employee_register_form.html',content)
     else:
         return redirect('/')
@@ -5621,6 +6013,7 @@ def admin_employee_register(request):
             emp_reg.empdept_id =Department.objects.get(id=int(request.POST['emp_dept']))
             emp_reg.empdesignation = request.POST['emp_desig']
             emp_reg.empdofj = request.POST['emp_dfj']
+            emp_reg.empstate = request.POST['emp_state']
 
             if request.POST['emp_sal']:
 

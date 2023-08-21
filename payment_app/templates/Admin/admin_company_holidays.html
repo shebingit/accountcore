@@ -3,275 +3,239 @@
 {% block body %}
 
 
-<style>
+<div class="content-wrapper">
 
-/*Register Box Register-details  Style */
+    <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active ps-0" id="" data-bs-toggle="tab"  href="#income-expence-view" role="tab" aria-controls="add-income-expence" aria-selected="true">States Holidays List </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="" data-bs-toggle="tab" href="#add-income-expence" role="tab" aria-selected="false">States Holidays Add</a>
+                </li>
+                
+              </ul>
+              {% if success_msg %}
+                <div class="messageBox-container" id="message-container">
+                
+                        <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                        <p class="text-center success-text">{{success_msg}}</p>
+                </div>
+              {% elif error_msg %}
+                <div class="messageBox-container" id="message-container">
+                        <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                        <p class="text-center error-text">{{error_msg}}</p>
+                </div>
+              {% endif %}
+              <div>
+                <div class="btn-wrapper">
+                  <a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
+                  <a href="#" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
+                  <a href="#" class="btn btn-primary text-white me-0"><i class="icon-download"></i> Export</a>
+                </div>
+              </div>
+            </div>
+            <div class="tab-content tab-content-basic">
+                <div class="tab-pane fade show active" id="income-expence-view" role="tabpanel" aria-labelledby=income-expence-view> 
+                
+                    <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card card-rounded">
+                            <div class="card-body">
+                                <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                    <h4 class="card-title card-title-dash">Holidays of all state </h4>
+                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{comp_holidays_count}}</span> recordes</p>
+                                </div>
+                                <div>
+                                    <form class="search-form" action="#" method="post">
+                                        {% csrf_token %}
+                                        <div class="searchBox">
+                                    
+                                            <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                            <button type="button" class="close-btn" id="closeBtn">
+                                                 <i class="mdi mdi-close"></i>
+                                            </button>
+                                            
+                                        </div>
+                                        <div class="w-box" >
+                                            <select name="search_select" class="search-select">
+                                               
+                                                <option value="0" > All states </option>
+                                                {% for state in states %}
+                                                <option value="{{state.id}}">{{state.state_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="">
+                                            <input type="date" class="search-date" name="start_date">
+                                        </div>
+                                        <div class=" ">
+                                            <input type="date" class="search-date" name="end_date">
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                </div>
+                                <div class="table-responsive  mt-1">
+                                <table class="table select-table" id="holidays">
+                                    <thead>
+                                        <tr>
+                                            <th>Edit</th>
+                                            <th>State</th>
+                                            <th>Start Date </th>
+                                            <th>End Date</th>
+                                            <th>Month</th>
+                                            <th>State Work Days</th>
+                                            <th>No of Holidays</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for i in comp_holidays %}
+                                        <tr>
+                                            <td><a href="{% url 'admin_company_holidy_edit' i.id %}" class="edit"><i class="mdi mdi-pen mdi-18px"></i></a></td>
+                                            <td>{{i.ch_state.state_name}}</td>
+                                            <td>{{i.ch_sdate}}</td>
+                                            <td>{{i.ch_edate}}</td>
+                                            <td>{{i.ch_sdate|date:"F" }}</td>
+                                            <td>{{i.ch_workno}}</td>
+                                            <td>{{i.ch_no}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                      
+                                    </tbody>
+                                </table>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                  </div>
+              <div class="tab-pane fade " id="add-income-expence" role="tabpanel" aria-labelledby="add-income-expence"> 
+                <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card card-rounded">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <form action="{% url 'admin_company_holiday_add' %}" class="forms-sample" method="post">
+                                  {% csrf_token %}
+                                  <div class="d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title card-title-dash">State Holidays  Form</h4>
+                                     
+                                        <button type="submit" class="btn btn-primary btn-lg text-white"><i class="mdi mdi-plus-circle"></i></button>
+                                     
+                                  </div>
 
-    #register-box .contaier-fluid
-    {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-       
-       
-    }
-    .register-details
-    {
-        height: 40vh;
-        background: #ffff;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-       
-    }
-
-    .register-details h4, .register-details-table h4{
-      
-        margin-top: 1.1em;
-        font-size: 1.35em;
-        margin-left: 0.40em;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color:rgb(38, 17, 63);
-       
-        
-    }
-    .register-details .line,  .register-details-table .line
-    {
-        width: 60px;
-        height: 3px;
-        border-bottom: 3px solid #000;
-        margin-left: 0.60em;
-
-    }
-
-    /* success Alert box */
-
-    .register-details .message-bx
-    {
-        background: #6fc146;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details .message-bx-delete
-    {
-        background: #d74141;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details form{
-        padding:0.50em 1em;
-        background: #fafafa;
-    }
-    .register-details form .input-group-box
-    {
-        margin-top: 1.5em;
-    }
-    .input-group-box label
-    {
-        width: 35%;
-        font-size: 0.90em;
-        font-weight: 600;
-        padding: 0.40em;
-    }
-    .input-group-box input, select{
-      width: 55%;
-      padding: 0.20em;
-      border: 1px solid #828181;
-      font-size: 0.90em;
+                                  <div class="form-group ">
+                                      <label for="Date_ofjoin">Start Date</label>
+                                      <input type="date" class="form-control small-text" id="cmphsdate" name="cmphsdate" placeholder="Date ">
+                                  </div>
+                                  <div class="form-group ">
+                                    <label for="Date_ofjoin">End Date</label>
+                                    <input type="date" class="form-control small-text" id="cmphedate" name="cmphedate" placeholder="Date ">
+                                </div>
+                                 
+                                  <div class="form-group">
+                                    <label for="Department">State</label>
+                                    <select  class="form-control small-text" id="state" name="holiday_state" required>
+                                      <option value="0" selected>Company</option>
+                                      {% for state in states %}
+                                      <option value="{{state.id}}">{{state.state_name}}</option>
+                                      {% endfor %}
+                                      
+                                    </select>
+                                </div>
+                                  <div class="form-group ">
+                                      <label for="Employeeeid">No Of Days</label>
+                                      <input type="text" class="form-control small-text" id="cmphno" name="cmphno" placeholder=" Expence / Income Amount">
+                                  </div>
+                                  
+                                 
+                              </form>
+                              
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
      
-    }
-    .input-group-box input:focus, select:focus
-    {
-        border:0.01rem solid #111158;
-        outline: none;
-        border-radius: 3px;
-    }
-    .input-group-box select option{
-        font-size: 0.90em;
-        padding: 1em 0em;
-    }
-    .submit_button
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 15vh;
-        background: #fafafa;
-        margin-top: 1em;
-    }
-    .submit_button button
-    {
-        padding: 0.40em 1.4em;
-        font-weight: 600;
-        background: #261b52;
-        color: #ffff;
-        margin:none ;
-        border: none;
-        letter-spacing: 0.04em;
-    }
-    #department a
-    {
-        padding: 0em 0.40em;
-        font-size: 1.1em;
-    
-    }
-    #department .edit
-    {
-        font-size: 0.95em;
-    }
-    #department .edit:nth-child(1)
-    {
-      
-        color: #1b126f; 
-    }
-    #department a:nth-child(1)
-    {
-      
-        color: #ec0909;
-    }
-    
-    /* Media Query*/
-    @media(max-width:964px)
-    {
-        #register-box .contaier-fluid
-        {
-        grid-template-columns:repeat(1,1fr) ;
+              </div>
+
+             
+            </div>
+          </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const ojtTable = document.getElementById('holidays');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = ojtTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+           
+            const Cell1 = rows[i].getElementsByTagName('td')[1];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+            
+            
+
+            if (Cell1 || Cell2 ) {
+               
+                const Celldata1 = Cell1.textContent || Cell1.innerText;
+                const Celldata4 = Cell4.textContent || Cell4.innerText;
+               
+
+                if (Celldata1.toLowerCase().includes(filterValue) || Celldata4.toLowerCase().includes(filterValue)  ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
         }
-        .register-details
-        {
-            height: auto;
-        }
+    }
+
+    // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
         
     }
-    /*Register Box Register-details End Style */
+    });
 
-     /*Register Box Register-details Table Style */
-     .register-details-table .container
-     {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        height: 70vh;
-        margin-top: 1.4em;
-        padding-top:2em ;
-     }
-     #department
-     {
-        font-size: 0.90em;
-     }
-      /* Media Query*/
-    @media(max-width:964px)
-    {
-    
-        .register-details-table .container
-        {
-            height: auto;
-            overflow-x: scroll;
-          
-           
-        }
-        #department
-        {
-          width: 100%; 
-        }
-        .register-details-table 
-        {
-            overflow-x: scroll;
-        }
-    }
-</style>
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
 
 
-<main>
-    <section id="register-box">
-        <div class="contaier-fluid">
-            <div class="register-details">
-                <h4>Company Holidays Add </h4>
-                <div class="line"></div>
-                {% if msg == 1 %}
-                <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-check-all"></i> Successfull!   Added  </p>
-                </div>
-                {% elif msg == 2 %}
-                <div class="message-bx-delete" id="msgbox-delete">
-                    <p><i class="bi bi-x"></i> Successfull!   Deleted  </p>
-                </div>
-                {% endif %}
 
-
-                <form action="{% url 'admin_company_holiday_add'  %}" method="post">
-                    {% csrf_token %}
-                    <div class="input-group-box">
-                        <label>Month Start date: <br>{{comp_holidays_edit.ch_sdate}}</label>
-                        <input type="date" name="cmphsdate"  required>
-                        <input type="text" name="cmphid" value="{{comp_holidays_edit.id}}"hidden >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Month End Date: <br> {{comp_holidays_edit.ch_edate}}</label>
-                        <input type="date" name="cmphedate" required>
-                    </div>
-                    <div class="input-group-box">
-                        <label>No of Days</label>
-                        <input type="text" name="cmphno" value="{{comp_holidays_edit.ch_no}}" required>
-                    </div>
-                    
-                    <div class="submit_button">
-                        <button type="submit">Save</button>
-                    </div>
-                </form>
-
-            </div>
-            <div class="register-details-table">
-                <h4>Company Holidays</h4>
-                <div class="line"></div>
-                <div class="container">
-
-                    <table id="department" class="display" >
-                        <thead>
-                            <tr>
-                                <th>Edit</th>
-                                <th>Start Date </th>
-                                <th>End Date</th>
-                                <th>Month</th>
-                                <th>Company Work Days</th>
-                                <th>No of Holidays</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for i in comp_holidays %}
-                            <tr>
-                                <td><a href="{% url 'admin_company_holidy_edit' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a></td>
-                                <td>{{i.ch_sdate}}</td>
-                                <td>{{i.ch_edate}}</td>
-                                <td>{{i.ch_sdate|date:"F" }}</td>
-                                <td>{{i.ch_workno}}</td>
-                                <td>{{i.ch_no}}</td>
-                            </tr>
-                            {% endfor %}
-                          
-                        </tbody>
-                       
-                    </table>
-
-                </div>
-            </div>
-           
-        </div>
-    </section>
-
-    <!-- Meaage Box fead Out -->
-
-
-</main>
 
 {% endblock %}
+

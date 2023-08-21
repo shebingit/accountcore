@@ -76,6 +76,16 @@
                                       <label for="Designation">Designation</label>
                                       <input type="text" class="form-control small-text" id="Designation" name="emp_desig" placeholder="Designation">
                                   </div>
+                                  <div class="form-group">
+                                    <label for="Department">State</label>
+                                    <select  class="form-control small-text" id="state" name="emp_state" required>
+                                      <option value="">Choose State</option>
+                                      {% for state in states %}
+                                      <option value="{{state.state_name}}">{{state.state_name}}</option>
+                                      {% endfor %}
+                                      
+                                    </select>
+                                </div>
                                   <div class="form-group ">
                                       <label for="Employeeeid">Employeee id</label>
                                       <input type="text" class="form-control small-text" id="Employeeeid" name="emp_id" placeholder="Employeee id">
@@ -127,6 +137,7 @@
                                     <th>Designation </th>
                                     <th>Date Of Joing</th>
                                     <th>confirmed Salary</th>
+                                    <th>State</th>
                                     <th>Status</th>
                                    
                                 </tr>
@@ -143,6 +154,7 @@
                                         <td>{{reg.empdesignation}}</td>
                                         <td>{{reg.empdofj}} </td>
                                         <td>{{reg.empconfirmsalary}} </td>
+                                        <td>{{reg.empstate}} </td>
                                         <td>
                                             {% if reg.emp_status == 1 %}
                                             <div class="badge badge-opacity-success"> Active</div>
@@ -188,7 +200,8 @@
             const empnameCell = rows[i].getElementsByTagName('td')[1];
             const departmentCell = rows[i].getElementsByTagName('td')[2];
             const designationCell = rows[i].getElementsByTagName('td')[3];
-            const statusCell = rows[i].getElementsByTagName('td')[6];
+            const statusCell = rows[i].getElementsByTagName('td')[7];
+            const stateCell = rows[i].getElementsByTagName('td')[6];
 
             if (empidCell || empnameCell || departmentCell || designationCell || statusCell ) {
                 const id = empidCell.textContent || empidCell.innerText;
@@ -196,9 +209,10 @@
                 const dept = departmentCell.textContent || departmentCell.innerText;
                 const desig = designationCell.textContent || designationCell.innerText;
                 const status_emp = statusCell.textContent || statusCell.innerText;
+                const state_emp = stateCell.textContent || stateCell.innerText;
                
 
-                if (id.toLowerCase().includes(filterValue) || empname.toLowerCase().includes(filterValue) || dept.toLowerCase().includes(filterValue) || desig.toLowerCase().includes(filterValue)|| status_emp.toLowerCase().includes(filterValue)) 
+                if (id.toLowerCase().includes(filterValue) || empname.toLowerCase().includes(filterValue) || dept.toLowerCase().includes(filterValue) || desig.toLowerCase().includes(filterValue)|| status_emp.toLowerCase().includes(filterValue)|| state_emp.toLowerCase().includes(filterValue)) 
                 {
                     rows[i].style.display = '';
                 } else {

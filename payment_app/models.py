@@ -26,8 +26,8 @@ class EmployeeRegister(models.Model):
     acc_dashid=models.ForeignKey(Dashboard_Register, on_delete=models.CASCADE, null=True,default='')
     empdesignation=  models.CharField(max_length=255,default='')
     empfullName = models.CharField(max_length=255)
-    empidreg= models.CharField(max_length=200,default='')
-    empstate= models.CharField(max_length=200,default='')
+    empidreg = models.CharField(max_length=200,default='')
+    empstate = models.CharField(max_length=200,default='')
     empPhone = models.CharField(max_length=15)
     empemail = models.EmailField()
     empdofj = models.DateField(auto_now_add=False,null=True)
@@ -122,6 +122,7 @@ class FixedExpence(models.Model):
     fixed_typ = models.IntegerField(default=0)
     fixed_dese = models.TextField(default='')
     fixed_status = models.IntegerField(default=0)
+    fixed_state = models.ForeignKey(Register_State, on_delete=models.CASCADE, null=True,default='')
 
 
 class IncomeExpence(models.Model):
@@ -131,12 +132,14 @@ class IncomeExpence(models.Model):
     exin_typ = models.IntegerField(default=0)
     exin_dese = models.TextField(default='')
     exin_status = models.IntegerField(default=0)
+    exin_state = models.ForeignKey(Register_State, on_delete=models.CASCADE, null=True,default='')
 
 class Company_Holidays(models.Model):
     ch_sdate = models.DateField(auto_now_add=False,null=True)
     ch_edate = models.DateField(auto_now_add=False,null=True)
     ch_no = models.IntegerField(default=0,null=True)
     ch_workno = models.IntegerField(default=0,null=True)
+    ch_state = models.ForeignKey(Register_State, on_delete=models.CASCADE, null=True,default='')
 
 
 

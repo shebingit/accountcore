@@ -58,9 +58,9 @@
                                                     {% for j in payhis_list %}
                                                         {% if j.reg_id_id == reg.id %}
                                                         <tr class="pay-progress-bg">
-                                                            <td>{{j.head_name}}</td>
-                                                            <td>{{j.paydofj}}</td>
-                                                            <td>{{j.payintial_amt}}</td>
+                                                            <td ><span class="text-white pl-1">{{j.head_name}}</span></td>
+                                                            <td class="text-white pl-1">{{j.paydofj}}</td>
+                                                            <td class="text-white pl-1">{{j.payintial_amt}}</td>
                                                             <td >
                                                                 {% if j.pay_status == 1 %}
                                                                 <a href="{% url 'singeldata_receipt' j.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a>
@@ -101,9 +101,9 @@
                                                 {% for j in payhis_list %}
                                                     {% if j.reg_id_id == reg.id %}
                                                     <tr class="pay-success-bg">
-                                                        <td>{{j.head_name}}</td>
-                                                        <td>{{j.paydofj}}</td>
-                                                        <td>{{j.payintial_amt}}</td>
+                                                        <td ><span class="text-white pl-1">{{j.head_name}}</span></td>
+                                                        <td class="text-white pl-1">{{j.paydofj}}</td>
+                                                        <td class="text-white pl-1">{{j.payintial_amt}}</td>
                                                         <td>
                                                             {% if j.pay_status == 1 %}
                                                             <a href="{% url 'singeldata_receipt' j.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a>
@@ -146,9 +146,9 @@
                                                     {% for j in payhis_list %}
                                                         {% if j.reg_id_id == reg.id %}
                                                         <tr class="pay-danger-bg">
-                                                            <td>{{j.head_name}}</td>
-                                                            <td>{{j.paydofj}}</td>
-                                                            <td >{{j.payintial_amt}}</td>
+                                                            <td ><span class="text-white pl-1">{{j.head_name}}</span></td>
+                                                            <td class="text-white pl-1">{{j.paydofj}}</td>
+                                                            <td class="text-white pl-1">{{j.payintial_amt}}</td>
                                                             <td>
                                                                 {% if j.pay_status == 1 %}
                                                             <a href="{% url 'singeldata_receipt' j.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a>
