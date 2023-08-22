@@ -4,584 +4,677 @@
 
 
 
+<!--- All Employees SALARY PATMENTS DETAILS   -->
+<div class="content-wrapper">
+
+    <div class="row flex-grow">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+                <div class="card-body">
+                    <div class="d-sm-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 class="card-title card-title-dash">Payments of &nbsp;{{emp_reg_edit.empfullName}}    </h4>
+                            <p class="card-subtitle card-subtitle-dash">Employes have <span class="count-value">{{salary_count}}</span> Payments and total - <span class="count-value">{{salary_tol}}</span> . 
+                                
+                            </p>
+                        </div>
+                        <div>
+                            <form class="search-form" action="{% url 'admin_employee_salary_payments_search' emp_reg_edit.id %}" method="post">
+                                {% csrf_token %}
+                            
+                               
+                            
+                                <div class="w-box" >
+                                    <select name="search_select" class="search-select">
+                                    
+                                        <option value="0"> All Employees </option>
+                                        {% for emp in emp_reg %}
+                                        <option value="{{emp.id}}">{{emp.empfullName}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="w-box">
+                                    <input type="date" class="search-date" name="start_date">
+                                </div>
+                                <div class="w-box">
+                                    <input type="date" class="search-date" name="end_date">
+                                </div>
+                               
+                                <div>
+                                    <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                    </div>
+                    <div class="table-responsive  mt-1">
+                        <table class="table select-table" id="OJT-register">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    
+                                    <th>Salary Month</th>
+                                    <th>Paid Date</th>
+                                    <th>Paid Amount</th>
+                                    <th> Srtatus</th>
+    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in salary %}
+                                   
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                           
+                                            <td>{{i.empsalary_month}}</td>
+                                            <td>{{i.empslaray_date}}</td>
+                                            <td>{{i.emppaid_amt}}</td>
+                                            <td>
+                                                {%if i.emp_paidstatus == 1 %}
+                                                <span style="color: #286f05;">Paid</span>
+                                                {% else %}
+                                                <span style="color: #ff2c25;">Not Paid</span>
+                                                {% endif %}
+    
+                                            </td>
+                                             
+                                        </tr>
+                                    
+                                {% endfor %}
+                              
+                            </tbody>
+                           
+                        
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+
+{% endblock %}
+
+
 <style>
 
-/*Register Box Register-details  Style */
-h6
-{
-    letter-spacing: 0.04em;
-    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    color:rgb(38, 17, 63);
-    text-align: center;
-    font-size: 1em;
-    font-weight: 600;
-    margin-bottom: 1em;
-}
-#emp_details
-{
-    padding:1.5em 1em;
-    font-size: 0.92em;
-    line-height: 2.5em;
-    margin-top: 1.3em;
-    border: none;
-    text-align: center;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-}
-#emp_details h5
-{
-    color: #060654;
-    font-weight: 600;
-}
-#emp_details span
-{
-    margin-left: 0.20em;
-    font-weight: 600;
-}
-
-    #register-box .contaier-fluid
+    /*Register Box Register-details  Style */
+    h6
     {
-        display: grid;
-        grid-template-columns: 2.2fr;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-    
-    }
-    
-    #register-box .contaier
-    {
-        display: grid;
-        grid-template-columns:1fr 2.2fr;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-       
-    }
-    .register-details
-    {
-        
-        background: #ffff;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-       
-    }
-    .register-details-table .top-section
-    {
-        display: grid;
-        grid-template-columns: 1.3fr 1fr;
-        justify-content: center;
-    }
- 
-    .register-details-table .quick-search .quick_links
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 1.5em 1em;
-        gap: 1em;
-
-    }
-    .register-details-table .quick-search .quick_links .card
-    {
-        width: 200px;
-        text-align: center;
-        padding: 0.80em 1em;
-        border: none;
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-        font-size: 0.90em;
-        font-weight: 600;
-        background: #020738;
-        color: #fff;
-        border-radius: 20px;
-    }
-
-    .register-details h4, .register-details-table h4{
-      
-        margin-top: 1.1em;
-        font-size: 1.35em;
-        margin-left: 0.40em;
-        font-weight: 500;
         letter-spacing: 0.04em;
         font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
         color:rgb(38, 17, 63);
-       
-        
-    }
-    .register-details .line,  .register-details-table .line
-    {
-        width: 60px;
-        height: 3px;
-        border-bottom: 3px solid #000;
-        margin-left: 0.60em;
-
-    }
-
-    /* Alert box */
-
-    .register-details .message-bx,  .register-details .message-bx-confirm
-    {
-       
-        color: #fafafa;
-        font-size: 0.98em;
+        text-align: center;
+        font-size: 1em;
         font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
+        margin-bottom: 1em;
     }
-    .register-details .message-bx
+    #emp_details
     {
-        background: #e8e340;
-    }
-    .register-details .message-bx-confirm
-    {
-        background: #6fc146;
-    }
-  
-    .register-details .message-bx-delete
-    {
-        background: #f7684c;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em;
-       
-    }
-    .register-details form{
-        padding:0.50em 1em;
-        background: #fafafa;
-    }
-    .register-details form .input-group-box
-    {
-        margin-top: 1.5em;
-    }
-    .input-group-box label
-    {
-        width: 35%;
-        font-size: 0.90em;
-        font-weight: 600;
-        padding: 0.40em;
-    }
-    .input-group-box input, select{
-      width: 55%;
-      padding: 0.20em;
-      border: 1px solid #828181;
-      font-size: 0.90em;
-     
-    }
-    .input-group-box input:focus, select:focus
-    {
-        border:0.01rem solid #111158;
-        outline: none;
-        border-radius: 3px;
-    }
-    .input-group-box select option{
-        font-size: 0.90em;
-        padding: 1em 0em;
-    }
-    .submit_button
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 15vh;
-        background: #fafafa;
-        margin-top: 1em;
-    }
-    .submit_button button
-    {
-        padding: 0.40em 1.4em;
-        font-weight: 600;
-        background: #261b52;
-        color: #ffff;
-        margin:none ;
+        padding:1.5em 1em;
+        font-size: 0.92em;
+        line-height: 2.5em;
+        margin-top: 1.3em;
         border: none;
-        letter-spacing: 0.04em;
+        text-align: center;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
     }
-    #register-details a
+    #emp_details h5
     {
-        padding: 0em 0.40em;
-        font-size: 1.1em;
+        color: #060654;
+        font-weight: 600;
+    }
+    #emp_details span
+    {
+        margin-left: 0.20em;
+        font-weight: 600;
+    }
     
-    }
-    #register-details .edit
-    {
-        font-size: 0.95em;
-    }
-    #register-details .edit:nth-child(1)
-    {
-      
-        color: #1b126f; 
-    }
-    #register-details .check
-    {
-      
-        color: #3da309; 
-    }
-    #register-details .wating
-    {
-        color: #fff308;
-    }
-    #register-details .wating span
-    {
-        color: #d3c90d;
-        font-size: 0.85em;
-        font-weight: 600;
-    }
-    #register-details .notcheck
-    {
-        color: #ec0909;
-    }
-    #register-details .confirmbtn
-    {
-        font-size: 0.89em;
-        font-weight: 600;
-        border: none;
-        padding: 0.40em 0.80em;
-        background: #111158;
-        color: #ffff;
-    }
-    .down-load
-    {
-        color: #ec0909;
-        cursor: pointer;
-    }
-    .not-download
-    {
-        color: #f7ea2d;
-    }
-    /* Media Query*/
-    @media(max-width:964px)
-    {
         #register-box .contaier-fluid
         {
-        grid-template-columns:repeat(1,1fr) ;
+            display: grid;
+            grid-template-columns: 2.2fr;
+            padding: 1em;
+            gap: 1em;
+            background-color:#fafafa;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        
+        }
+        
+        #register-box .contaier
+        {
+            display: grid;
+            grid-template-columns:1fr 2.2fr;
+            padding: 1em;
+            gap: 1em;
+            background-color:#fafafa;
+           
         }
         .register-details
         {
-            height: auto;
-        }
-        
-    }
-    /*Register Box Register-details End Style */
-
-     /*Register Box Register-details Table Style */
-     .register-details-table .container
-     {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-      
-        margin-top: 1.4em;
-        padding-top:2em ;
-        padding-bottom:2em ;
-     }
-     #register-details
-     {
-        font-size: 0.90em;
-     }
-      /* Media Query*/
-    @media(max-width:964px)
-    {
-    
-        .register-details-table .container
-        {
-            height: auto;
-            overflow-x: scroll;
-          
+            
+            background: #ffff;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
            
         }
-        #register-details
+        .register-details-table .top-section
         {
-          width: 100%; 
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            justify-content: center;
         }
-        .register-details-table 
-        {
-            overflow-x: scroll;
-        }
-    }
-    #register-details .start
-    {
-        background: #ec0909;
-        color: #fff;
-    }
-    #register-details .progressing
-    {
-        background: #ffff53;
-    }
-    #register-details .end
-    {
-        background: #74f342;
-    }
-
-     /*Search Box styling */
-     .register-details-table .form
-     {
-         padding: 0.80em 0.60em;
-         margin-bottom: 1em;
-     }
-
-     .register-details-table  .search-box
-     {
-         display: flex;
-        flex-wrap: wrap;
-        flex-direction: row;
-        align-items: center;
-        margin-bottom: 1em;
-        justify-content: center;
-        gap: 2em;
-     }
-     .card{
-      
-        border: none;
-        margin: none;
-        cursor: pointer;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        padding: 1.3em;
-       
-     }
-     .card p{
-        font-size: 1.5em;
-        font-weight: 700;
-        text-align: center;
-     }
-     .register-details-table  .search-box .input-date-box
-     {
-         padding: 0.80em .50em;
-     }
-     .register-details-table  .search-box .input-date-box label
-     {
-         font-size: 0.92em;
-         font-weight: 600;
-         margin-right: 0.40em;
-     }
-     .register-details-table  .search-box .input-date-box input{
-        padding: 0.30em;
-       
-        border: 1px solid #0c1846;
-        margin: none;
-     }
-     .register-details-table  .search-box button
-     { background: #0c1846;
-        border: none;
-        margin: none;
-        cursor: pointer;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        padding: 0.30em 0.70em;
-        color: #fff;
-     }
-     .register-details-table .search-box button:hover{
-         box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-         background: #040f3b;
-         
-        
-     }
-
-       /* End Search Box styling */
-       .allexp
-       {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-       
-       }
-       .addexp
-       {
-      
-        text-align: center;
-        margin-top: 3em;
-        
-       
-       }
-       .addexp .exp_link, .allexp .exp_link
-       {
-        padding: 0.50em 1em;
-        background: #141f49;
-        color:#ffff;
-        font-size: 0.89em;
-        font-weight: 600;
-        margin-left: 0.40em;
      
-       }
-       .addexp.exp_link i, .allexp  .exp_link i
-       {
-        margin-right: 0.30em;
-       }
-       
-       .notice 
-       {
-        background: #f1f0f0;
-        text-align: center;
-        padding:1em;
-       
-       }
-       .notice p
-       {
-        font-weight: 600;
-        color: #ec0909;
-        font-size: 0.93em;
-       }
-       .notice p span{
-        color: #221854;
-       }
-   
-       .danger
-       {
-        color: #ec0909;
-        font-weight: 600;
-       }
-       .notice  .amount
-       {
-        font-weight: 800;
-        font-size: 1.3em;
-       }
-       @media (max-width:832px)
-       {
-        h6
+        .register-details-table .quick-search .quick_links
         {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1.5em 1em;
+            gap: 1em;
+    
+        }
+        .register-details-table .quick-search .quick_links .card
+        {
+            width: 200px;
+            text-align: center;
+            padding: 0.80em 1em;
+            border: none;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+            font-size: 0.90em;
+            font-weight: 600;
+            background: #020738;
+            color: #fff;
+            border-radius: 20px;
+        }
+    
+        .register-details h4, .register-details-table h4{
+          
+            margin-top: 1.1em;
+            font-size: 1.35em;
+            margin-left: 0.40em;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color:rgb(38, 17, 63);
            
-            font-size: 1.1em;
             
         }
-       
-            .register-details-table .top-section
-            {
-                display: grid;
-                grid-template-columns:repeat(1,1fr) 
-            }
-            .register-details-table .quick-search .quick_links
-            {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                margin: 1.5em 1em;
-                gap: 1em;
-
-            }
-            .register-details-table  .search-box
-            {
-                display: flex;
+        .register-details .line,  .register-details-table .line
+        {
+            width: 60px;
+            height: 3px;
+            border-bottom: 3px solid #000;
+            margin-left: 0.60em;
+    
+        }
+    
+        /* Alert box */
+    
+        .register-details .message-bx,  .register-details .message-bx-confirm
+        {
+           
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em; 
+        }
+        .register-details .message-bx
+        {
+            background: #e8e340;
+        }
+        .register-details .message-bx-confirm
+        {
+            background: #6fc146;
+        }
+      
+        .register-details .message-bx-delete
+        {
+            background: #f7684c;
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em;
+           
+        }
+        .register-details form{
+            padding:0.50em 1em;
+            background: #fafafa;
+        }
+        .register-details form .input-group-box
+        {
+            margin-top: 1.5em;
+        }
+        .input-group-box label
+        {
+            width: 35%;
+            font-size: 0.90em;
+            font-weight: 600;
+            padding: 0.40em;
+        }
+        .input-group-box input, select{
+          width: 55%;
+          padding: 0.20em;
+          border: 1px solid #828181;
+          font-size: 0.90em;
+         
+        }
+        .input-group-box input:focus, select:focus
+        {
+            border:0.01rem solid #111158;
+            outline: none;
+            border-radius: 3px;
+        }
+        .input-group-box select option{
+            font-size: 0.90em;
+            padding: 1em 0em;
+        }
+        .submit_button
+        {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 15vh;
+            background: #fafafa;
+            margin-top: 1em;
+        }
+        .submit_button button
+        {
+            padding: 0.40em 1.4em;
+            font-weight: 600;
+            background: #261b52;
+            color: #ffff;
+            margin:none ;
+            border: none;
+            letter-spacing: 0.04em;
+        }
+        #register-details a
+        {
+            padding: 0em 0.40em;
+            font-size: 1.1em;
         
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 1em;
+        }
+        #register-details .edit
+        {
+            font-size: 0.95em;
+        }
+        #register-details .edit:nth-child(1)
+        {
+          
+            color: #1b126f; 
+        }
+        #register-details .check
+        {
+          
+            color: #3da309; 
+        }
+        #register-details .wating
+        {
+            color: #fff308;
+        }
+        #register-details .wating span
+        {
+            color: #d3c90d;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        #register-details .notcheck
+        {
+            color: #ec0909;
+        }
+        #register-details .confirmbtn
+        {
+            font-size: 0.89em;
+            font-weight: 600;
+            border: none;
+            padding: 0.40em 0.80em;
+            background: #111158;
+            color: #ffff;
+        }
+        .down-load
+        {
+            color: #ec0909;
+            cursor: pointer;
+        }
+        .not-download
+        {
+            color: #f7ea2d;
+        }
+        /* Media Query*/
+        @media(max-width:964px)
+        {
+            #register-box .contaier-fluid
+            {
+            grid-template-columns:repeat(1,1fr) ;
+            }
+            .register-details
+            {
+                height: auto;
+            }
+            
+        }
+        /*Register Box Register-details End Style */
+    
+         /*Register Box Register-details Table Style */
+         .register-details-table .container
+         {
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+          
+            margin-top: 1.4em;
+            padding-top:2em ;
+            padding-bottom:2em ;
+         }
+         #register-details
+         {
+            font-size: 0.90em;
+         }
+          /* Media Query*/
+        @media(max-width:964px)
+        {
+        
+            .register-details-table .container
+            {
+                height: auto;
+                overflow-x: scroll;
+              
                
             }
-            #register-box .contaier
+            #register-details
             {
-                grid-template-columns: repeat(1,1fr);
+              width: 100%; 
             }
-       }
-</style>
-
-
-<main>
-    <section id="register-box">
-        <div class="contaier-fluid">
-            
-            <div class="register-details-table">
-                <h4>All  Salary Payments <span style="margin-left: 0.60em;"><a href="#"  onclick="goBack()"><i class="bi bi-arrow-left-square-fill"></i></a></span> </h4>
-                <div class="line mb-5"></div>
-
-                <form action="{% url 'admin_employee_salary_payments_search' emp_reg_edit.id %}" method="post">
-                    {% csrf_token %}
-                    <p class="text-center mb-4 mt-2"><span style="color: #f83b3b;"> Note :</span> Search Payments By Paid Date </p>
-                       
-                    <div class="search-box">
-                        <div class="card">
-                            <h6>Total Paid Salary </h6>
-                            <p>{% if salary_tol %}
-                                {{salary_tol}} /-
-                                {% else %}
-                                0 /-
-                                {% endif %}
-                            </p>
-                        </div>
-                        
-                        <div class="input-date-box">
-                            <label>From Date :</label>
-                            <input type="date" name="adempfr_data" required>
-                        </div>
-                        <div class="input-date-box">
-                            <label>To Date :</label>
-                            <input type="date" name="adempto_date" required>
-                        </div>
-                        <div class="submit-box">
-                            <button type="submit"><i class="bi bi-search"></i></button>
-                        </div>
-                    </div>
-                </form>
-
-        
-                <div class="contaier">
-
-                    <div class="employee_details">
-                        <div class="card" id="emp_details">
-                            <span><h5>{{emp_reg_edit.empfullName}}</h5></span>
-                                <b>ID: {{emp_reg_edit.empidreg}}</b>
-                            <span ><b>Date Of Joing:</b> {{emp_reg_edit.empdofj}}</span>
-                        
-                            <span><b style="margin-left: 0.50em;">Confirmed Salary:</b>   {{emp_reg_edit.empconfirmsalary}}</span>
-                        </div>
-                    </div>
-
-                    <table id="register-details" class="display" >
-                        <thead>
-                            <tr>
-                                <th></th>
-                                
-                                <th>Salary Month</th>
-                                <th>Paid Date</th>
-                                <th>Paid Amount</th>
-                                <th> Srtatus</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for i in salary %}
-                               
-                                    <tr>
-                                        <td>{{ forloop.counter }}</td>
-                                       
-                                        <td>{{i.empsalary_month}}</td>
-                                        <td>{{i.empslaray_date}}</td>
-                                        <td>{{i.emppaid_amt}}</td>
-                                        <td>
-                                            {%if i.emp_paidstatus == 1 %}
-                                            <span style="color: #286f05;">Paid</span>
-                                            {% else %}
-                                            <span style="color: #ff2c25;">Not Paid</span>
-                                            {% endif %}
-
-                                        </td>
-                                         
-                                    </tr>
-                                
-                            {% endfor %}
-                          
-                        </tbody>
-                       
-                    </table>
-
-                </div>
-            </div>
-           
-        </div>
-    </section>
-
-    <!-- Meaage Box fead Out -->
-
-    <script>
-        function goBack() {
-          history.go(-1); // Go back one page in the browser history
+            .register-details-table 
+            {
+                overflow-x: scroll;
+            }
         }
-    </script>
-
-
-
-</main>
-
-{% endblock %}
+        #register-details .start
+        {
+            background: #ec0909;
+            color: #fff;
+        }
+        #register-details .progressing
+        {
+            background: #ffff53;
+        }
+        #register-details .end
+        {
+            background: #74f342;
+        }
+    
+         /*Search Box styling */
+         .register-details-table .form
+         {
+             padding: 0.80em 0.60em;
+             margin-bottom: 1em;
+         }
+    
+         .register-details-table  .search-box
+         {
+             display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 1em;
+            justify-content: center;
+            gap: 2em;
+         }
+         .card{
+          
+            border: none;
+            margin: none;
+            cursor: pointer;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            padding: 1.3em;
+           
+         }
+         .card p{
+            font-size: 1.5em;
+            font-weight: 700;
+            text-align: center;
+         }
+         .register-details-table  .search-box .input-date-box
+         {
+             padding: 0.80em .50em;
+         }
+         .register-details-table  .search-box .input-date-box label
+         {
+             font-size: 0.92em;
+             font-weight: 600;
+             margin-right: 0.40em;
+         }
+         .register-details-table  .search-box .input-date-box input{
+            padding: 0.30em;
+           
+            border: 1px solid #0c1846;
+            margin: none;
+         }
+         .register-details-table  .search-box button
+         { background: #0c1846;
+            border: none;
+            margin: none;
+            cursor: pointer;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            padding: 0.30em 0.70em;
+            color: #fff;
+         }
+         .register-details-table .search-box button:hover{
+             box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+             background: #040f3b;
+             
+            
+         }
+    
+           /* End Search Box styling */
+           .allexp
+           {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+           
+           }
+           .addexp
+           {
+          
+            text-align: center;
+            margin-top: 3em;
+            
+           
+           }
+           .addexp .exp_link, .allexp .exp_link
+           {
+            padding: 0.50em 1em;
+            background: #141f49;
+            color:#ffff;
+            font-size: 0.89em;
+            font-weight: 600;
+            margin-left: 0.40em;
+         
+           }
+           .addexp.exp_link i, .allexp  .exp_link i
+           {
+            margin-right: 0.30em;
+           }
+           
+           .notice 
+           {
+            background: #f1f0f0;
+            text-align: center;
+            padding:1em;
+           
+           }
+           .notice p
+           {
+            font-weight: 600;
+            color: #ec0909;
+            font-size: 0.93em;
+           }
+           .notice p span{
+            color: #221854;
+           }
+       
+           .danger
+           {
+            color: #ec0909;
+            font-weight: 600;
+           }
+           .notice  .amount
+           {
+            font-weight: 800;
+            font-size: 1.3em;
+           }
+           @media (max-width:832px)
+           {
+            h6
+            {
+               
+                font-size: 1.1em;
+                
+            }
+           
+                .register-details-table .top-section
+                {
+                    display: grid;
+                    grid-template-columns:repeat(1,1fr) 
+                }
+                .register-details-table .quick-search .quick_links
+                {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                    margin: 1.5em 1em;
+                    gap: 1em;
+    
+                }
+                .register-details-table  .search-box
+                {
+                    display: flex;
+            
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 1em;
+                   
+                }
+                #register-box .contaier
+                {
+                    grid-template-columns: repeat(1,1fr);
+                }
+           }
+    </style>
+    
+    
+    <main>
+        <section id="register-box">
+            <div class="contaier-fluid">
+                
+                <div class="register-details-table">
+                    <h4>All  Salary Payments <span style="margin-left: 0.60em;"><a href="#"  onclick="goBack()"><i class="bi bi-arrow-left-square-fill"></i></a></span> </h4>
+                    <div class="line mb-5"></div>
+    
+                    <form action="{% url 'admin_employee_salary_payments_search' emp_reg_edit.id %}" method="post">
+                        {% csrf_token %}
+                        <p class="text-center mb-4 mt-2"><span style="color: #f83b3b;"> Note :</span> Search Payments By Paid Date </p>
+                           
+                        <div class="search-box">
+                            <div class="card">
+                                <h6>Total Paid Salary </h6>
+                                <p>{% if salary_tol %}
+                                    {{salary_tol}} /-
+                                    {% else %}
+                                    0 /-
+                                    {% endif %}
+                                </p>
+                            </div>
+                            
+                            <div class="input-date-box">
+                                <label>From Date :</label>
+                                <input type="date" name="adempfr_data" required>
+                            </div>
+                            <div class="input-date-box">
+                                <label>To Date :</label>
+                                <input type="date" name="adempto_date" required>
+                            </div>
+                            <div class="submit-box">
+                                <button type="submit"><i class="bi bi-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+    
+            
+                    <div class="contaier">
+    
+                        <div class="employee_details">
+                            <div class="card" id="emp_details">
+                                <span><h5>{{emp_reg_edit.empfullName}}</h5></span>
+                                    <b>ID: {{emp_reg_edit.empidreg}}</b>
+                                <span ><b>Date Of Joing:</b> {{emp_reg_edit.empdofj}}</span>
+                            
+                                <span><b style="margin-left: 0.50em;">Confirmed Salary:</b>   {{emp_reg_edit.empconfirmsalary}}</span>
+                            </div>
+                        </div>
+    
+                        <table id="register-details" class="display" >
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    
+                                    <th>Salary Month</th>
+                                    <th>Paid Date</th>
+                                    <th>Paid Amount</th>
+                                    <th> Srtatus</th>
+    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in salary %}
+                                   
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                           
+                                            <td>{{i.empsalary_month}}</td>
+                                            <td>{{i.empslaray_date}}</td>
+                                            <td>{{i.emppaid_amt}}</td>
+                                            <td>
+                                                {%if i.emp_paidstatus == 1 %}
+                                                <span style="color: #286f05;">Paid</span>
+                                                {% else %}
+                                                <span style="color: #ff2c25;">Not Paid</span>
+                                                {% endif %}
+    
+                                            </td>
+                                             
+                                        </tr>
+                                    
+                                {% endfor %}
+                              
+                            </tbody>
+                           
+                        </table>
+    
+                    </div>
+                </div>
+               
+            </div>
+        </section>
+    
+        <!-- Meaage Box fead Out -->
+    
+        <script>
+            function goBack() {
+              history.go(-1); // Go back one page in the browser history
+            }
+        </script>
+    
+    
+    
+    </main>

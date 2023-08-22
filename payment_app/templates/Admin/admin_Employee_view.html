@@ -37,7 +37,13 @@
                                         {% for state in states %}
                                         <option value="{{state.id}}">{{state.state_name}}</option>
                                         {% endfor %}
-                                    </select>
+                                    </select>     
+                                </div>
+                                <div class="w-box">
+                                    <input type="date" class="search-date" name="start_date">
+                                </div>
+                                <div class="w-box">
+                                    <input type="date" class="search-date" name="end_date">
                                 </div>
                                 <div>
                                     <button type="submit" class="search-button">  <i class="icon-search"></i></button>
@@ -47,7 +53,7 @@
                         
                     </div>
                     <div class="table-responsive  mt-1">
-                        <table class="table select-table" id="OJT-register">
+                        <table class="table select-table" id="emp-list">
                             <thead>
                                 <tr>
                                     <th>Remove</th>
@@ -120,6 +126,65 @@
     
 </div>
 
+
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const salaryTable = document.getElementById('emp-list');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = salaryTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+           
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+            const Cell5 = rows[i].getElementsByTagName('td')[5];
+            
+            
+
+            if (Cell2 || Cell3  || Cell4 || Cell5 ) {
+               
+                const Celldata2 = Cell2.textContent || Cell2.innerText;
+                const Celldata3 = Cell3.textContent || Cell3.innerText;
+                const Celldata4 = Cell4.textContent || Cell4.innerText;
+                const Celldata5 = Cell5.textContent || Cell5.innerText;
+               
+
+                if (Celldata2.toLowerCase().includes(filterValue) || Celldata3.toLowerCase().includes(filterValue) || Celldata4.toLowerCase().includes(filterValue) || Celldata5.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+    // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
 
 
 

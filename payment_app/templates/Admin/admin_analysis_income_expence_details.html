@@ -126,20 +126,28 @@
                     <div>
                         <form class="search-form" action="#" method="post">
                             {% csrf_token %}
-                            <div >
+                            <div class="searchBox">
+                        
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                            </div>
+                            <div class="w-box" >
                                 <select name="search_select" class="search-select">
                                    
-                                    <option> All</option>
-                                    {% for i in exp_income %}
-                                    <option value="{{i.exin_head_name}}">{{i.exin_head_name}}</option>
+                                    <option value="0" > All states </option>
+                                    {% for state in states %}
+                                    <option value="{{state.id}}">{{state.state_name}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="">
-                                <input type="date" class="search-date">
+                                <input type="date" class="search-date" name="start_date">
                             </div>
                             <div class=" ">
-                                <input type="date" class="search-date">
+                                <input type="date" class="search-date" name="end_date">
                             </div>
                             <div>
                                 <button type="submit" class="search-button">  <i class="icon-search"></i></button>
@@ -149,22 +157,24 @@
                     
                   </div>
                   <div class="table-responsive  mt-1">
-                    <table class="table select-table">
-                      <thead>
+                    <table class="table select-table" id="income-expence">
+                        <thead>
                         <tr>
-                              
                             <th>Date</th>
                             <th>Head Name</th>
-                            <th><a href="#">Income</a></th>
-                            <th><a href="#">Expence</a></th>
+                            <th>Income</th>
+                            <th>Expence</th>
                             <th>Note</th>
-                            
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for i in exp_income %}
-                        <tr>
+                            <th>State</th>
                            
+                        </tr>
+                        </thead>
+                        <tbody>
+                            
+                        {% for i in exp_income %}
+                        
+                        <tr>
+                       
                             <td>{{i.exin_date}}</td>
                             <td>{{i.exin_head_name}}</td>
                             {% if i.exin_typ == 1 %}
@@ -178,19 +188,71 @@
                             <td></td>
                             {% endif %}
                             <td>{{i.exin_dese}}</td>
-                            
+                            <td>{{i.exin_state.state_name}}</td>
                             
                         </tr>
+                       
                         {% endfor %}
-                      
-                    </tbody>
-                    
+                        </tbody>
                     </table>
-                  </div>
+                    </div>
                 </div>
               </div>
         </div>
     </div>
 </div>
+
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const ojtTable = document.getElementById('income-expence');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = ojtTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+           
+            const Cell1 = rows[i].getElementsByTagName('td')[1];
+            
+            
+
+            if (Cell1 || Cell2 ) {
+               
+                const Celldata1 = Cell1.textContent || Cell1.innerText;
+               
+
+                if (Celldata1.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+    // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
 
 {% endblock %}

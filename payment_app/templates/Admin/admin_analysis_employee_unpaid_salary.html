@@ -13,8 +13,8 @@
                 <div class="card-body">
                 <div class="d-sm-flex justify-content-between align-items-start">
                     <div>
-                    <h4 class="card-title card-title-dash">Salary Unpaid </h4>
-                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{emp_unpaid_count}}</span>  unpaid salary - ( {{emp_unp_amt|default_if_none:"0"}} )</p>
+                    <h4 class="card-title card-title-dash">Salary Payment Pending on {% now "F" %} </h4>
+                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{emp_unpaid_count}}</span>  Payments Pending - ( {{emp_unp_amt|default_if_none:"0"}} )</p>
                     </div>
                     <div>
                         <form class="search-form" action="#" method="post">

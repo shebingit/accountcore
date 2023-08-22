@@ -58,7 +58,7 @@
                     <table class="table select-table" id="OJT-register">
                         <thead>
                             <tr>
-                               
+                                <th>Date Of JOIN </th>
                                 <th>Full Name</th>
                                 <th>Department</th>
                                 <th>Reffernce</th>
@@ -74,7 +74,7 @@
                             {% for i in reg %}
                                 
                                     <tr>
-                                      
+                                      <td>{{i.dofj}}</td>
                                         <td >
                                             <div class="d-flex ">
                                                 <div>
@@ -161,16 +161,20 @@
             const Cell0 = rows[i].getElementsByTagName('td')[0];
             const Cell1 = rows[i].getElementsByTagName('td')[1];
             const Cell2 = rows[i].getElementsByTagName('td')[2];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
             
 
             if (Cell1 || Cell2 ) {
                 const Celldata0 = Cell1.textContent || Cell1.innerText;
                 const Celldata1 = Cell1.textContent || Cell1.innerText;
                 const Celldata2 = Cell2.textContent || Cell2.innerText;
+                const Celldata3 = Cell3.textContent || Cell3.innerText;
+                const Celldata4 = Cell4.textContent || Cell4.innerText;
              
                
 
-                if (Celldata0.toLowerCase().includes(filterValue) ||Celldata1.toLowerCase().includes(filterValue) || Celldata2.toLowerCase().includes(filterValue)) 
+                if (Celldata0.toLowerCase().includes(filterValue) ||Celldata1.toLowerCase().includes(filterValue) || Celldata2.toLowerCase().includes(filterValue)||Celldata3.toLowerCase().includes(filterValue) || Celldata4.toLowerCase().includes(filterValue)) 
                 {
                     rows[i].style.display = '';
                 } else {

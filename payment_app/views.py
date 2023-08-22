@@ -204,10 +204,16 @@ def login_dashboard(request):
                         
                         common_data = nav_data(request)
 
+                        otj_reg = Register.objects.all().count()
+                        emp_reg = EmployeeRegister.objects.all().count()
+                        state_reg = Register_State.objects.filter(allocate_status=1).count()
 
                         content = {'admin_DHB':admin_DHB,
                                    'success_msg':success_msg,
-                                   'new_reg':new_reg
+                                   'new_reg':new_reg,
+                                   'otj_reg':otj_reg,
+                                   'emp_reg':emp_reg,
+                                   'state_reg':state_reg
                                    
                                    }
                         # Merge the two dictionaries
@@ -3316,7 +3322,16 @@ def admin_dashboard(request):
 
         common_data = nav_data(request)
 
-        content={'admin_DHB':admin_DHB,'new_reg':new_reg}
+        otj_reg = Register.objects.all().count()
+        emp_reg = EmployeeRegister.objects.all().count()
+        state_reg = Register_State.objects.filter(allocate_status=1).count()
+
+        content={'admin_DHB':admin_DHB,
+                 'new_reg':new_reg,
+                 'otj_reg':otj_reg,
+                 'emp_reg':emp_reg,
+                 'state_reg':state_reg
+                 }
         # Merge the two dictionaries
         content = {**content, **common_data}
 
@@ -4336,21 +4351,36 @@ def admin_emp_Register_view(request):
         admin_DHB = Dashboard_Register.objects.get(id=admid)
        
         #---------------------------------------------------
+        emp_reg=EmployeeRegister.objects.all()
+        emp_reg_count=EmployeeRegister.objects.all().count()
 
         if request.method == 'POST':
-            
-            if request.POST['search_select']=='0':
 
-                emp_reg=EmployeeRegister.objects.all()
-                emp_reg_count=EmployeeRegister.objects.all().count()
-            else:
+            sdate= request.POST['start_date']
+            edate= request.POST['end_date']
+            
+            if request.POST['search_select']=='0' and sdate and edate :
+
+                emp_reg=EmployeeRegister.objects.filter(empdofj__gte=sdate,empdofj__lte=edate)
+                emp_reg_count=EmployeeRegister.objects.filter(empdofj__gte=sdate,empdofj__lte=edate).count()
+
+            elif request.POST['search_select'] and sdate and edate :
+
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                emp_reg=EmployeeRegister.objects.filter(empdofj__gte=sdate,empdofj__lte=edate,empstate=state.state_name)
+                emp_reg_count=EmployeeRegister.objects.filter(empdofj__gte=sdate,empdofj__lte=edate,empstate=state.state_name).count()
+            
+            elif request.POST['search_select'] !='0':
+
                 state = Register_State.objects.get(id=int(request.POST['search_select']))
                 emp_reg=EmployeeRegister.objects.filter(empstate=state.state_name)
                 emp_reg_count=EmployeeRegister.objects.filter(empstate=state.state_name).count()
-        else:
-       
-            emp_reg=EmployeeRegister.objects.all()
-            emp_reg_count=EmployeeRegister.objects.all().count()
+
+            else:
+                emp_reg=EmployeeRegister.objects.all()
+                emp_reg_count=EmployeeRegister.objects.all().count()
+
+        
 
         common_data = nav_data(request)
 
@@ -4395,6 +4425,19 @@ def admin_income_expence(request):
        
         #---------------------------------------------------
 
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+        
+        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('-id')
+        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=fr_date,exin_date__lte=to_date).count()
+        inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(intol=Sum('exin_amount'))['intol']
+        expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(exptol=Sum('exin_amount'))['exptol']
+        
+
+       
+
         if request.method == 'POST':
 
             sdate=request.POST['start_date']
@@ -4405,32 +4448,52 @@ def admin_income_expence(request):
                  
                 exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate).order_by('-id')
                 exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate).count()
+
+                inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_date__gte=sdate,exin_date__lte=edate).aggregate(intol=Sum('exin_amount'))['intol']
+                expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_date__gte=sdate,exin_date__lte=edate).aggregate(exptol=Sum('exin_amount'))['exptol']
+                
+                
        
             elif request.POST['search_select'] and sdate and edate :
+
                 state = Register_State.objects.get(id=int(request.POST['search_select']))
                 exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).order_by('-id')
                 exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).count()
+
+                inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).aggregate(intol=Sum('exin_amount'))['intol']
+                expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).aggregate(exptol=Sum('exin_amount'))['exptol']
+               
             
             elif  request.POST['search_select'] != '0':
+
                 state = Register_State.objects.get(id=int(request.POST['search_select']))
                 exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=state).order_by('-id')
                 exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=state).count()
+
+                inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_state=state).aggregate(intol=Sum('exin_amount'))['intol']
+                expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_state=state).aggregate(exptol=Sum('exin_amount'))['exptol']
+               
             
             else:
-                exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('-id')
-                exp_income_count=IncomeExpence.objects.filter(exin_status=1).count()
+                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=fr_date,exin_date__lte=to_date).count()
 
-        
-        else:
-            exp_income=IncomeExpence.objects.filter(exin_status=1,).order_by('-id')
-            exp_income_count=IncomeExpence.objects.filter(exin_status=1,).count()
+       
+        if expe == None:
+           expe=0
+        if inco == None:
+           inco=0
 
+        balans=inco-expe
     
         common_data = nav_data(request)
 
         content = {'admin_DHB':admin_DHB,
                   'exp_income':exp_income,
-                  'exp_income_count':exp_income_count
+                  'exp_income_count':exp_income_count,
+                  'inco':inco,
+                  'expe':expe,
+                  'balans':balans,
                    }
 
         # Merge the two dictionaries
@@ -4538,24 +4601,74 @@ def admin_salary_expence(request):
         else:
             return redirect('/')
         
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+       
+        #---------------------------------------------------
+
+        # --------------------Current month --------------------
+        
         
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
-        emp_salary_tol=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+        # -------------------- End Current month --------------------
 
-        salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
-        salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-        content={'emp_salary_tol':emp_salary_tol,
-                 'to_date':to_date,
-                 'fr_date':fr_date,
-                 'cur_date':cur_date,
-                 'salary_tol':salary_tol,
-                 }
+        emp_reg_count=EmployeeRegister.objects.filter(emp_status=1).count()
+        emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
         
-        return render(request,'Admin/admin_salary_expence.html',{'content':content,'salary':salary,})
+        emp_paid=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_paid.values_list('empreg_id', flat=True)).count()
+        emp_unpaid_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_paid.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+        emp_sal_acc_deative=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=0,).count()
+       
+        emp_salary_tol=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+        salary=EmployeeSalary.objects.filter(emp_paidstatus=1)
+
+        if request.method == 'POST':
+
+            sdate= request.POST['start_date']
+            edate= request.POST['end_date']
+
+            if request.POST['search_select'] == '0' and sdate and edate:
+
+                salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=sdate,empslaray_date__lte=edate)
+
+            elif request.POST['search_select'] and sdate and edate:
+
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                emp = EmployeeRegister.objects.filter(empstate=state.state_name)
+                salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=sdate,empslaray_date__lte=edate,empreg_id__in=emp)
+            
+            elif request.POST['search_select'] !='0':
+
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                emp = EmployeeRegister.objects.filter(empstate=state.state_name)
+                salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp)
+            else:
+                salary=EmployeeSalary.objects.filter(emp_paidstatus=1)
+
+        salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        
+        
+        content = {'admin_DHB':admin_DHB,
+                    'emp_sal_count':emp_sal_count,
+                    'emp_unpaid':emp_unpaid,
+                    'emp_sal_acc_deative':emp_sal_acc_deative,
+                    'salary':salary,
+                    'emp_reg_count':emp_reg_count,
+                    'emp_salary_tol':emp_salary_tol,
+                    'salary_tol':salary_tol,
+                    'emp_unpaid_amt':emp_unpaid_amt
+                    }
+            
+        common_data = nav_data(request)
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+       
+        
+        return render(request,'Admin/admin_salary_expence.html',content)
     else:
         return redirect('/')
     
@@ -4604,10 +4717,28 @@ def admin_employee_salary_details(request,pk):
         else:
             return redirect('/')
         
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+       
+        #---------------------------------------------------
+        
         emp_reg_edit=EmployeeRegister.objects.get(id=pk)
+        emp_reg=EmployeeRegister.objects.all()
         salary=EmployeeSalary.objects.filter(empreg_id=pk)
+        salary_count=EmployeeSalary.objects.filter(empreg_id=pk).count()
         salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id=pk).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
-        return render(request,'Admin/admin_employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit,'salary_tol':salary_tol})
+
+        content = {'admin_DHB':admin_DHB,
+                    'emp_reg_edit':emp_reg_edit,
+                    'salary':salary,
+                    'salary_tol':salary_tol,
+                    'salary_count':salary_count,
+                    'emp_reg':emp_reg
+                    }
+            
+        common_data = nav_data(request)
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+        return render(request,'Admin/admin_employee_salary_details.html',content)
     else:
         return redirect('/')
     
@@ -4619,15 +4750,57 @@ def admin_employee_salary_payments_search(request,pk):
             admid = request.session['admid']
         else:
             return redirect('/')
+         
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+        emp_reg=EmployeeRegister.objects.all()
+       
+        #---------------------------------------------------
         
         if request.method =='POST':
 
-            emp_reg_edit=EmployeeRegister.objects.get(id=pk)
-            salary=EmployeeSalary.objects.filter(empreg_id=pk,empslaray_date__gte=request.POST['adempfr_data'],empslaray_date__lte=request.POST['adempto_date'])
-            salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id=pk,empslaray_date__gte=request.POST['adempfr_data'],empslaray_date__lte=request.POST['adempto_date']).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
-            return render(request,'Admin/admin_employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit,'salary_tol':salary_tol})
+            sdate=request.POST['start_date']
+            edate=request.POST['end_date']
 
-        return render(request,'account/employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit})
+            if request.POST['search_select'] == '0' and sdate and edate:
+
+                emp_reg_edit=EmployeeRegister.objects.get(id=pk)
+                salary=EmployeeSalary.objects.filter(empreg_id=pk,empslaray_date__gte=sdate,empslaray_date__lte=edate)
+                salary_count=EmployeeSalary.objects.filter(empreg_id=pk,empslaray_date__gte=sdate,empslaray_date__lte=edate).count()
+                salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id=pk,empslaray_date__gte=sdate,empslaray_date__lte=edate).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
+
+            elif request.POST['search_select'] != '0':
+
+                emp_reg_edit=EmployeeRegister.objects.get(id=int(request.POST['search_select'])) 
+                salary=EmployeeSalary.objects.filter(empreg_id=int(request.POST['search_select']))
+                salary_count=EmployeeSalary.objects.filter(empreg_id=int(request.POST['search_select'])).count()
+                salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id=int(request.POST['search_select'])).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
+            
+            elif request.POST['search_select'] != '0' and sdate and edate:
+                emp_reg_edit=EmployeeRegister.objects.get(id=int(request.POST['search_select']))
+                salary=EmployeeSalary.objects.filter(empreg_id=int(request.POST['search_select']),empslaray_date__gte=sdate,empslaray_date__lte=edate)
+                salary_count=EmployeeSalary.objects.filter(empreg_id=int(request.POST['search_select']),empslaray_date__gte=sdate,empslaray_date__lte=edate).count()
+                salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id=int(request.POST['search_select']),empslaray_date__gte=sdate,empslaray_date__lte=edate).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
+            
+            else:
+                emp_reg_edit=EmployeeRegister.objects.get(id=pk)
+                salary=EmployeeSalary.objects.filter(empreg_id=pk)
+                salary_count=EmployeeSalary.objects.filter(empreg_id=pk).count()
+                salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id=pk).aggregate(sal_tol=Sum('emppaid_amt'))['sal_tol']
+
+
+
+        content = {'admin_DHB':admin_DHB,
+                    'emp_reg_edit':emp_reg_edit,
+                    'salary':salary,
+                    'salary_tol':salary_tol,
+                    'salary_count':salary_count,
+                    'emp_reg':emp_reg
+                    }
+            
+        common_data = nav_data(request)
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+        return render(request,'Admin/admin_employee_salary_details.html',content)
     else:
         return redirect('/')
     
@@ -4856,13 +5029,35 @@ def admin_fixed_delete(request,pk):
             admid = request.session['admid']
         else:
             return redirect('/')
-        fixededit=FixedExpence.objects.get(fixed_status=1,id=pk)
-        fixededit.delete()
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+       
+        #---------------------------------------------------
+        try:
+            fixededit=FixedExpence.objects.get(fixed_status=1,id=pk)
+            fixededit.delete()
+        except:
+            print('No Date')
+       
+       
         fixedexp=FixedExpence.objects.all()
-        fixededit=''
-        msg=2
-        content={'msg':msg}
-        return render(request,'Admin/admin_fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+        fixedexp_count=FixedExpence.objects.all().count()
+        
+        error_msg='Opps! Data removed'
+       
+        content = {'admin_DHB':admin_DHB,
+                    'fixedexp':fixedexp,
+                    'fixedexp_count':fixedexp_count,
+                    'error_msg':error_msg
+                            }
+
+     
+            
+        common_data = nav_data(request)
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+        return render(request,'Admin/admin_fixed_expence.html',content)
         
     else:
         return redirect('/')
@@ -5196,7 +5391,57 @@ def admin_analysis_income_expence_details(request):
         exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=fr_date,exin_date__lte=to_date).count()
         inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(intol=Sum('exin_amount'))['intol']
         expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(exptol=Sum('exin_amount'))['exptol']
+      
+
+        
+        if request.method == 'POST':
+
+            sdate=request.POST['start_date']
+            edate=request.POST['end_date']
+
+
+            if request.POST['search_select'] == '0' and sdate and edate :
+                 
+                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate).count()
+
+                inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_date__gte=sdate,exin_date__lte=edate).aggregate(intol=Sum('exin_amount'))['intol']
+                expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_date__gte=sdate,exin_date__lte=edate).aggregate(exptol=Sum('exin_amount'))['exptol']
+                
+                
+       
+            elif request.POST['search_select'] and sdate and edate :
+
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).count()
+
+                inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).aggregate(intol=Sum('exin_amount'))['intol']
+                expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_date__gte=sdate,exin_date__lte=edate,exin_state=state).aggregate(exptol=Sum('exin_amount'))['exptol']
+               
+            
+            elif  request.POST['search_select'] != '0':
+
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=state).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=state).count()
+
+                inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_state=state).aggregate(intol=Sum('exin_amount'))['intol']
+                expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_state=state).aggregate(exptol=Sum('exin_amount'))['exptol']
+               
+            
+            else:
+                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_date__gte=fr_date,exin_date__lte=to_date).count()
+
+       
+        if expe == None:
+           expe=0
+        if inco == None:
+           inco=0
+
         balans=inco-expe
+    
 
         common_data = nav_data(request)
 
@@ -5457,9 +5702,9 @@ def admin_analysis_employee_details(request):
 
         emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
         
-        emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
-        emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
-        emp_sal_acc_deative=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=0,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+        emp_paid=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_paid.values_list('empreg_id', flat=True)).count()
+        emp_sal_acc_deative=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=0,).count()
        
 
         # ============================== Employee section End =============================
@@ -5594,6 +5839,11 @@ def admin_emp_salary_unpaid_list(request):
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
+        emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
+        emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+        emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
         if request.method=='POST':
 
             sdate=request.POST['start_date']
@@ -5601,30 +5851,38 @@ def admin_emp_salary_unpaid_list(request):
 
             if request.POST['search_select'] == '0' and sdate and edate :
 
-                emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=edate)
+                emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=edate,emp_paidstatus=1)
                 emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
                 emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
                 emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
             
             elif request.POST['search_select'] and sdate and edate:
-                stateName=Register_State.objects.get(id=int(request.POST['search_select'])) 
-                emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=to_date,empstate=stateName.state_name)
-                emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
-                emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
-                emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
 
+                stateName=Register_State.objects.get(id=int(request.POST['search_select'])) 
+                emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=to_date,emp_paidstatus=1)
+
+                emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
+                emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+                emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+            
+            
+            elif request.POST['search_select'] != '0':
+
+                stateName=Register_State.objects.get(id=int(request.POST['search_select'])) 
+                emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1)
+
+                emp_unpaid=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
+                emp_unpaid_count=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+                emp_unp_amt=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
 
             else:
-                emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=to_date)
-                emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
-                emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
-                emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+                emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+                emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
+                emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+                emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
 
-        else:
-            emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
-            emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
-            emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
-            emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+           
 
         common_data = nav_data(request)
 
@@ -6293,78 +6551,9 @@ def admin_state_reallocation(request):
         return redirect('/')
 
 
-# ------------State Analysis section------------------
-
-def admin_states_analysis(request):
-    if 'admid' in request.session:
-        if request.session.has_key('admid'):
-            admid = request.session['admid']
-        else:
-            return redirect('/')
-        
-        admin_DHB=Dashboard_Register.objects.get(id=admid)
-        common_data = nav_data(request)
-           
-        content={'admin_DHB':admin_DHB}
-        
-            # Merge the two dictionaries
-        content = {**content, **common_data}
-
-        return render(request,'Admin/admin_states_analysis.html',content)
-
-    else:
-        return redirect('/')
-
-
-#---------------- State Track Payments --------------
-
-def admin_states_track_payments(request):
-    if 'admid' in request.session:
-        if request.session.has_key('admid'):
-            admid = request.session['admid']
-        else:
-            return redirect('/')
-        
-        admin_DHB=Dashboard_Register.objects.get(id=admid)
-        common_data = nav_data(request)
-           
-        content={'admin_DHB':admin_DHB}
-        
-            # Merge the two dictionaries
-        content = {**content, **common_data}
-
-        return render(request,'Admin/admin_states_track_payments.html',content)
-
-    else:
-        return redirect('/')
 
 
 
-
-
-#------------ State Account Section ---------------------
-def admin_states_account(request):
-    if 'admid' in request.session:
-        if request.session.has_key('admid'):
-            admid = request.session['admid']
-        else:
-            return redirect('/')
-        
-        admin_DHB=Dashboard_Register.objects.get(id=admid)
-        common_data = nav_data(request)
-           
-        content={'admin_DHB':admin_DHB}
-        
-            # Merge the two dictionaries
-        content = {**content, **common_data}
-
-        return render(request,'Admin/admin_states_account.html',content)
-
-    else:
-        return redirect('/')
-
-
-#--------------------------------------------------
 # =========================== End Admin Module Section ======================================
 
 

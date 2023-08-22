@@ -244,21 +244,7 @@ urlpatterns = [
     path('Analysis-Deactive-Salary-Account',views.admin_emp_deactive_salary_account_list,name='admin_emp_deactive_salary_account_list'),
     path('Analysis-EmployeeSalary-Payments-Details/<int:emp_id>',views.admin_emp_salary_pay_details,name='admin_emp_salary_pay_details'),
 
-    #------------------State Analyis section --------------------------
-    path('Analysis-State-List',views.admin_states_analysis,name='admin_states_analysis'),
-
-
-
-    # ----------------State Track Payments section -----------------
-    path('State-Track-Payments',views.admin_states_track_payments,name='admin_states_track_payments'),
-
-
-
-
-    #-----------== State  Account section -------------------
-    
-    path('State-Account',views.admin_states_account,name='admin_states_account'),
-
+   
 
 
 

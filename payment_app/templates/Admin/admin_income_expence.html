@@ -39,8 +39,65 @@
               </div>
             </div>
             <div class="tab-content tab-content-basic">
+
                 <div class="tab-pane fade show active" id="income-expence-view" role="tabpanel" aria-labelledby=income-expence-view"> 
-                
+
+                  <div class="row">
+                    <div class="col-md-4 grid-margin stretch-card">
+                     
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title text-success">Income - <i class="mdi mdi-currency-inr icon-sm"></i> {{inco}} -
+                                    {% if balans > 0 %}
+                                       <span class="text-normal">{% now "F" %}</span><span class="text-success text-sm"> ( Profit )</span>
+                                    {% elif balans < 0%}
+                                    <span class="text-normal"> {% now "F" %}</span><span class="text-danger text-sm"> ( Loss )</span>
+                                    {% else %}
+                                    <span class="text-normal"> {% now "F" %}</span><span class="text-primary text-sm"> ( Equal )</span>
+                                    {% endif %}
+                                 </h4>
+                                <div class="media">
+                                <i class="mdi mdi-plus icon-md text-info d-flex align-self-start me-3"></i>
+                                <div class="media-body">
+                                    <p class="card-text">The Income calculated based on all state.( OJT and other incomes)</p>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                      
+                    </div>
+                    <div class="col-md-4 grid-margin stretch-card">
+                    
+                        <div class="card">
+                          <div class="card-body">
+                              <h4 class="card-title text-danger">Expence - <i class="mdi mdi-currency-inr icon-sm"></i> {{expe}} </h4>
+                              <div class="media">
+                              <i class="mdi mdi-minus icon-md text-info d-flex align-self-center me-3"></i>
+                              <div class="media-body">
+                                  <p class="card-text">The Expence calculated based on all state. ( salary and fixed expence and 0ther)</p>
+                              </div>
+                              </div>
+                          </div>
+                        </div>
+                      
+                    </div>
+                    <div class="col-md-4 grid-margin stretch-card">
+                     
+                        <div class="card">
+                            <div class="card-body">
+                              <h4 class="card-title">Balance - <i class="mdi mdi-currency-inr icon-sm"></i> {{balans}}</h4>
+                              <div class="media">
+                              <i class="mdi mdi-contrast icon-md text-info d-flex align-self-end me-3"></i>
+                              <div class="media-body">
+                                  <p class="card-text">The Balance calculated based on the in come and expence</p>
+                              </div>
+                              </div>
+                            </div>
+                        </div>
+                      
+                    </div>
+                </div>
+
                     <div class="row flex-grow">
                         <div class="col-12 grid-margin stretch-card">
                             <div class="card card-rounded">
@@ -127,69 +184,69 @@
                             </div>
                         </div>
                         </div>
-                  </div>
-              <div class="tab-pane fade " id="add-income-expence" role="tabpanel" aria-labelledby="add-income-expence"> 
-                <div class="row flex-grow">
-                    <div class="col-12 grid-margin stretch-card">
-                      <div class="card card-rounded">
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col-lg-12">
-                              <form action="{% url 'admin_income_expence_add' %}" class="forms-sample" method="post">
-                                  {% csrf_token %}
-                                  <div class="d-flex justify-content-between align-items-center">
-                                        <h4 class="card-title card-title-dash">Company Income Expence Form</h4>
-                                     
-                                        <button type="submit" class="btn btn-primary btn-lg text-white"><i class="mdi mdi-plus-circle"></i></button>
-                                     
-                                  </div>
-                                  <div class="form-group ">
-                                    <label for="empName">Choose Type</label>
-                                    <div class="pt-2">
-                                        <span class="small-text" ><input type="radio" id="income" name="adexin_type" value="1" checked > Income</span>
-                                        <span class="small-text pl-1 "> <input type="radio"  id="expence" name="adexin_type" value="2" > Expence</span>
-                                    </div>
-                                    
-                                </div>
-                               
-                                  <div class="form-group ">
-                                      <label for="empName">Head Name</label>
-                                      <input type="text" class="form-control small-text" id="empName" name="adexin_head_name"  placeholder="Head " required>
-                                  </div>
-                                  <div class="form-group ">
-                                      <label for="Date_ofjoin">Date</label>
-                                      <input type="date" class="form-control small-text" id="adexin_date" name="adexin_date" placeholder="Date ">
-                                  </div>
-                                 
-                                  <div class="form-group">
-                                    <label for="Department">State</label>
-                                    <select  class="form-control small-text" id="state" name="emp_state" required>
-                                      <option value="0" selected>Company</option>
-                                      {% for state in states %}
-                                      <option value="{{state.id}}">{{state.state_name}}</option>
-                                      {% endfor %}
+                </div>
+                <div class="tab-pane fade " id="add-income-expence" role="tabpanel" aria-labelledby="add-income-expence"> 
+                  <div class="row flex-grow">
+                      <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                          <div class="card-body">
+                            <div class="row">
+                              <div class="col-lg-12">
+                                <form action="{% url 'admin_income_expence_add' %}" class="forms-sample" method="post">
+                                    {% csrf_token %}
+                                    <div class="d-flex justify-content-between align-items-center">
+                                          <h4 class="card-title card-title-dash">Company Income Expence Form</h4>
                                       
-                                    </select>
-                                </div>
-                                  <div class="form-group ">
-                                      <label for="Employeeeid">Amount</label>
-                                      <input type="text" class="form-control small-text" id="Employeeeid" name="adexin_amt" placeholder=" Expence / Income Amount">
+                                          <button type="submit" class="btn btn-primary btn-lg text-white"><i class="mdi mdi-plus-circle"></i></button>
+                                      
+                                    </div>
+                                    <div class="form-group ">
+                                      <label for="empName">Choose Type</label>
+                                      <div class="pt-2">
+                                          <span class="small-text" ><input type="radio" id="income" name="adexin_type" value="1" checked > Income</span>
+                                          <span class="small-text pl-1 "> <input type="radio"  id="expence" name="adexin_type" value="2" > Expence</span>
+                                      </div>
+                                      
                                   </div>
-                                  <div class="form-group ">
-                                      <label for="confirmed"> Note</label>
-                                      <textarea class="form-control small-text" id="adexin_dese" name="adexin_dese"style="height:100px;" placeholder="confirmed Salary"></textarea>
+                                
+                                    <div class="form-group ">
+                                        <label for="empName">Head Name</label>
+                                        <input type="text" class="form-control small-text" id="empName" name="adexin_head_name"  placeholder="Head " required>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="Date_ofjoin">Date</label>
+                                        <input type="date" class="form-control small-text" id="adexin_date" name="adexin_date" placeholder="Date ">
+                                    </div>
+                                  
+                                    <div class="form-group">
+                                      <label for="Department">State</label>
+                                      <select  class="form-control small-text" id="state" name="emp_state" required>
+                                        <option value="0" selected>Company</option>
+                                        {% for state in states %}
+                                        <option value="{{state.id}}">{{state.state_name}}</option>
+                                        {% endfor %}
+                                        
+                                      </select>
                                   </div>
-                                 
-                              </form>
-                              
+                                    <div class="form-group ">
+                                        <label for="Employeeeid">Amount</label>
+                                        <input type="text" class="form-control small-text" id="Employeeeid" name="adexin_amt" placeholder=" Expence / Income Amount">
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="confirmed"> Note</label>
+                                        <textarea class="form-control small-text" id="adexin_dese" name="adexin_dese"style="height:100px;" placeholder="confirmed Salary"></textarea>
+                                    </div>
+                                  
+                                </form>
+                                
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-     
-              </div>
+      
+                </div>
 
              
             </div>
