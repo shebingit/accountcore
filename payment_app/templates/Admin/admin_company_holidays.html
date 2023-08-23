@@ -7,6 +7,7 @@
 
     <div class="row">
         <div class="col-sm-12">
+         
           <div class="home-tab">
             <div class="d-sm-flex align-items-center justify-content-between border-bottom">
               <ul class="nav nav-tabs" role="tablist">
@@ -38,6 +39,61 @@
                 </div>
               </div>
             </div>
+
+            <div class="edit-div" id="editDiv">
+              <div class="row flex-grow">
+                <div class="col-12 grid-margin stretch-card">
+                  <div class="card card-rounded">
+                    <div class="card-body">
+                      <span class=" text-danger"  onclick="closeEditDiv()"><i class="mdi mdi-close-circle-outline mdi-18px"></i></span>
+                      <div class="row">
+                        <div class="col-lg-12">
+                          <form action="{% url 'admin_company_holiday_add' %}" class="forms-sample" method="post">
+                              {% csrf_token %}
+                              <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title card-title-dash"><span id="edit_state"></span> Holidays Edit Form</h4>
+                                 
+                                    <button type="submit" class="btn btn-primary btn-lg text-white"><i class="mdi mdi-check"></i></button>
+                              </div>
+
+                              <div class="form-group ">
+                                  <input type="hidden" name="cmphid" id="cmphid">
+                                  <label for="Date_ofjoin">Start Date</label>
+                                  <input type="date" class="form-control small-text" id="cmphsdate" name="cmphsdate" placeholder="Date ">
+                                  
+                              </div>
+                              <div class="form-group ">
+                                <label for="Date_ofjoin">End Date</label>
+                                <input type="date" class="form-control small-text" id="cmphedate" name="cmphedate" placeholder="Date ">
+                            </div>
+                             
+                              <div class="form-group">
+                                <label for="Department">State</label>
+                                <select  class="form-control small-text" id="state" name="holiday_state" required>
+                                  <option value="0">Select a state</option>
+                                  {% for state in states %}
+                                  <option value="{{ state.id }}">{{ state.state_name }}</option>
+                                  {% endfor %}
+                                  
+                                </select>
+                            </div>
+                              <div class="form-group ">
+                                  <label for="Employeeeid">No Of Days</label>
+                                  <input type="text" class="form-control small-text" id="cmphno" name="cmphno" placeholder=" No of Holidays">
+                              </div>
+                              
+                             
+                          </form>
+                          
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+           
             <div class="tab-content tab-content-basic">
                 <div class="tab-pane fade show active" id="income-expence-view" role="tabpanel" aria-labelledby=income-expence-view> 
                 
@@ -99,7 +155,7 @@
                                     <tbody>
                                         {% for i in comp_holidays %}
                                         <tr>
-                                            <td><a href="{% url 'admin_company_holidy_edit' i.id %}" class="edit"><i class="mdi mdi-pen mdi-18px"></i></a></td>
+                                            <td><span onclick="openEditDiv('{{ i.id }}')"><i class="mdi mdi-pen mdi-18px"></i></span></td>
                                             <td>{{i.ch_state.state_name}}</td>
                                             <td>{{i.ch_sdate}}</td>
                                             <td>{{i.ch_edate}}</td>
@@ -154,7 +210,7 @@
                                 </div>
                                   <div class="form-group ">
                                       <label for="Employeeeid">No Of Days</label>
-                                      <input type="text" class="form-control small-text" id="cmphno" name="cmphno" placeholder=" Expence / Income Amount">
+                                      <input type="text" class="form-control small-text" id="cmphno" name="cmphno" placeholder="  No of Holidays">
                                   </div>
                                   
                                  
@@ -175,9 +231,57 @@
         </div>
     </div>
 
+    
+   
+    
 </div>
 
 
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+
+  // Ajax call for to edit Holidays of state 
+
+function openEditDiv(itemId) {
+  console.log('Button click',itemId)
+  $.ajax({
+    url: '/Admin-Holiday-Edit/' + itemId ,
+    type: 'GET',
+    success: function(content) {
+    
+      displayEditDiv(content);
+    },
+    error: function() {
+      console.error('Error fetching item data.');
+    }
+  });
+}
+
+// Display the edit form 
+function displayEditDiv(content) {
+  var editDiv = $('#editDiv');
+  editDiv.css('display', 'block');
+  $('#cmphsdate').val(content.sdate);  
+  $('#cmphedate').val(content.edate);
+  //$('#cmphedate').val(itemData.date);
+  $('#cmphno').val(content.days);
+  $('#cmphid').val(content.edit_id);
+  $('#edit_state').text(content.state_name);
+
+
+}
+
+// Hide the edit form
+function closeEditDiv() {
+  var editDiv = document.getElementById('editDiv');
+  editDiv.style.display = 'none';
+}
+
+</script>
 
 <script>
    
@@ -233,8 +337,6 @@
     filterTable(); // Display the full table data
     });
 </script>
-
-
 
 
 {% endblock %}

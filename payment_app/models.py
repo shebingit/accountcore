@@ -98,6 +98,8 @@ class PaymentHistory(models.Model):
     paytotal_amt =  models.IntegerField(default=0)
     pay_status = models.IntegerField(default=0)
     admin_payconfirm = models.IntegerField(default=0)
+    pay_state=models.ForeignKey(Register_State, on_delete=models.CASCADE, null=True,default='')
+
 
 
 

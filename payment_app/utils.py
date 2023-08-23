@@ -23,6 +23,137 @@ def nav_data(request):
     return comman_data
 
 
+
+
+# adding income ,expence and fixed expence  to table 
+
+
+def income_expence_check(request):
+     
+    cur_date=datetime.now().date() # Current date 
+    fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+    last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+    to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+    states = Register_State.objects.filter(allocate_status=1)
+      
+    #Income adding to IncomeExpence Table
+    if PaymentHistory.objects.exists():
+       
+        for state in states:
+           
+            payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1,pay_state=state).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                                
+
+            if payhis:
+
+                try:
+                    inexpe=IncomeExpence.objects.get(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date,exin_state=state)
+
+                    inexpe.exin_head_name='OJT'
+                    inexpe.exin_amount=payhis
+                    inexpe.exin_typ=1
+                    inexpe.exin_date=to_date
+                    inexpe.exin_status=1
+                    inexpe.exin_state=state
+                    inexpe.save()
+                
+                except IncomeExpence.DoesNotExist:
+
+               
+                    incexpence=IncomeExpence()
+                    incexpence.exin_head_name='OJT'
+                    incexpence.exin_amount=payhis
+                    incexpence.exin_typ=1
+                    incexpence.exin_date=cur_date
+                    incexpence.exin_status=1
+                    incexpence.exin_state=state
+                    incexpence.save()
+
+                                        
+            else:
+                print('Payment History Is Amount Empty')
+    else:
+        print('Payment History Is Empty')
+
+                       
+    # Salay Expence adding to IncomeExpence Table
+    if EmployeeSalary.objects.exists():
+
+        for state in states:
+
+            emp = EmployeeRegister.objects.filter(empstate=state.state_name)
+           
+            sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1,empreg_id__in=emp).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                                
+                                
+            if sal_exp:
+                try:
+                    inexp=IncomeExpence.objects.get(exin_head_name='SALARY',exin_date__gte=fr_date,exin_date__lte=to_date,exin_state=state)
+                
+              
+                    inexp.exin_head_name='SALARY'
+                    inexp.exin_amount=sal_exp
+                    inexp.exin_typ=2
+                    inexp.exin_date=to_date
+                    inexp.exin_status=1
+                    inexp.exin_state=state
+                    inexp.save()
+                                    
+                except IncomeExpence.DoesNotExist:
+
+                    incexp=IncomeExpence()
+                    incexp.exin_head_name='SALARY'
+                    incexp.exin_amount=sal_exp
+                    incexp.exin_typ=2
+                    incexp.exin_date=cur_date
+                    incexp.exin_status=1
+                    incexp.exin_state=state
+                    incexp.save()
+            else:
+                print('Employee Salary Is Amount Empty')
+        else:
+            print('Employee Salary Is Empty')
+
+    
+    # Fixed Expence adding to the IncomeEpence Table
+
+    for state in states:
+
+        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date,fixed_status=1,fixed_state=state)
+                            
+        inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True)).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True))
+        
+        if inex:
+            print('Data Found')
+
+        else:
+            not_in_inex = fixexp.exclude(fixed_date__in=inex.values_list('exin_date', flat=True)).exclude(fixed_head_name__in=inex.values_list('exin_head_name', flat=True)).values_list('id', flat=True)
+            fixexp=FixedExpence.objects.filter(id__in=not_in_inex)
+            for i in fixexp:
+                incomeexp = IncomeExpence()
+                incomeexp.exin_head_name=i.fixed_head_name
+                incomeexp.exin_date=i.fixed_date
+                incomeexp.exin_amount=i.fixed_amount
+                incomeexp.exin_typ=2
+                incomeexp.exin_dese=i.fixed_dese
+                incomeexp.exin_status=1
+                incomeexp.save()
+                exp_date=i.fixed_date
+                today = date.today()
+
+                # Calculate the number of days in the current month
+                days_in_month = (today.replace(month=today.month+1, day=1) - timedelta(days=1)).day
+                                
+                fr_date=exp_date + timedelta(days=days_in_month)
+                i.fixed_date=fr_date
+                i.save()
+
+    success_msg='Income Expence Details add.'
+    return success_msg                  
+                                    
+
+
 # To get all the payments list of selected OJT trainee
 
 def OJT_payments_details(request,pk):

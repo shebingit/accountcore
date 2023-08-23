@@ -11,10 +11,12 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from .utils import *
 import calendar
+from xhtml2pdf import pisa
+from num2words import num2words
 from django.db.models import Sum
 from django.core.mail import send_mail
 from django.db.models import Q
-
+from django.http import JsonResponse
 
 #===============comman views===============
 
@@ -97,112 +99,15 @@ def login_dashboard(request):
                         
                         admin_DHB=Dashboard_Register.objects.get(id=admid)
                         success_msg = 'Authentication Success!'
-                        new_reg=Register.objects.filter(reg_status=0).count()
 
-                        cur_date=datetime.now().date()
-                        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
-                        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
-                        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+                       
+                        new_reg=Register.objects.filter(reg_status=0).count()  #Geting the new OJT registration count
 
-                        #states = Register_State.objects.filter(allocate_status=1)
+                        common_data = nav_data(request) # calling for navbar datas
 
-                        #Income adding to IncomeExpence Table
-                        if PaymentHistory.objects.exists():
-                            inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
-                            payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-                            #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
+                        data_check = income_expence_check(request)
 
-                            if payhis:
-
-                                if inexpe:
-                                    inexpe.exin_head_name='OJT'
-                                    inexpe.exin_amount=payhis
-                                    inexpe.exin_typ=1
-                                    inexpe.exin_date=to_date
-                                    inexpe.exin_status=1
-                                    inexpe.save()
-
-                                else:
-
-                                    incexpence=IncomeExpence()
-                                    incexpence.exin_head_name='OJT'
-                                    incexpence.exin_amount=payhis
-                                    incexpence.exin_typ=1
-                                    incexpence.exin_date=cur_date
-                                    incexpence.exin_status=1
-                                    incexpence.save()
-                            else:
-                                print('Payment History Is Amount Empty')
-                        else:
-                            print('Payment History Is Empty')
-
-                        # Salay Expence adding to IncomeExpence Table
-
-                        if EmployeeSalary.objects.exists():
-
-                            inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=fr_date,exin_date__lte=to_date).first()
-                            sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-                            #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
-                            
-                            if sal_exp:
-
-                                if inexp:
-
-                                    inexp.exin_head_name='SALARY'
-                                    inexp.exin_amount=sal_exp
-                                    inexp.exin_typ=2
-                                    inexp.exin_date=to_date
-                                    inexp.exin_status=1
-                                    inexp.save()
-                                
-                                else:
-
-                                    incexp=IncomeExpence()
-                                    incexp.exin_head_name='SALARY'
-                                    incexp.exin_amount=sal_exp
-                                    incexp.exin_typ=2
-                                    incexp.exin_date=cur_date
-                                    incexp.exin_status=1
-                                    incexp.save()
-                            else:
-                                print('Employee Salary Is Amount Empty')
-                        else:
-                            print('Employee Salary Is Empty')
-
-                        # Fixed Expence adding to the IncomeEpence Table
-
-                        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date,fixed_status=1)
-                        
-                        inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True)).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True))
-                        if inex:
-                            print('Data Found')
-
-                        else:
-                            not_in_inex = fixexp.exclude(fixed_date__in=inex.values_list('exin_date', flat=True)).exclude(fixed_head_name__in=inex.values_list('exin_head_name', flat=True)).values_list('id', flat=True)
-                            fixexp=FixedExpence.objects.filter(id__in=not_in_inex)
-                            for i in fixexp:
-                                incomeexp = IncomeExpence()
-                                incomeexp.exin_head_name=i.fixed_head_name
-                                incomeexp.exin_date=i.fixed_date
-                                incomeexp.exin_amount=i.fixed_amount
-                                incomeexp.exin_typ=2
-                                incomeexp.exin_dese=i.fixed_dese
-                                incomeexp.exin_status=1
-                                incomeexp.save()
-                                exp_date=i.fixed_date
-                                today = date.today()
-
-                                # Calculate the number of days in the current month
-                                days_in_month = (today.replace(month=today.month+1, day=1) - timedelta(days=1)).day
-                            
-                                fr_date=exp_date + timedelta(days=days_in_month)
-                                i.fixed_date=fr_date
-                                i.save()
-
-                        
-
-                        
-                        common_data = nav_data(request)
+                        print(data_check)
 
                         otj_reg = Register.objects.all().count()
                         emp_reg = EmployeeRegister.objects.all().count()
@@ -220,131 +125,6 @@ def login_dashboard(request):
                         content = {**content, **common_data}
 
                         return render(request,'Admin/Admin_dashboard.html',content)
-                    
-                    else:
-                        return redirect('/')
-                    
-                
-                else:
-                    request.session["uid"]=user.id
-                   
-
-                    if request.session.has_key('uid'):
-                        uid = request.session['uid']
-                        reg=Register.objects.filter(reg_status=1)
-                        reg_count=Register.objects.all().count()
-                        dept_count=Department.objects.all().count()
-
-                        cur_date=datetime.now().date()
-                        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
-                        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
-                        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
-
-                        #Income adding to IncomeExpence Table
-                        if PaymentHistory.objects.exists():
-                            inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
-                            payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-                            #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
-
-                            if payhis:
-
-                                if inexpe:
-                                    inexpe.exin_head_name='OJT'
-                                    inexpe.exin_amount=payhis
-                                    inexpe.exin_typ=1
-                                    inexpe.exin_date=to_date
-                                    inexpe.exin_status=1
-                                    inexpe.save()
-
-                                else:
-
-                                    incexpence=IncomeExpence()
-                                    incexpence.exin_head_name='OJT'
-                                    incexpence.exin_amount=payhis
-                                    incexpence.exin_typ=1
-                                    incexpence.exin_date=cur_date
-                                    incexpence.exin_status=1
-                                    incexpence.save()
-                            else:
-                                print('Payment History Is Amount Empty')
-                        else:
-                            print('Payment History Is Empty')
-
-                        # Salay Expence adding to IncomeExpence Table
-
-                        if EmployeeSalary.objects.exists():
-
-                            inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=fr_date,exin_date__lte=to_date).first()
-                            sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-                            #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
-                            
-                            if sal_exp:
-
-                                if inexp:
-
-                                    inexp.exin_head_name='SALARY'
-                                    inexp.exin_amount=sal_exp
-                                    inexp.exin_typ=2
-                                    inexp.exin_date=to_date
-                                    inexp.exin_status=1
-                                    inexp.save()
-                                
-                                else:
-
-                                    incexp=IncomeExpence()
-                                    incexp.exin_head_name='SALARY'
-                                    incexp.exin_amount=sal_exp
-                                    incexp.exin_typ=2
-                                    incexp.exin_date=cur_date
-                                    incexp.exin_status=1
-                                    incexp.save()
-                            else:
-                                print('Employee Salary Is Amount Empty')
-                        else:
-                            print('Employee Salary Is Empty')
-
-                        # Fixed Expence adding to the IncomeEpence Table
-
-                        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date,fixed_status=1)
-                        
-                        inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True)).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True))
-                        if inex:
-                            print('Data Found')
-
-                        else:
-                            not_in_inex = fixexp.exclude(fixed_date__in=inex.values_list('exin_date', flat=True)).exclude(fixed_head_name__in=inex.values_list('exin_head_name', flat=True)).values_list('id', flat=True)
-                            fixexp=FixedExpence.objects.filter(id__in=not_in_inex)
-                            for i in fixexp:
-                                incomeexp = IncomeExpence()
-                                incomeexp.exin_head_name=i.fixed_head_name
-                                incomeexp.exin_date=i.fixed_date
-                                incomeexp.exin_amount=i.fixed_amount
-                                incomeexp.exin_typ=2
-                                incomeexp.exin_dese=i.fixed_dese
-                                incomeexp.exin_status=1
-                                incomeexp.save()
-                                exp_date=i.fixed_date
-                                today = date.today()
-
-                                # Calculate the number of days in the current month
-                                days_in_month = (today.replace(month=today.month+1, day=1) - timedelta(days=1)).day
-                            
-                                fr_date=exp_date + timedelta(days=days_in_month)
-                                i.fixed_date=fr_date
-                                i.save()
-
-                          
-                       
-                        pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
-                    
-                        pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
-                        msg_succes=1
-                        content={'dept_count':dept_count,
-                                'reg_count':reg_count,
-                                'pay_count':pay_count,
-                                'pay_pending_count':pay_pending_count,'msg_succes':msg_succes}
-                     
-                        return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content})
                     
                     else:
                         return redirect('/')
@@ -4934,6 +4714,7 @@ def admin_fixed_expence(request):
         return render(request,'Admin/admin_fixed_expence.html',content)
     else:
         return redirect('/')
+ 
     
 def admin_fixed_expence_add(request):
     if 'admid' in request.session:
@@ -4948,23 +4729,52 @@ def admin_fixed_expence_add(request):
 
         if request.method =='POST':
 
-            if request.POST['fixed_state'] == '0':
-                state=None
 
+            if request.POST['fixedid']:
+
+                fixedexp_reg=FixedExpence.objects.get(id=int(request.POST['fixedid']))
+
+                fixedexp_reg.fixed_head_name=request.POST['fixed_head_name'].upper()
+                fixedexp_reg.fixed_date=request.POST['fixed_date']
+                fixedexp_reg.fixed_amount=request.POST['fixed_amt']
+                fixedexp_reg.fixed_dese=request.POST['fixed_dese']
+
+                if request.POST['fixed_state'] == '0':
+                    fixedexp_reg.fixed_state=fixedexp_reg.fixed_state
+
+                else:
+                    state= Register_State.objects.get(id=int(request.POST['fixed_state']))
+                    fixedexp_reg.fixed_state=state
+
+                fixedexp_reg.fixed_state=state
+                fixedexp_reg.fixed_status=1
+                
+                fixedexp_reg.save()
+
+                success_msg='Success! Fixed expence Edit.'
+                 
+                
+                    
+            
             else:
-                state= Register_State.objects.get(id=int(request.POST['fixed_state']))
 
-            fixedexp_reg=FixedExpence()
-            fixedexp_reg.fixed_head_name=request.POST['fixed_head_name'].upper()
-            fixedexp_reg.fixed_date=request.POST['fixed_date']
-            fixedexp_reg.fixed_amount=request.POST['fixed_amt']
-            fixedexp_reg.fixed_dese=request.POST['fixed_dese']
-            fixedexp_reg.fixed_state=state
-            fixedexp_reg.fixed_status=1
-              
-            fixedexp_reg.save()
+                if request.POST['fixed_state'] == '0':
+                    state=None
 
-            success_msg='Success! Fixed expence added.'
+                else:
+                    state= Register_State.objects.get(id=int(request.POST['fixed_state']))
+
+                fixedexp_reg=FixedExpence()
+                fixedexp_reg.fixed_head_name=request.POST['fixed_head_name'].upper()
+                fixedexp_reg.fixed_date=request.POST['fixed_date']
+                fixedexp_reg.fixed_amount=request.POST['fixed_amt']
+                fixedexp_reg.fixed_dese=request.POST['fixed_dese']
+                fixedexp_reg.fixed_state=state
+                fixedexp_reg.fixed_status=1
+                
+                fixedexp_reg.save()
+
+                success_msg='Success! Fixed expence added.'
             fixedexp=FixedExpence.objects.all()
             fixedexp_count=FixedExpence.objects.all().count()
         
@@ -4987,19 +4797,18 @@ def admin_fixed_expence_add(request):
     
 
 def admin_fixed_edit(request,pk):
+    fixededit=FixedExpence.objects.get(id=pk)
+    content = {
+       'state_name': fixededit.fixed_state.state_name,
+       'head_name': fixededit.fixed_head_name,
+       'amount': fixededit.fixed_amount,
+       'descr': fixededit.fixed_dese,
+       'date': fixededit.fixed_date,
+       'edit_id':pk,
+
+    }
+    return JsonResponse(content)
     
-    if 'admid' in request.session:
-        if request.session.has_key('admid'):
-            admid = request.session['admid']
-        else:
-            return redirect('/')
-        fixededit=FixedExpence.objects.get(id=pk)
-        fixedexp=FixedExpence.objects.all()
-        content=''
-        return render(request,'Admin/admin_fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
-    
-    else:
-        return redirect('/')
     
 
    
@@ -5138,6 +4947,12 @@ def admin_company_holiday_add(request):
                 comp_holidays_edit.ch_edate=request.POST['cmphedate']
                 comp_holidays_edit.ch_no=request.POST['cmphno']
 
+                if request.POST['holiday_state'] == '0':
+                    comp_holidays_edit.ch_state= comp_holidays_edit.ch_state
+                else:
+                    state=Register_State.objects.get(id=int(request.POST['holiday_state']))
+                    comp_holidays_edit.ch_state= state
+
                 e = datetime.strptime(request.POST['cmphedate'], '%Y-%m-%d')
                 s = datetime.strptime(request.POST['cmphsdate'], '%Y-%m-%d')
 
@@ -5145,7 +4960,7 @@ def admin_company_holiday_add(request):
                 comp_holidays_edit.ch_workno=int(month_days) - int(request.POST['cmphno'])
                
                 comp_holidays_edit.save()
-                msg=3
+                success_msg='Success! Holiday Data Edited.'
 
             else:
 
@@ -5169,6 +4984,7 @@ def admin_company_holiday_add(request):
             
                 comp_holiday.save()
                 success_msg='Success! Holiday Data added.'
+
             comp_holidays=Company_Holidays.objects.all()
             comp_holidays_count=Company_Holidays.objects.all().count()
 
@@ -5188,19 +5004,18 @@ def admin_company_holiday_add(request):
 
 
 def admin_company_holidy_edit(request,pk):
-    if 'admid' in request.session:
-        if request.session.has_key('admid'):
-            admid = request.session['admid']
-        else:
-            return redirect('/')
-        comp_holidays=Company_Holidays.objects.all()
-        comp_holidays_edit=Company_Holidays.objects.get(id=pk)
-        return render(request,'Admin/admin_company_holidays.html',{'comp_holidays':comp_holidays,'comp_holidays_edit':comp_holidays_edit})
-    else:
-        return redirect('/')
+   
+    comp_holidays_edit=Company_Holidays.objects.get(id=pk)
+    content = {
+       'state_name': comp_holidays_edit.ch_state.state_name,
+       'days': comp_holidays_edit.ch_no,
+       'sdate': comp_holidays_edit.ch_sdate,
+       'edate': comp_holidays_edit.ch_edate,
+       'edit_id':pk,
+
+    }
+    return JsonResponse(content)
     
-
-
 # Analysi Section 
 
 def admin_analysis(request):
