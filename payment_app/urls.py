@@ -142,7 +142,6 @@ urlpatterns = [
     
 
     path('Register-Form',views.Register_form,name='Register_form'),
-    path('Register-Save',views.register_Details,name='register_Details'),
     #path('Confirm/<int:pk>',views.confirm,name="confirm"),
     path('Remove/<int:pk>',views.remove,name="remove"),
     #path('Payment-Completed/<int:pk>',views.payment_completed,name="payment_completed"),

@@ -2,104 +2,209 @@
 {% load static %}
 {% block body %}
 
-<style>
-    /* Login Success Message Box*/
-    .welcome_messagebox
-    {
-       margin-top: 1em;
+
+ <!--=========================== ACCOUNT DASHBOARD  ========================-->
+
+ <div class="content-wrapper">
+    <!-- ============= Login Success Message =======================-->
+         
+    <div class="d-flex align-items-center justify-content-end ">
+     {% if success_msg %}
+       <div class="messageBox-container" id="message-container">
        
-       height: 60px;
+               <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+               <p class="text-center success-text">{{success_msg}}</p>
+       </div>
+     {% elif error_msg %}
+       <div class="messageBox-container" id="message-container">
+               <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+               <p class="text-center error-text">{{error_msg}}</p>
+       </div>
+     {% endif %}
+   </div>
     
-       padding: 0.07em 0.10em;
-      
-    }
-    .welcome_messagebox .msg-box
-    {
-        padding: 1em;
-        background: #a0ef94;
-      
-        width: 100%;
-        height: 100%;
-       
-    }
-    .welcome_messagebox .msg-box p{
-        font-weight: 600;
-        font-size: 0.88em;
-        color: #121e50;
-       
-    }
-    .welcome_messagebox .msg-box i{
-        color: #0c376b;
-        padding-right: 0.60em;
-    }
+
+   <!---=================================================================-->
+
+   <!-- ======================= Main Section =============================-->
+
+
    
+   <div class="row">
+     <div class="col-sm-12">
+       <div class="home-tab">
 
-    /* End Login Success Message Box*/
+         <div class="tab-content tab-content-basic">
+           <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
+             <div class="row">
+               <div class="col-md-3 grid-margin stretch-card">
+                 <a href="#">
+                     <div class="card">
+                     <div class="card-body">
+                         <h4 class="card-title">Onthe Job Training  - ({{reg_count}})</h4>
+                         <div class="media">
+                         <i class="mdi mdi-account-check icon-md text-info d-flex align-self-start me-3"></i>
+                         <div class="media-body">
+                             <p class="card-text"> Providing the details of OJT members </p>
+                         </div>
+                         </div>
+                     </div>
+                     </div>
+                 </a>
+               </div>
+               <div class="col-md-3 grid-margin stretch-card">
+                <a href="{% url 'pyment_form' %}">
+                    <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add OJT Payments </h4>
+                        <div class="media">
+                        <i class="mdi mdi-plus-circle-outline icon-md text-info d-flex align-self-end me-3"></i>
+                        <div class="media-body">
+                            <p class="card-text">To add  OJT payments from members </p>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </a>
+              </div>
+               <div class="col-md-3 grid-margin stretch-card">
+                 <a href="#">
+                     <div class="card">
+                     <div class="card-body">
+                         <h4 class="card-title">Employees - ({{emp_reg}})</h4>
+                         <div class="media">
+                         <i class="mdi mdi-account-multiple icon-md text-info d-flex align-self-center me-3"></i>
+                         <div class="media-body">
+                             <p class="card-text">The details of Employees in {{acc_state.state_name}} state.</p>
+                         </div>
+                         </div>
+                     </div>
+                     </div>
+                 </a>
+               </div>
+               <div class="col-md-3 grid-margin stretch-card">
+                <a href="#">
+                    <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Employees Salary</h4>
+                        <div class="media">
+                        <i class="mdi mdi-account-multiple icon-md text-info d-flex align-self-center me-3"></i>
+                        <div class="media-body">
+                            <p class="card-text">Providing the salary details of employees </p>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </a>
+              </div>
+               
+             </div>
+          
+             <div class="row">
+               <div class="col-lg-12 d-flex flex-column">
+               
+                 <div class="row flex-grow">
+                   <div class="col-12 grid-margin stretch-card">
+                     <div class="card card-rounded">
+                       <div class="card-body">
+                         <div class="d-sm-flex justify-content-between align-items-start">
+                           <div>
+                             <h4 class="card-title card-title-dash">Payment List</h4>
+                            <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{approve_count}}</span> new requests</p>
+                           </div>
+                           {% if new_reg %}
+                           <div>
+                             <a href="{% url 'newpay_confirm_list' %}"><button type="button" class="btn btn-primary btn-lg text-white mb-0 me-0 blink" type="button"><i class="mdi mdi-account-plus "></i>OJT- New Registrations( {{new_reg}} )</button></a>
+                           </div>
+                           {% endif %}
+                           
+                         </div>
+                         <div class="table-responsive  mt-1">
+                           <table class="table select-table">
+                             <thead>
+                               <tr>
+                                    <th>Edit</th>  
+                                    <th>Full Name</th>
+                                    <th>Msg</th>
+                                    <th>Next Pay AMT</th>
+                                    <th>DOF-Join</th>
+                                    <th>Reff.</th>
+                                    <th>Dept.</th>
+                                    <th>TL Paid</th>
+                                    <th>BAL. amt</th>
+                                    <th>TL. amt</th>
+                                    <th>Progress</th>
+                                    <th class="text-center">Status</th>
+                               </tr>
+                             </thead>
+                             <tbody>
+                             {% for i in reg %}
+                               <tr>
+                               
+                                 <td>
+                                   <div>
+                                     <div class="btn-wrapper">
+                                        
+                                       <a href="{% url 'singleuser_details' i.id %}" class=" text-primary me-0"><i class="mdi mdi-pen"></i> Edit</a>
+                                     </div>
+                                   </div>
+                                 </td>
+                                 
+                                 <td>
+                                   <div class="d-flex ">
+                                     <div>{{i.fullName}}</div>
+                                   </div>
+                                 </td>
+                                 <td>{{i.next_pay_date}}</td>
+                                 <td>{{i.next_pat_amt}}</td>
+                                 <td>{{i.dofj}}</td>
+                                 <td>{{i.refrence}}</td>
+                                 <td>{{i.dept_id.department}}</td>
+                                 <td>{{i.reg_payedtotal}}</td>
+                                 <td>{{i.regbalance_amt}}</td>
+                                 <td>{{i.regtotal_amt}}</td>
+                                 <td>
+                                    <div class="progress progress-md">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                 </td>
+
+                                 <td><div class="badge badge-opacity-warning">wating for approve</div></td>
+                               </tr>
+                               {% endfor %}
+                               
+                             </tbody>
+                           </table>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+                
+               </div>
+              
+             </div>
+
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+
+   <!---=================================================================-->
+ </div>
+
+ <!-- content-wrapper ends -->
 
 
-    #action-box
-    {
-        /*background:var( --white-color);*/
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-        gap: 1em;
-        padding:1rem 1.2rem;
-        background-color: #ffffff;
-    }
-    #action-box .card
-    {
-        height: 130px;
-        width: 150px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-        border-radius: 10px;
-        border: none;
 
-        cursor: pointer;
-      
-    }
-    #action-box .card:hover{
-        box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
-    }
-    #action-box .card h5{
-        margin-top: 0.40em;
-        margin-bottom: 0.80em;
-        color:rgb(21, 74, 139);
-        font-weight: 600;
-        font-size: 0.90em;
-    }
-    .nofication 
-    {
-        background-color: rgb(239, 24, 24);
-        margin-top:0.10em;
-        color: #ffff;
-        width: 30px;
-        height: 30px;
-        border-radius: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .nofication span{
-        font-size: 0.83em;
-        font-weight: 600;
-    }
-    @media (width<=575px)
-    {
-        #action-box
-        {
-          display: grid;
-          grid-template-columns: repeat(2,1fr);
 
-        }
-      
-    }
-    
-   
-</style>
+{% endblock %}
+
+
+
+
+
 
 <!--Container Main start-->
 <main>
@@ -169,205 +274,6 @@
 
 
 
-<!-- Register-list Style -->
-
-    <style>
-        #register-list 
-        {
-            padding: 1em;
-            overflow-x: scroll;
-           
-          
-        
-        }
-        #register-list .message-bx 
-        {
-            background: #81e372;
-        }
-        #register-list .msgbox-deactive
-        {
-            background: #f0442d;
-        }
-
-        #register-list .message-bx,  #register-list .msgbox-deactive
-        {
-            
-            padding: 0.10em 0.50em;
-            margin: 0 auto;
-            margin-bottom: 0.30em;
-            border-radius: 5px;
-            text-align: start;
-            width: 40%;
-           
-        }
-        #register-list .message-bx p,  #register-list .msgbox-deactive{
-            font-size: 0.99em;
-            color: #fff;
-            font-weight: 800;
-           margin-top: 0.30em;
-           text-align: center;
-        }
-        .head-btnBox 
-        {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 1.2rem;
-        }
-        .head-btnBox .pay-head h5
-        {
-            font-size: 1.3rem;
-            font-weight: 800;
-            letter-spacing: 0.06rem;
-        }
-       
-       
-        #register-list .card
-        {
-            padding: 0.80em 1em;
-            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-            border: none;
-           
-
-        }
-
-        
-         
-
-        #register-details tbody td
-        {
-            font-size: 0.90em;
-        }
-        #register-details .danger
-        {
-            background: #ef552e;
-            color:#fff;
-            font-weight: 600;
-        }
-        #register-details .dangermsg
-        {
-            
-            color:#ef552e;
-            font-weight: 700;
-        }
-        #register-details .success
-        {
-            background: #2cdb11;
-            color: #252527;
-            font-weight: 600;
-        }
-        #register-details .successmsg
-        {
-            color: #2cdb11;
-           
-            font-weight: 700;
-        }
-        
-        #register-details .warning
-        {
-            background:#fceb2e;
-            color: #252527;
-            font-weight: 600;
-        }
-        #register-details .warningmsg
-        {
-            color:#ffe02e;;
-            font-weight: 700;
-        }
-        .payprogress
-        {
-            background: #fff;
-        }
-        #register-details .edit
-        {
-            padding-left: 0.50em;
-            margin-right: 0em;
-            cursor: pointer;
-        }
-        .progress-bar-danger
-        {
-            background: #eb4c20;
-        }
-        .progress-bar-warning
-        {
-            background: #fceb2e;
-           
-        }
-        .progress-bar-success
-        {
-            background: #27a814;
-        }
-        .actiontd
-        {
-            text-align: center;
-            
-        }
-        #register-details .complete
-        {
-            background: #0c1846;
-            color: #fff;
-            padding: 0.50em 1em;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-           
-        }
-        #register-details .completed
-        {
-            color: #37be19;
-            font-weight: 800;
-        }
-        #register-details  
-        {
-            margin-top: 2em;
-        }
-        #register-details thead th{
-            font-size: 0.85em;
-        }
-       .search-box
-       {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 1rem;
-        box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
-        padding: 1rem 1.5rem;
-        margin-bottom: 1rem;
-       }
-       .input-date-box input
-       {
-        border: none;
-        padding: 0.50rem;
-        outline: 2px solid #b6c7d9;
-        border-radius: 10px;
-        font-size: 0.90rem;
-       }
-       .input-date-box input:focus
-       {
-        border: none;
-        outline: none;
-        outline: 1px solid #d8dde5;
-       }
-       .submit-box
-       {
-        padding: 0.80rem;
-       }
-       .submit-box {
-        border-radius: 131px;
-background: #f4f0f0;
-box-shadow:  -10px 16px 32px #e5e2e2,
-             10px -10px 32px #fffefe;
-            }
-       .submit-box  button
-       {
-        border: none;
-       }
-       .bi-search
-       {
-        font-size: 1.1rem;
-        font-weight: 700;
-       }
-        
-    </style>
 
 <!-- Register-list Style -->
 
@@ -579,6 +485,5 @@ box-shadow:  -10px 16px 32px #e5e2e2,
 
 </main>
 
-{% endblock %}
 
 
