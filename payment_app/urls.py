@@ -12,14 +12,31 @@ urlpatterns = [
     path('Login-Dashboard',views.login_dashboard,name='login_dashboard'),
     path('Admin-Dashboard',views.admin_dashboard,name='admin_dashboard'),
 
-    #account
-    
+    #========================== Account Section ======================================
+
+    #Account management------------
     path('Account-Profile',views.account_profile,name='account_profile'),
+    path('Account-Profile-Save',views.profile_account_details_save,name='profile_account_details_save'),
     path('Account-Password-Change',views.account_password_change,name='account_password_change'),
+
+    # Main section ---------------- 
+    path('Account-Dashboard',views.dashboard,name='dashboard'),
+    path('Account-OJT-List',views.OJT_list_view,name='OJT_list_view'),
+    path('Account-Employee-List',views.employee_list_view,name='employee_list_view'),
+
+    #OJT Payment------------------
+    path('Payment-Add',views.pyment_form,name='pyment_form'),
+    path('Add-Pay-Details/<int:pk>',views.addpayment_details,name="addpayment_details"),
+    path('Pay-List',views.ojt_payment_list_single,name="ojt_payment_list_single"),
+    path('OJT-Payment-Edit',views.ojt_payment_edit,name="ojt_payment_edit"),
+    
+    
     
 
+    
 
-    path('Account-Dashboard',views.dashboard,name='dashboard'),
+    
+    
     path('All-Payments',views.allpayments,name='allpayments'),
     path('Pending-Payments',views.pending_payments,name='pending_payments'),
     path('Completed-Payments',views.completed_payments,name='completed_payments'),
@@ -104,10 +121,9 @@ urlpatterns = [
     
     
     
-    path('Payment-Add',views.pyment_form,name='pyment_form'),
-    path('Add-Pay-Details/<int:pk>',views.addpayment_details,name="addpayment_details"),
+   
     path('Pay-Details/<int:pk>',views.payment_details,name="payment_details"),
-    path('Payment-Save',views.save_payment,name='save_payment'),
+ 
     path('Pay-Details-Remove/<int:pk>',views.payhis_remove,name="payhis_remove"),
     
 

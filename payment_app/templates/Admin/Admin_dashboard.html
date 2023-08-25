@@ -107,36 +107,38 @@
                               <table class="table select-table">
                                 <thead>
                                   <tr>
-                                    <th>Confirm</th>
+                                  
                                     <th>Full Name</th>
                                     <th>Date</th>
                                     <th>Payed Amount</th>
                                     <th>Total Payed</th>
                                     <th>Balance</th>
                                     <th>Status</th>
+                                    <th>Confirm</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {% for app in payhis_list %}
                                   <tr>
-                                    <td>
-                                      <div>
-                                        <div class="btn-wrapper">
-                                          <a href="{% url 'admin_confirm' app.id %}" class="btn btn-primary text-white me-0"><i class="icon-check"></i>Aprove</a>
-                                        </div>
-                                      </div>
-                                    </td>
+                                    
                                     <td>
                                       <div class="d-flex ">
                                         <div><h6>{{app.reg_id.fullName}}</h6></div>
                                       </div>
                                     </td>
                                     <td><h6>{{app.paydofj}}</h6> </td>
-                                    <td><div><h6>{{app.payintial_amt}}</h6></div></td>
-                                    <td><div><h6>{{app.paybalance_amt}}</h6></div></td>
-                                    <td><div><h6>{{app.paytotal_amt}}</h6></div></td>
+                                    <td><h6>{{app.payintial_amt}}</h6></td>
+                                    <td><h6>{{app.paytotal_amt}}</h6></td>
+                                    <td><h6>{{app.paybalance_amt}}</h6></td>
                                     
                                     <td><div class="badge badge-opacity-warning">wating for approve</div></td>
+                                    <td>
+                                      
+                                      <div class="btn-wrapper">
+                                        <a href="{% url 'admin_confirm' app.id %}" class="btn btn-primary text-white me-0"><i class="icon-check"></i>Aprove</a>
+                                      </div>
+                                    
+                                  </td>
                                   </tr>
                                   {% endfor %}
                                   

@@ -1,0 +1,187 @@
+{% extends 'account/account_base.html' %}
+{% load static %}
+{% block body %}
+
+
+ <!--=========================== ACCOUNT OJT LIST  ========================-->
+
+ <div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-lg-12 d-flex flex-column">
+        
+          <div class="row flex-grow">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card card-rounded">
+                <div class="card-body">
+                  <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                      <h4 class="card-title card-title-dash">Employee - Registration List</h4>
+                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{reg_emp_count}}</span> Registration</p>
+                    </div>
+
+                    <div>
+                        <form class="search-form" action="#" method="post">
+                            {% csrf_token %}
+                           
+                            <div class="searchBox">
+                                
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                            </div>
+                           
+                            
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="start_date" >
+                            </div>
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="end_date" >
+                            </div>
+                            <div>
+                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    
+                  </div>
+                  <div class="table-responsive  mt-1">
+                    <table class="table select-table" id="Emp-register">
+                      <thead>
+                        <tr>
+                             <th>Check</th>  
+                             <th>DOF-Join</th>
+                             <th>Employee Id</th>
+                             <th>Name and Details </th>
+                             <th>Designation</th>
+                             <th>Department.</th>
+                             <th>Conf. salary</th>
+                             <th>Sal. Status</th>
+                             <th>Acc. Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for i in reg_emp %}
+                        <tr>
+                        
+                          <td>
+                            <div>
+                              <div class="btn-wrapper">
+                                 
+                                <a href="{% url 'singleuser_details' i.id %}" class=" text-primary me-0"><i class="mdi mdi-arrow-right-drop-circle-outline mdi-18px"></i> </a>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{{i.empdofj}}</td>
+                          <td>{{i.empidreg}}</td>
+                          
+                          <td>
+                            <div class="d-flex ">
+                              <div>{{i.empfullName}}</div>
+                              <p>{{i.empPhone}}</p>
+                              <p>{{i.empemail}}</p>
+
+                            </div>
+                          </td>
+                          <td>{{i.empdesignation}}</td>
+                          <td>{{i.empdept_id.department}}</td>
+                          <td>{{i.empconfirmsalary}}</td>
+                          <td class="text-center">
+                            {% if i.emp_salary_status == 1 %}
+                                <div class="badge badge-opacity-success">Active</div>
+                            {% else %}
+                                <div class="badge badge-opacity-danger">Deactive</div>
+                            {% endif %}
+                            </td>
+                          <td class="text-center">
+                           
+                            {% if i.emp_status == 1 %}
+                                <div class="badge badge-opacity-success">Active</div>
+                            {% else %}
+                                <div class="badge badge-opacity-danger">Deactive</div>
+                            {% endif %}
+                           </td>
+                        
+                        </tr>
+                        {% endfor %}
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+         
+        </div>
+       
+    </div>
+
+
+ </div>
+
+ 
+
+ <script>
+
+    // Table data Search Script
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const empTable = document.getElementById('Emp-register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = empTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+            const Cell5 = rows[i].getElementsByTagName('td')[5];
+
+            if (Cell2 || Cell4 || Cell4 || Cell5 ) {
+
+                const datacell2 = Cell2.textContent || Cell2.innerText;
+                const datacell3 = Cell3.textContent || Cell3.innerText;
+                const datacell4 = Cell4.textContent || Cell4.innerText;
+                const datacell5 = Cell5.textContent || Cell.innerText;
+                
+
+                if (datacell2.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue) || datacell4.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+ 
+{% endblock %}

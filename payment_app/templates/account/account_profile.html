@@ -2,287 +2,228 @@
 {% load static %}
 {% block body %}
 
-
 <style>
-
-    /*Register Box Register-details  Style */
-    
-        #register-box .contaier-fluid
-        {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1em;
-            gap: 1em;
-            background-color:#fafafa;
-           
-           
-        }
-        .register-details
-        {
-           
-            width: 600px;
-            background: #ffff;
-            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    
-           
-        }
-    
-        .register-details h4, .register-details-table h4{
-          
-            margin-top: 1.1em;
-            font-size: 1.35em;
-            margin-left: 0.40em;
-            font-weight: 500;
-            letter-spacing: 0.04em;
-            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-            color:rgb(38, 17, 63);
-           
-            
-        }
-        .register-details .line,  .register-details-table .line
-        {
-            width: 60px;
-            height: 3px;
-            border-bottom: 3px solid #000;
-            margin-left: 0.60em;
-    
-        }
-    
-        /* Alert box */
-    
-        .register-details .message-bx,  .register-details .message-bx-confirm
-        {
-           
-            color: #fafafa;
-            font-size: 0.98em;
-            font-weight: 600;
-            font-family: 'Times New Roman', Times, serif;
-            padding: 0.50em ;
-            height: 5vh;
-            margin-top: 1.2em; 
-        }
-        .register-details .message-bx
-        {
-            background: #e8e340;
-        }
-        .register-details .message-bx-confirm
-        {
-            background: #6fc146;
-        }
-      
-        .register-details .message-bx-delete
-        {
-            background: #f7684c;
-            color: #fafafa;
-            font-size: 0.98em;
-            font-weight: 600;
-            font-family: 'Times New Roman', Times, serif;
-            padding: 0.50em ;
-            height: 5vh;
-            margin-top: 1.2em;
-           
-        }
-        .register-details form{
-            padding:0.50em 1em;
-            background: #fafafa;
-        }
-        .register-details form .input-group-box
-        {
-            margin-top: 1.5em;
-        }
-        .input-group-box label
-        {
-            width: 35%;
-            font-size: 0.90em;
-            font-weight: 600;
-            padding: 0.40em;
-        }
-        .input-group-box input, select{
-          width: 55%;
-          padding: 0.20em;
-          border: 1px solid #828181;
-          font-size: 0.90em;
-         
-        }
-        .input-group-box input:focus, select:focus
-        {
-            border:0.01rem solid #111158;
-            outline: none;
-            border-radius: 3px;
-        }
-        .input-group-box select option{
-            font-size: 0.90em;
-            padding: 1em 0em;
-        }
-        .submit_button
-        {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 15vh;
-            background: #fafafa;
-            margin-top: 1em;
-        }
-        .submit_button button
-        {
-            padding: 0.40em 1.4em;
-            font-weight: 600;
-            background: #261b52;
-            color: #ffff;
-            margin:none ;
-            border: none;
-            letter-spacing: 0.04em;
-        }
-        #register-details a
-        {
-            padding: 0em 0.40em;
-            font-size: 1.1em;
-        
-        }
-        #register-details .edit
-        {
-            font-size: 0.95em;
-        }
-        #register-details .edit:nth-child(1)
-        {
-          
-            color: #1b126f; 
-        }
-        #register-details .check
-        {
-          
-            color: #3da309; 
-        }
-        #register-details .wating
-        {
-            color: #fff308;
-        }
-        #register-details .wating span
-        {
-            color: #d3c90d;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-        #register-details .notcheck
-        {
-            color: #ec0909;
-        }
-        #register-details .confirmbtn
-        {
-            font-size: 0.89em;
-            font-weight: 600;
-            border: none;
-            padding: 0.40em 0.80em;
-            background: #111158;
-            color: #ffff;
-        }
-        /* Media Query*/
-        @media(max-width:964px)
-        {
-            #register-box .contaier-fluid
-            {
-            grid-template-columns:repeat(1,1fr) ;
-            }
-            .register-details
-            {
-                height: auto;
-            }
-            
-        }
-        /*Register Box Register-details End Style */
-    
-         /*Register Box Register-details Table Style */
-         .register-details-table .container
-         {
-            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-            height: 70vh;
-            margin-top: 1.4em;
-            padding-top:2em ;
-         }
-         #register-details
-         {
-            font-size: 0.90em;
-         }
-          /* Media Query*/
-        @media(max-width:964px)
-        {
-        
-            .register-details-table .container
-            {
-                height: auto;
-                overflow-x: scroll;
-              
-               
-            }
-            #register-details
-            {
-              width: 100%; 
-            }
-            .register-details-table 
-            {
-                overflow-x: scroll;
-            }
-        }
+    .box{
+        border: #000000d2;
+    }
     </style>
     
+    <!--- Admin Profile Settings -->
+    <div class="content-wrapper">
     
-    <main>
-        <section id="register-box">
-            <div class="contaier-fluid">
-                <div class="register-details">
-                    <h4>Password Update Form</h4>
-                    <div class="line"></div>
-                    {% if msg == 1 %}
-                    <div class="message-bx-confirm" id="msgbox">
-                        <p><i class="bi bi-check"></i>Password Changed. </p>
+        <div class="row">
+            <div class="col-sm-12">
+              <div class="home-tab">
+                <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                  <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="register-employee" aria-selected="true">Profile </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="password-tab" data-bs-toggle="tab" href="#password-change" role="tab" aria-selected="false">Password Change</a>
+                    </li>
+                    
+                    
+                  </ul>
+                  {% if success_msg %}
+                    <div class="messageBox-container" id="message-container">
+                    
+                            <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                            <p class="text-center success-text">{{success_msg}}</p>
                     </div>
-                    <!-- {% elif  msg == 2 %}
-                    <div class="message-bx-confirm" id="msgbox">
-                        <p><i class="bi bi-check-all"></i>Registeration Completed </p>
+                  {% elif error_msg %}
+                    <div class="messageBox-container" id="message-container">
+                            <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                            <p class="text-center error-text">{{error_msg}}</p>
                     </div>
-                    {% elif  msg == 3 %}
-                    <div class="message-bx-delete" id="msgbox">
-                        <p><i class="bi bi-x"></i></i>Oops Deleted the User </p>
-                    </div> -->
-                    {% endif %}
-    
-                    <!-- Register Form -->
-    
-                    <form action="{% url 'account_password_change' %}" method="post">
-                        {% csrf_token %}
-                        <!-- <div class="input-group-box" >
-                            <label>First Name</label>
-                            <input type="text" name="name" value="{{reg.fullName}}" required>
-                        </div>
-                        <div class="input-group-box" >
-                            <label>Last Name</label>
-                            <input type="text" name="name" value="{{reg.fullName}}" required>
-                        </div>
-                        <div class="input-group-box" >
-                            <label>Email Id</label>
-                            <input type="email" name="name" value="{{reg.fullName}}" required>
-                        </div> -->
-                        <div class="input-group-box" >
-                            <label>User Name</label>
-                            <input type="email" name="urname" value="{{user.username}}" >
-                        </div>
-                        <div class="input-group-box" >
-                            <label>Password</label>
-                            <input type="Password" name="pws" required>
-                        </div>
-                        
-                        <div class="submit_button">
-                            <button type="submit">Save</button>
-                        </div>
-                    </form>
+                  {% endif %}
+                  
                 </div>
-               
-               
+                <div class="tab-content tab-content-basic">
+                  <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile"> 
+                    <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                          <div class="card card-rounded">
+                            <div class="card-body">
+                            <form class="forms-sample" action="{% url 'profile_account_details_save' %}" method="post" enctype="multipart/form-data">
+                              {% csrf_token %}
+                              <div class="row flex-grow">
+                               
+                                <div class="col-lg-5 col-md-5 col-sm-12 profile ">
+                                    <div class="profile-imgBox" id="profile-imgBox">
+                                      {% if account_DHB.dsh_image %}
+                                        <img  src="{{ account_DHB.dsh_image.url}}" id="profile-image">
+                                      {% else %}
+                                        <img  src="{% static 'admin/images/faces/profile/admin-dummy-img.png' %}" id="profile-image">
+                                      {% endif %}
+                                    </div>
+                                    <div class="profile-details">
+                                        <h5>{{account_DHB.dsh_name}}</h5>
+                                        <p>{{account_DHB.dsh_email}} - Accountent &nbsp;<span class="profile-edit"><span id="editbtn"><i class="mdi mdi-pen"> edit</i></span></span> </p>
+                                    </div>
+                                    <div class="profile-pic">
+                                        <label for="file-upload" class="upload-box">
+                                            <span>Upload Profile Picture JPG,PNG</span>
+                                        </label>
+                                        <input type="file" id="file-upload" name="profile_pic" onchange="displayImage(this)" hidden>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7 col-md-7 col-sm-12  ">
+                                    <h5 class="fw-bold">Account Information</h5>
+                            
+                                        <div class="form-group mt-3">
+                                            <label for="fname">Full Name</label>
+                                            <input type="text" class="form-control" id="fname" name="fname" value="{{account_DHB.dsh_name}}" placeholder="Full Name"  readonly>
+                                          </div>
+                                        <div class="form-group ">
+                                          <label for="uname">User Name</label>
+                                          <input type="text" class="form-control" id="uname"  name="uname" value="{{account_DHB.dsh_username}}" placeholder="User Name" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                          <label for="email">Email address</label>
+                                          <input type="email" class="form-control" id="email" name="email" value="{{account_DHB.dsh_email}}"placeholder="email@gmail.com" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                          <label for="psw">Password</label>
+                                          <input type="text" class="form-control" id="psw" name="psw" value="{{account_DHB.dsh_password}}" placeholder="Password" readonly>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-success text-white me-2">Update Changes</button>
+                                        <button type="reset" class="btn btn-danger text-white ">Cancel</button>
+                                    
+                                </div>
+                              </div>
+                            </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+         
+                  </div>
+    
+                  <div class="tab-pane fade" id="password-change" role="tabpanel" aria-labelledby="password-change"> 
+                    
+                    <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card card-rounded">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6 sm-12 p-2">
+                                            <div class="password-info">
+                                                <div>
+                                                    <h4>Change Password</h4>
+                                                    <p>In order to protect your account, make sure your password:</p>
+                                                </div>
+                                               
+                                                <ul>
+                                                    <li>Use a mix of uppercase and lowercase letters.</li>
+                                                    <li>Include numbers and special characters (e.g., !, @, #, $).</li>
+                                                    <li>Avoid using common words, names, or easily guessable information.</li>
+                                                    <li>Make your password at least 8 characters long.</li>
+                                                    <li>Do not use sequential or repetitive characters (e.g., "123456" or "aaaaaa").</li>
+                                                    <li>Avoid using easily obtainable information, such as your birthday or phone number.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 sm-12">
+                                            <form class="forms-sample" action="{% url 'account_password_change' %}" method="post">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="oldpsw">Old Password</label>
+                                                    <input type="password" class="form-control" id="oldpsw" name="oldpsw" placeholder="Old Password" required>
+                                                  </div>
+                                                
+                                                <div class="form-group">
+                                                  <label for="newpsw">New Password</label>
+                                                  <input type="password" class="form-control" id="newpsw" name="newpsw"  placeholder="New Password"
+                                                  pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[a-zA-Z!@#$%^&*])(?=.*[0-9]).{8,}$"
+                                                  title="Conditions are not satisfied." required>
+                                                </div>
+                                                <div class="form-group">
+                                                  <label for="confpsw">Confirm Password</label>
+                                                  <input type="password" class="form-control" id="confpsw" name="confpsw" placeholder="Confirm Password" required>
+                                                </div>
+                                                
+                                                <button type="submit" class="btn btn-outline-success me-2">Change Password</button>
+                                                <button class="btn btn-outline-danger">Cancel</button>
+                                              </form> 
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   </div>
+    
+                  
+                </div>
+              </div>
             </div>
-        </section>
+        </div>
+    
+    
+    </div>
+    
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    
+        // click on edit button to perform edit
+    
+        $(document).ready(function() {
+            // When the button is clicked
+            $("#editbtn").click(function() {
+                // Remove the readonly attribute from the input field
+                $("#fname").prop("readonly", false);
+                $("#uname").prop("readonly", false);
+                $("#email").prop("readonly", false);
+               
+            });
+        });
+    
+        function displayImage(input) {
+            var file = input.files[0];
+        
+            // Check if the selected file is a JPG or PNG image
+            if (file && (file.type === "image/jpeg" || file.type === "image/png")) {
+                var reader = new FileReader();
+        
+                reader.onload = function(e) {
+                    var image = document.getElementById("profile-image");
+                    image.src = e.target.result;
+                };
+        
+                reader.readAsDataURL(file);
+            } else {
+                alert("Please select a valid JPG or PNG image.");
+                input.value = ""; // Clear the input field
+            }
+        }
+    </script>
+    
+    <!--Passwor Matching Check -->
+    <script>
+      $(document).ready(function() {
+        $("#confpsw").on("input", function() {
+          var newPassword = $("#newpsw").val();
+          var confirmPassword = $(this).val();
+    
+           
+          if ((newPassword === confirmPassword) && (newPassword != '' || confirmPassword != '')) {
+            $(this).removeClass("error-border");
+          }
+          else if (newPassword === '' || confirmPassword === '')
+          {
+            $(this).removeClass("error-border");
+          }
+          else {
+            $(this).addClass("error-border");
+          }
+        });
+      });
+      
+    </script>
 
-</main>
 
 {% endblock %}

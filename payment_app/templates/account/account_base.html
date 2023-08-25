@@ -113,14 +113,14 @@
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
                 {% if account_DHB.dsh_image %}
-                <img class="img-xs rounded-circle" src="{{admin_DHB.dsh_image.url}}" alt="Profile image">
+                <img class="img-xs rounded-circle" src="{{account_DHB.dsh_image.url}}" alt="Profile image">
                 {% else %}
                 <img class="img-xs rounded-circle" src="images/faces/face8.jpg" alt="Profile image"> </a>
                 {% endif %}
                 <p class="mb-1 mt-3 font-weight-semibold">{{account_DHB.dsh_name}}</p>
                 <p class="fw-light text-muted mb-0">{{account_DHB.dsh_email}}</p>
               </div>
-              <a href="{% url 'admin_account' %}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
+              <a href="{% url 'account_profile' %}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
              
               <a href="{% url 'logout_page' %}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
             </div>
@@ -242,7 +242,7 @@
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
             <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">from <a href="https://www.bootstrapdash.com/" target="_blank">Altostechnology.com</a> templates</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights reserved.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © {% now "Y" %}. All rights reserved.</span>
           </div>
         </footer>
         <!-- partial -->

@@ -38,14 +38,14 @@
            <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
              <div class="row">
                <div class="col-md-3 grid-margin stretch-card">
-                 <a href="#">
+                 <a href="{% url 'OJT_list_view' %}">
                      <div class="card">
                      <div class="card-body">
                          <h4 class="card-title">Onthe Job Training  - ({{reg_count}})</h4>
                          <div class="media">
                          <i class="mdi mdi-account-check icon-md text-info d-flex align-self-start me-3"></i>
                          <div class="media-body">
-                             <p class="card-text"> Providing the details of OJT members </p>
+                             <p class="card-text"> Total registrations for  OJT, details of trainees </p>
                          </div>
                          </div>
                      </div>
@@ -60,7 +60,7 @@
                         <div class="media">
                         <i class="mdi mdi-plus-circle-outline icon-md text-info d-flex align-self-end me-3"></i>
                         <div class="media-body">
-                            <p class="card-text">To add  OJT payments from members </p>
+                            <p class="card-text">To add  OJT payments from trainees </p>
                         </div>
                         </div>
                     </div>
@@ -68,14 +68,14 @@
                 </a>
               </div>
                <div class="col-md-3 grid-margin stretch-card">
-                 <a href="#">
+                 <a href="{% url 'employee_list_view' %}">
                      <div class="card">
                      <div class="card-body">
-                         <h4 class="card-title">Employees - ({{emp_reg}})</h4>
+                         <h4 class="card-title">Employees - ({{emp_reg_count}})</h4>
                          <div class="media">
                          <i class="mdi mdi-account-multiple icon-md text-info d-flex align-self-center me-3"></i>
                          <div class="media-body">
-                             <p class="card-text">The details of Employees in {{acc_state.state_name}} state.</p>
+                             <p class="card-text">Total Number of  Employees and details in {{acc_state.state_name}} state.</p>
                          </div>
                          </div>
                      </div>
@@ -86,9 +86,9 @@
                 <a href="#">
                     <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Employees Salary</h4>
+                        <h4 class="card-title">Salary Payments</h4>
                         <div class="media">
-                        <i class="mdi mdi-account-multiple icon-md text-info d-flex align-self-center me-3"></i>
+                        <i class="mdi mdi-currency-inr icon-md text-info d-flex align-self-center me-3"></i>
                         <div class="media-body">
                             <p class="card-text">Providing the salary details of employees </p>
                         </div>
@@ -112,18 +112,13 @@
                              <h4 class="card-title card-title-dash">Payment List</h4>
                             <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{approve_count}}</span> new requests</p>
                            </div>
-                           {% if new_reg %}
-                           <div>
-                             <a href="{% url 'newpay_confirm_list' %}"><button type="button" class="btn btn-primary btn-lg text-white mb-0 me-0 blink" type="button"><i class="mdi mdi-account-plus "></i>OJT- New Registrations( {{new_reg}} )</button></a>
-                           </div>
-                           {% endif %}
-                           
+                          
                          </div>
                          <div class="table-responsive  mt-1">
                            <table class="table select-table">
                              <thead>
                                <tr>
-                                    <th>Edit</th>  
+                                    <th>Check</th>  
                                     <th>Full Name</th>
                                     <th>Msg</th>
                                     <th>Next Pay AMT</th>

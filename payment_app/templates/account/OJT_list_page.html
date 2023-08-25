@@ -1,0 +1,171 @@
+{% extends 'account/account_base.html' %}
+{% load static %}
+{% block body %}
+
+
+ <!--=========================== ACCOUNT OJT LIST  ========================-->
+
+ <div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-lg-12 d-flex flex-column">
+        
+          <div class="row flex-grow">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card card-rounded">
+                <div class="card-body">
+                  <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                      <h4 class="card-title card-title-dash">OJT - Registration List</h4>
+                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{reg_ojt_count}}</span> Registration</p>
+                    </div>
+
+                    <div>
+                        <form class="search-form" action="#" method="post">
+                            {% csrf_token %}
+                           
+                            <div class="searchBox">
+                                
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                            </div>
+                           
+                            
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="start_date" >
+                            </div>
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="end_date" >
+                            </div>
+                            <div>
+                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    
+                  </div>
+                  <div class="table-responsive  mt-1">
+                    <table class="table select-table" id="OJT-register">
+                      <thead>
+                        <tr>
+                             <th>Check</th>  
+                             <th>Full Name</th>
+                             <th>DOF-Join</th>
+                             <th>Reff.</th>
+                             <th>Dept.</th>
+                             <th>TL Paid</th>
+                             <th>BAL. amt</th>
+                             <th>TL. amt</th>
+                             <th>Progress</th>
+                             <th class="text-center">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for i in reg_ojt %}
+                        <tr>
+                        
+                          <td>
+                            <div>
+                              <div class="btn-wrapper">
+                                 
+                                <a href="{% url 'singleuser_details' i.id %}" class=" text-primary me-0"><i class="mdi mdi-arrow-right-drop-circle-outline mdi-18px"></i> </a>
+                              </div>
+                            </div>
+                          </td>
+                          
+                          <td>
+                            <div class="d-flex ">
+                              <div>{{i.fullName}}</div>
+                            </div>
+                          </td>
+                          <td>{{i.dofj}}</td>
+                          <td>{{i.refrence}}</td>
+                          <td>{{i.dept_id.department}}</td>
+                          <td>{{i.reg_payedtotal}}</td>
+                          <td>{{i.regbalance_amt}}</td>
+                          <td>{{i.regtotal_amt}}</td>
+                          <td>
+                             <div class="progress progress-md">
+                                 <div class="progress-bar bg-success" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                             </div>
+                          </td>
+
+                          <td class="text-center"><div class="badge badge-opacity-warning">wating for approve</div></td>
+                        </tr>
+                        {% endfor %}
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+         
+        </div>
+       
+    </div>
+
+
+ </div>
+
+ <script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const ojtTable = document.getElementById('OJT-register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = ojtTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const Cell1 = rows[i].getElementsByTagName('td')[1];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+
+            if (Cell1 || Cell4 || Cell4 ) {
+
+                const datacell1 = Cell1.textContent || Cell1.innerText;
+                const datacell3 = Cell3.textContent || Cell3.innerText;
+                const datacell4 = Cell4.textContent || Cell4.innerText;
+                
+
+                if (datacell1.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue) || datacell4.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+ 
+{% endblock %}

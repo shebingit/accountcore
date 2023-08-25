@@ -31385,7 +31385,6 @@ background: #ffffff;
   margin-bottom: 0.30rem;
   transition: opacity 1s ease-in-out; /* Add a transition for opacity */
   opacity: 1; /* Set initial opacity to fully visible */
-  z-index: 9999;
   
 }
 .messageicon-Box 
@@ -31559,7 +31558,7 @@ background: #ffffff;
   }
  
   100% {
-    opacity: 0.6;
+    opacity: 0.5;
    
   }
 }
@@ -31606,4 +31605,15 @@ background: #ffffff;
 {
   padding-top: 0.15rem;
 }
+.mdi-8px i
+{
+  font-size: 8px;
+  animation: opacityChange 0.6s infinite alternate;
+  color:#ed170f;
+}
+.OJT-Edit
+{
+  display: none;
+}
+
        

@@ -44,32 +44,7 @@ def account_profile(request):
     else:
             return redirect('/')
 
-def account_password_change(request):
 
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-           
-        else:
-            return redirect('/')
-        
-        if request.method=='POST':
-            username=request.POST['urname']
-            password=request.POST['pws']
-
-            user=User.objects.get(id=uid)
-            if username:
-                user.username=username
-            else:
-                user.username= user.username
-            user.set_password(password)
-            user.save()
-            msg=1
-        return render(request,'account/account_profile.html',{'user':user,'msg':msg})
-
-    else:
-        return redirect('/')
-    
 
 
 
@@ -172,7 +147,8 @@ def dashboard(request):
         
 
         reg=Register.objects.filter(reg_status=1,reg_state=acc_state)
-        reg_count=Register.objects.filter(reg_status=1,reg_state=acc_state).count()
+        reg_count=Register.objects.filter(reg_state=acc_state).count()
+        emp_reg_count = EmployeeRegister.objects.filter(empstate=acc_state.state_name).count()
         dept_count=Department.objects.all().count()
 
         cur_date=datetime.now().date()
@@ -291,6 +267,7 @@ def dashboard(request):
         common_accdash_data = account_nav_data(request) # calling for navbar datas       
 
         content={'account_DHB':account_DHB,'dept_count':dept_count,
+                 'emp_reg_count':emp_reg_count,
                 'reg_count':reg_count,
                 'pay_count':pay_count,
                 'pay_pending_count':pay_pending_count,
@@ -303,6 +280,157 @@ def dashboard(request):
     else:
         return redirect('/')
     
+
+# Account Profile------------------------
+
+def account_profile(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+       
+        #-------------------------------------------------
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        
+        return render(request,'account/account_profile.html',content)
+
+    else:
+            return redirect('/')
+
+
+# Account Details -----------------------------------------
+
+
+def profile_account_details_save(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+
+        if request.method == 'POST':
+            
+            account_DHB.dsh_name = request.POST['fname']
+            account_DHB.dsh_email = request.POST['email']
+            account_DHB.dsh_username = request.POST['uname'] 
+            account_DHB.dsh_image = request.FILES.get('profile_pic')
+            account_DHB.save()
+
+            success_msg= 'Success! Profile Data Updated Successfully'
+            account_DHB=Dashboard_Register.objects.get(id=uid)
+
+            content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    success_msg:success_msg}
+        
+        else:
+            error_msg='Oops! Something Went Wrong'
+
+            content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'error_msg':error_msg
+                    }
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/account_profile.html',content)
+
+    else:
+            return redirect('/')
+
+
+# Account Password ----------------------------------------
+
+def account_password_change(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        
+        if request.method=='POST':
+
+            oldpassword=request.POST['oldpsw']
+            newpassword=request.POST['newpsw']
+            confpassword=request.POST['confpsw']
+
+            if newpassword != confpassword:
+
+                error_msg = 'Opps! New Password and Confirm Password not maching'
+
+                content={'account_DHB':account_DHB,
+                            'error_msg':error_msg,
+                            'acc_state':acc_state,
+                 }
+                common_accdash_data = account_nav_data(request) # calling for navbar datas  
+
+                content = {**content, **common_accdash_data}
+
+                return render(request,'account/account_profile.html',content)
+
+           
+            if oldpassword == account_DHB.dsh_password:
+
+                account_DHB.dsh_password=newpassword
+                account_DHB.save()
+
+                success_msg= 'Success! Password Updated Successfully'
+                account_DHB=Dashboard_Register.objects.get(id=uid)
+
+                content={'account_DHB':account_DHB,
+                        'success_msg':success_msg,
+                        'acc_state':acc_state,
+                    }
+            
+            else:
+
+               
+                error_msg = 'Opps! Old Password and New Password not maching'
+                content={'account_DHB':account_DHB,
+                            'error_msg':error_msg,
+                            'acc_state':acc_state,
+                 }
+               
+
+        else:
+            error_msg = 'Opps! Something Went Wrong'
+            content={'account_DHB':account_DHB,
+                'error_msg':error_msg,
+                'acc_state':acc_state,
+                 } 
+                 
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/account_profile.html',content)
+   
+    else:
+        return redirect('/')
+
 
 
 # ===============================All Registration section ==================================
@@ -417,13 +545,6 @@ def Register_form(request):
 
 
 
-
-
-
-
-
-
-
 # ======================== All Delete section =====================================
 
 # OJT Delete - This view is used for to delete 
@@ -470,9 +591,309 @@ def remove(request,pk):
     else:
         return redirect('/')
         
+# OJT Payment delete ---------------
+def payhis_remove(request,pk):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+        
+        payhis=PaymentHistory.objects.get(id=pk)
+        ojt_reg=Register.objects.filter(reg_status=1,payment_status=0,reg_state=acc_state)
+        ojt_count=Register.objects.filter(reg_status=1,payment_status=0,reg_state=acc_state).count()
+        pay_history = PaymentHistory.objects.filter(reg_id__in=ojt_reg,admin_payconfirm=0)
+
+
+        if payhis.admin_payconfirm == 0:
+
+            payhis.delete()
+            error_msg='Opps! One Payment is deleted'
+    
+        else:
+            error_msg='Sorry! The Payment is already approved'
+
+
+        common_accdash_data = account_nav_data(request) # calling for navbar datas       
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'ojt_reg':ojt_reg,
+                    'ojt_count':ojt_count,
+                    'pay_history':pay_history,
+                    'error_msg':error_msg
+                   }
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/payment_add_page.html',content)
+    
+    else:
+        return redirect('/')
+            
+
+# ======================== All View section =====================================
+
+#OJT List--------------------
+def OJT_list_view(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        if request.method == 'POST':
+
+            sdate= request.POST['start_date']
+            edate= request.POST['end_date']
+
+            if sdate and edate:
+
+                reg_ojt= Register.objects.filter(reg_state=acc_state,dofj__gte=sdate,dofj__lte=edate)
+                reg_ojt_count= Register.objects.filter(reg_state=acc_state,dofj__gte=sdate,dofj__lte=edate).count()
+
+            else:
+                reg_ojt= Register.objects.filter(reg_state=acc_state)
+                reg_ojt_count= Register.objects.filter(reg_state=acc_state).count()
+
+
+        else:
+
+            reg_ojt= Register.objects.filter(reg_state=acc_state)
+            reg_ojt_count= Register.objects.filter(reg_state=acc_state).count()
+
+        common_accdash_data = account_nav_data(request) # calling for navbar datas       
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'reg_ojt':reg_ojt,
+                    'reg_ojt_count':reg_ojt_count
+                   }
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/OJT_list_page.html',content)
+
+    else:
+        return redirect('/')
+
+
+#Employees List ------------
+def employee_list_view(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        if request.method == 'POST':
+
+            sdate= request.POST['start_date']
+            edate= request.POST['end_date']
+
+            if sdate and edate:
+
+                reg_emp= EmployeeRegister.objects.filter(acc_dashid=account_DHB,empdofj__gte=sdate,empdofj__lte=edate)
+                reg_emp_count= EmployeeRegister.objects.filter(acc_dashid=account_DHB,empdofj__gte=sdate,empdofj__lte=edate).count()
+
+            else:
+                reg_emp= EmployeeRegister.objects.filter(acc_dashid=account_DHB)
+                reg_emp_count= EmployeeRegister.objects.filter(acc_dashid=account_DHB).count()
+
+
+        else:
+
+            reg_emp= EmployeeRegister.objects.filter(acc_dashid=account_DHB)
+            reg_emp_count= EmployeeRegister.objects.filter(acc_dashid=account_DHB).count()
+
+        common_accdash_data = account_nav_data(request) # calling for navbar datas       
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'reg_emp':reg_emp,
+                    'reg_emp_count':reg_emp_count
+                   }
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/employee_list_page.html',content)
+
+    else:
+        return redirect('/')
 
 
 
+#======================= ALL Payment Section ====================================
+
+def pyment_form(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        ojt_reg=Register.objects.filter(reg_status=1,payment_status=0,reg_state=acc_state)
+        ojt_count=Register.objects.filter(reg_status=1,payment_status=0,reg_state=acc_state).count()
+        pay_history = PaymentHistory.objects.filter(reg_id__in=ojt_reg,admin_payconfirm=0)
+
+
+        # Payment save---------------
+        if request.method =='POST':
+ 
+            reg=Register.objects.get(id=int(request.POST['payname']))
+
+            pay_amt=int(request.POST['payamount'])
+            next_date=request.POST['pay_nextdate']
+            
+            paymt=PaymentHistory()
+            paymt.reg_id=reg
+            paymt.head_name=request.POST['payhead']
+            paymt.payintial_amt=pay_amt
+            paymt.paydofj=request.POST['paydate']
+            paymt.paybalance_amt=int(reg.regbalance_amt) - pay_amt
+            paymt.paytotal_amt=int(reg.reg_payedtotal)
+            paymt.save()
+
+           
+
+            if next_date:
+                reg.next_pay_date=request.POST['pay_nextdate']
+
+            else:
+                # Calculate the date after 30 days
+            
+                current_date = reg.next_pay_date
+
+                if pay_amt >= int(reg.fixed_intial_amt):
+                
+                    after_days = current_date + timedelta(days=30)
+                else:
+                    after_days = current_date + timedelta(days=15)
+
+                reg.next_pay_date=after_days
+           
+            reg.save()
+            success_msg='Success! Payments Details add successful.'
+
+            content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'ojt_reg':ojt_reg,
+                    'ojt_count':ojt_count,
+                    'success_msg':success_msg,
+                    'pay_history':pay_history
+                   }
+            
+        #-------------------------------------------------------------
+        else:
+            content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'ojt_reg':ojt_reg,
+                    'ojt_count':ojt_count,
+                    'pay_history':pay_history
+                   }
+
+        common_accdash_data = account_nav_data(request) # calling for navbar datas       
+
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/payment_add_page.html',content)
+
+    
+    else:
+        return redirect('/')
+
+
+# Featching the trainee to add payments----------
+def addpayment_details(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        reg_dt=Register.objects.get(id=pk)
+
+        ojt_reg=Register.objects.filter(reg_status=1,payment_status=0,reg_state=acc_state)
+        ojt_count=Register.objects.filter(reg_status=1,payment_status=0,reg_state=acc_state).count()
+        pay_history = PaymentHistory.objects.filter(reg_id__in=ojt_reg,admin_payconfirm=0)
+
+        common_accdash_data = account_nav_data(request) # calling for navbar datas       
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'ojt_reg':ojt_reg,
+                    'ojt_count':ojt_count,
+                    'reg_dt':reg_dt,
+                    'pay_history':pay_history
+                   }
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/payment_add_page.html',content)
+    
+
+    else:
+            return redirect('/')
+
+
+
+def ojt_payment_list_single(request):
+   
+    reg= Register.objects.get(id=int(request.GET.get('regid')))
+    pay_list=PaymentHistory.objects.filter(reg_id=reg).order_by('-id')
+    pay_list_count=PaymentHistory.objects.filter(reg_id=reg).count()
+
+
+    content = {'pay_list':pay_list,
+               'pay_list_count':pay_list_count,
+               'reg':reg}
+    return render(request,'account/ojt_payment_list_single.html',content)
+
+
+def ojt_payment_edit(request):
+
+    pay_id=int(request.GET.get('payid'))
+    pay_his=PaymentHistory.objects.get(id=pay_id)
+    content = {
+       'name': pay_his.reg_id.fullName,
+       'head_name': pay_his.head_name,
+       'amount': pay_his.payintial_amt,
+       'paydate': pay_his.paydofj,
+       'nextdate': pay_his.reg_id.next_pay_date,
+       'edit_id':pay_id,
+
+    }
+    return JsonResponse(content)
+
+
+#====================================================================================
 
 
 
@@ -804,86 +1225,8 @@ def remove_dept(request,pk):
     else:
         return redirect('/')
     
-    
-def pyment_form(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-          
-        else:
-            return redirect('/')
-        reg=Register.objects.filter(reg_status=1)
-        return render(request,'account/Payment_form.html',{'reg':reg})
-    
-    else:
-        return redirect('/')
 
 
-def addpayment_details(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-          
-        else:
-            return redirect('/')
-        reg_dt=Register.objects.get(id=pk)
-        reg=Register.objects.filter(reg_status=1)
-        return render(request,'account/Payment_form.html',{'reg':reg,'reg_dt':reg_dt})
-    else:
-            return redirect('/')
-
-
-def save_payment(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-          
-        else:
-            return redirect('/')
-        
-        if request.method =='POST':
-
-            paymt=PaymentHistory()
-            reg=Register.objects.get(id=int(request.POST['payname']))
-            pay_amt=int(request.POST['pinit_amunt'])
-            total_amt=int(reg.regtotal_amt)
-            cal=int(total_amt / 3)
-
-            paymt.reg_id=reg
-            paymt.head_name=request.POST['payhname']
-            paymt.payintial_amt=pay_amt
-
-            next_date=request.POST['pnxtpdof']
-            if next_date:
-                reg.next_pay_date=request.POST['pnxtpdof']
-
-            else:
-                # Calculate the date after 30 days
-            
-                current_date = reg.next_pay_date
-
-                if pay_amt >= int(reg.fixed_intial_amt):
-                
-                    after_days = current_date + timedelta(days=30)
-                else:
-                    after_days = current_date + timedelta(days=15)
-
-                reg.next_pay_date=after_days
-
-        
-            paymt.paydofj=request.POST['pdfj']
-            pay_amt=int(request.POST['pinit_amunt'])
-            paymt.paybalance_amt=int(reg.regbalance_amt) - pay_amt
-            paymt.paytotal_amt=int(reg.reg_payedtotal)
-            paymt.save()
-            #reg.payprogress=int(request.POST['progres'])
-            reg.save()
-            msg=1
-            reg=Register.objects.filter(reg_status=1)
-            return render(request,'account/Payment_form.html',{'reg':reg,'msg':msg})
-        
-    else:
-        return redirect('/')
 
 
 def payment_details(request,pk):
@@ -902,25 +1245,7 @@ def payment_details(request,pk):
         return redirect('/')
     
     
-def payhis_remove(request,pk):
 
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-          
-        else:
-            return redirect('/')
-        
-        payhis=PaymentHistory.objects.get(id=pk)
-
-        if payhis.admin_payconfirm == 0:
-            payhis.delete()
-
-        return redirect('pyment_form')
-    
-    else:
-        return redirect('/')
-            
 
 
 
@@ -3134,9 +3459,6 @@ def admin_password_changeing(request):
                  }  
 
                 return render(request,'Admin/Admin_Account.html',content)
-
-
-            
         
     else:
         return redirect('/')

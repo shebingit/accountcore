@@ -1,0 +1,389 @@
+{% extends 'account/account_base.html' %}
+{% load static %}
+{% block body %}
+
+
+ <!--=========================== ACCOUNT OJT PAYMENT ADD  ========================-->
+
+ <div class="content-wrapper">
+
+    <div class="edit-div" id="palistDiv">
+        <div class="row flex-grow">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card card-rounded" id="payment-list-container" >
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-sm-12">
+           
+            <div class="d-sm-flex align-items-center justify-content-start mb-2">
+            
+                {% if success_msg %}
+                    <div class="messageBox-container" id="message-container">
+                    
+                            <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                            <p class="text-center success-text">{{success_msg}}</p>
+                    </div>
+                {% elif error_msg %}
+                    <div class="messageBox-container" id="message-container">
+                            <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                            <p class="text-center error-text">{{error_msg}}</p>
+                    </div>
+                {% endif %}
+            
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="row flex-grow">
+                <div class="col-sm-12 col-md-4 grid-margin stretch-card">
+                    <div class="card card-rounded" id="OJT-Add-Form">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <form action="{% url  'pyment_form' %}" class="forms-sample" method="post">
+                                        {% csrf_token %}
+                                            <div class="d-flex justify-content-start align-items-center">
+                                                <h4 class="card-title card-title-dash">OJT - Payment Add Form</h4>
+                                            
+                                            </div>
+                                            <div class="form-group mt-3">
+                                            <label for="Fullname">Full Name</label>
+                                            <input type="text" class="form-control small-text" id="Fullname" name="name" placeholder="Full Name" value="{{reg_dt.fullName}}" required readonly>
+                                            <input type="text" name="payname" value="{{reg_dt.id}}" hidden>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="Pay_Head">Pay Head</label>
+                                                <input type="text" class="form-control small-text" id="Pay_Head" name="payhead"  placeholder="Pay Head" required>
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="Payment_Date">Payment Date</label>
+                                                <input type="date" class="form-control small-text" id="Payment_Date" name="paydate" placeholder="Payment Date" required>
+                                            </div>
+            
+            
+                                            <div class="form-group ">
+                                                <label for="Next_Pay_Date">Next Pay Date</label>
+                                                <input type="date" class="form-control small-text" id="Next_Pay_Date" name="pay_nextdate" placeholder="Next Pay Date">
+                                            </div>
+                                            
+    
+                                            <div class="form-group ">
+                                                <label for="amount">Amount</label>
+                                                <input type="text" class="form-control small-text" id="amount" name="payamount" placeholder="Amount">
+                                            </div>
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-account-plus"></i>&nbsp; Add payment</button>
+                                            </div>
+                                            
+                                            
+                                    </form>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-rounded OJT-Edit" id="OJT-Edit-Form">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <form action="#" class="forms-sample" method="post">
+                                        {% csrf_token %}
+                                            <div class="d-flex justify-content-start align-items-center">
+                                                <h4 class="card-title card-title-dash">OJT - Payment Edit Form</h4>
+                                            
+                                            </div>
+                                            <div class="form-group mt-3">
+                                            <label for="Fullname">Full Name</label>
+                                            <input type="text" class="form-control small-text" id="editname" name="name" placeholder="Full Name" value="{{reg_dt.fullName}}" required readonly>
+                                            <input type="text" name="editpayname" id="editpayid"  >
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="Pay_Head">Pay Head</label>
+                                                <input type="text" class="form-control small-text" id="editPay_Head" name="payhead"  placeholder="Pay Head" required>
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="Payment_Date">Payment Date</label>
+                                                <input type="date" class="form-control small-text" id="editPayment_Date" name="paydate" placeholder="Payment Date" required>
+                                            </div>
+            
+            
+                                            <div class="form-group ">
+                                                <label for="Next_Pay_Date">Next Pay Date</label>
+                                                <input type="date" class="form-control small-text" id="editNext_Pay_Date" name="pay_nextdate" placeholder="Next Pay Date">
+                                            </div>
+                                            
+    
+                                            <div class="form-group ">
+                                                <label for="amount">Amount</label>
+                                                <input type="text" class="form-control small-text" id="editamount" name="payamount" placeholder="Amount">
+                                            </div>
+                                            <div class="d-flex justify-content-center align-items-center g-1">
+      
+                                                <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0" > <i class="mdi mdi-pen"></i>&nbsp; Edit payment</button>
+                                                &nbsp;
+                                                <button type="button" onclick="closeEditform()" class="btn btn-danger btn-sm text-white mb-0 "><i class="mdi mdi-refresh"></i>&nbsp; Close</button>
+                                            </div>
+                                            
+                                            
+                                    </form>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-12 col-md-8 grid-margin stretch-card">
+                    <div class="card card-rounded">
+                        <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                    <h4 class="card-title card-title-dash"> OJT Payment List</h4>
+                                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{ojt_count}}</span>OJT Pending </p>
+                                </div>
+                                <div class="searchBox">
+                                        
+                                    <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                    <button class="close-btn" id="closeBtn">
+                                            <i class="mdi mdi-close"></i>
+                                    </button>
+                                        
+                                </div>
+                                
+                            </div>
+            
+                            <div class="table-responsive  mt-1" >
+                                <table class="table select-table" id="OJT-Register">
+                                    <thead>
+                                        <tr>
+                                            <th>Pay Now</th>
+                                            <th>Full Name and Details</th>
+                                            <th>Pay Amount</th>
+                                            <th>Bal. Amount</th>
+                                            <th>Tl. Amount</th>
+                                            <th>Progress</th>
+                                            <th>Pay List</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            
+                                    {% for i in ojt_reg %}
+                                    
+                                            <tr>
+                                                <td>
+                                                    <a href="{% url 'addpayment_details' i.id %}" class="text-primary"><i class="mdi mdi-gesture-double-tap mdi-18px"></i> Pay</a>
+                                                   
+                                                </td>
+                                            
+                                                <td>
+                                                    {% for pay in pay_history %}
+                                                    {% if pay.reg_id.id == i.id %}
+                                                    <span class="mdi-8px">
+                                                        <i class="mdi mdi-checkbox-blank-circle  "></i>
+                                                    </span>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                     {{i.fullName}}
+                                                    <p class="pt-015">{{i.Phone}}</p>
+                                                    <p class="pt-015">{{i.dept_id.department}}</p>
+                                                    <p class="pt-015">{{i.reg_state.state_name}}</p>
+                                                </td>
+                                               
+                                                
+                                                <td>{{i.reg_payedtotal}} </td>
+                                                <td>{{i.regbalance_amt}}</td>
+                                                <td>{{i.regtotal_amt}}</td>
+                                                <td>
+                                                    <div>
+                                                        <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                          <p class="text-warning">{{i.payprogress}}%</p>
+                                                        </div>
+                                                    
+                                                        <div class="progress progress-md">
+                                                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                    </div>
+                                                 </td>
+
+                                                 <td>
+                                                    <span onclick="paylistDiv('{{ i.id }}')">
+                                                        <i class="mdi mdi-note-multiple mdi-18px text-success"></i>
+                                                        
+                                                    </span>
+                                                </td>
+
+                                            </tr>
+                                       
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+
+  // Ajax call for to edit Fixed Expence of state 
+
+function paylistDiv(itemId) {
+   
+ 
+  $.ajax({
+    url: "{% url 'ojt_payment_list_single' %}",
+    type: 'GET',
+    data: {
+        'regid': itemId,
+    },
+    success: function(response) {
+
+        displayEditDiv(response);
+    
+       
+    },
+    error: function(response) {
+      console.error('Error fetching item data.');
+    }
+  });
+}
+// Display the edit form 
+function displayEditDiv(response) {
+    var listDiv = $('#palistDiv');
+    listDiv.css('display', 'block');
+    $("#payment-list-container").html(response);
+  
+  }
+
+
+  // Display the OJT edit form and hide OJT add form
+function openEditDiv(editid) {
+
+    $.ajax({
+        url: "{% url 'ojt_payment_edit' %}",
+        type: 'GET',
+        data: {
+            'payid': editid,
+        },
+        success: function(content) {
+    
+            displayEditdata(content);
+        
+           
+        },
+        error: function(content) {
+          console.error('Error fetching item data.');
+        }
+      });
+    }
+  
+    // Display the edit form 
+function displayEditdata(content) {
+
+    var editDiv = document.getElementById('OJT-Edit-Form');
+    var addDiv = document.getElementById('OJT-Add-Form');
+    addDiv.style.display = 'none';
+    editDiv.style.display = 'block';
+  
+    $('#editname').val(content.name);  
+    $('#editpayid').val(content.edit_id);
+    $('#editPayment_Date').val(content.paydate);
+    $('#editPay_Head').val(content.head_name);
+    $('#editamount').val(content.amount);
+    $('#editNext_Pay_Date').val(content.nextdate);
+  
+  }
+
+// Hide the edit form
+function closeEditform() {
+    var editDiv = document.getElementById('OJT-Edit-Form');
+    var addDiv = document.getElementById('OJT-Add-Form');
+    addDiv.style.display = 'block';
+    editDiv.style.display = 'none';
+  
+  }
+  
+
+// Hide the edit form
+function closeEditDiv() {
+  var payDiv = document.getElementById('palistDiv');
+  payDiv.style.display = 'none';
+}
+
+</script>
+
+
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const ojtTable = document.getElementById('OJT-Register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = ojtTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const Cell1 = rows[i].getElementsByTagName('td')[1];
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
+           
+
+            if (Cell1 || Cell2 ) {
+                const dataCell1 = Cell1.textContent || Cell1.innerText;
+                const dataCell2 = Cell2.textContent || Cell2.innerText;
+                
+               
+
+                if (dataCell1.toLowerCase().includes(filterValue) || dataCell2.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+ 
+ {% endblock %}
+
+ 
+

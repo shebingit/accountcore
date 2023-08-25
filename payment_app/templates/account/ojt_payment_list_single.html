@@ -1,0 +1,71 @@
+
+<!--- Ajax call out put to dispaly the OJT payment list of a single trainee -->
+
+<div class="card-body">
+    <div class="d-sm-flex justify-content-between align-items-start">
+        <div>
+            <h4 class="card-title card-title-dash">Payments List of {{reg.fullName}}</h4>
+            <p class="card-subtitle card-subtitle-dash">{{reg.fullName}} have <span class="count-value">{{pay_list_count}}</span> payments </p>
+        </div>
+        <div>
+            <span class=" text-danger"  onclick="closeEditDiv()"><i class="mdi mdi-close-circle-outline mdi-18px"></i></span>
+        </div>
+        
+    </div>
+   
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="table-responsive  mt-1" >
+                <table class="table select-table" >
+                    <thead>
+                        <tr>
+                            
+                            <th>Full Name </th>
+                            <th>Pay date</th>
+                            <th>Pay Head</th>
+                            <th>Pay Amount</th>
+                            <th>Balance Amount</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Edit / Delete</th>
+                 
+                        </tr>
+                    </thead>
+                    <tbody>
+                            
+                    {% for i in pay_list %}
+                    
+                            <tr>
+                               
+                                <td> {{i.reg_id.fullName}} </td>
+                                <td>{{i.paydofj}} </td>
+                                <td>{{i.head_name}}</td>
+                                <td>{{i.payintial_amt}} </td>
+                                <td>{{i.paybalance_amt}}</td>
+                                <td>{{i.paytotal_amt}}</td>
+                                <td>
+                                    {% if i.admin_payconfirm == 0 %}
+                                        <div class="badge badge-opacity-warning">wating for approve</div>
+                                    {% else %}
+                                    <div class="badge badge-opacity-success"> Approved</div>
+                                    {% endif %}
+
+                                
+                                </td>
+                                <td>
+                                    {% if i.admin_payconfirm == 0 %}
+                                        <span class="text-primary mr-1" onclick="openEditDiv('{{ i.id }}')"><i class="mdi mdi-pen mdi-18px"></i></span>
+                                        <a href="{% url 'payhis_remove' i.id %}"> <span class="text-danger"><i class="mdi mdi-delete-circle mdi-18px"></i></span></a>
+                                       
+                                    {% endif %}
+                                </td>
+                            </tr>
+                       
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
