@@ -19,21 +19,33 @@ urlpatterns = [
     path('Account-Profile-Save',views.profile_account_details_save,name='profile_account_details_save'),
     path('Account-Password-Change',views.account_password_change,name='account_password_change'),
 
-    # Main section ---------------- 
+    #---------------------- Main section ---------------- 
     path('Account-Dashboard',views.dashboard,name='dashboard'),
     path('Account-OJT-List',views.OJT_list_view,name='OJT_list_view'),
     path('Account-Employee-List',views.employee_list_view,name='employee_list_view'),
 
-    #OJT Payment------------------
-    path('Payment-Add',views.pyment_form,name='pyment_form'),
+    #----------------------Sidebar section --------------
+
+    #Register links-----------
+    path('Register-Form',views.Register_form,name='Register_form'),
+    path('Employee-Register-Form',views.emp_Register_form,name='emp_Register_form'),
+    path('Department-Form',views.department_form,name='department_form'),
+
+    #Payment view -----------
+    path('Payments-List',views.pyments_history,name='pyments_history'),
+    path('Payments-Status/<int:pk>',views.pyments_status_view,name='pyments_status_view'),
+   
+    
+
+    #----------------------OJT Payment------------------
+    path('Payment-Add-Form',views.pyment_form,name='pyment_form'),
     path('Add-Pay-Details/<int:pk>',views.addpayment_details,name="addpayment_details"),
     path('Pay-List',views.ojt_payment_list_single,name="ojt_payment_list_single"),
     path('OJT-Payment-Edit',views.ojt_payment_edit,name="ojt_payment_edit"),
     
     
     
-
-    
+   
 
     
     
@@ -135,20 +147,19 @@ urlpatterns = [
     
     
     path('Department-Form',views.department_form,name='department_form'),
-    path('Add-Department',views.department_add,name='department_add'),
     path('Edit-Department/<int:pk>',views.edit_dept,name="edit_dept"),
     path('Remove-Department/<int:pk>',views.remove_dept,name="remove_dept"),
 
     # Payments History section
-    path('Payments-List',views.pyments_history,name='pyments_history'),
+    
     path('PaymentsView-List',views.paymentfull_view,name='paymentfull_view'),
     
     path('User-Payments-Details/<int:pk>',views.singleuser_details,name="singleuser_details"),
     path('Previous-Details/<int:pk>',views.previous_data,name="previous_data"),
     path('Next-Payments-Details/<int:pk>',views.next_data,name="next_data"),
     
-    path('Deactive-User/<int:pk>',views.deactive_user,name="deactive_user"),
-    path('Reactive-User/<int:pk>',views.reactivate_user,name="reactivate_user"),
+   
+    path('Deactive-Reactive-User/<int:pk>',views.user_active_reactive,name="user_active_reactive"),
     path('Delete-User/<int:pk>',views.delete_user,name="delete_user"),
     
     
@@ -157,7 +168,6 @@ urlpatterns = [
     path('Full-Payment-Recipt/<int:pk>',views.singelUserfull_receipt,name="singelUserfull_receipt"),
     
 
-    path('Register-Form',views.Register_form,name='Register_form'),
     #path('Confirm/<int:pk>',views.confirm,name="confirm"),
     path('Remove/<int:pk>',views.remove,name="remove"),
     #path('Payment-Completed/<int:pk>',views.payment_completed,name="payment_completed"),

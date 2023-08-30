@@ -109,18 +109,43 @@
                        <div class="card-body">
                          <div class="d-sm-flex justify-content-between align-items-start">
                            <div>
-                             <h4 class="card-title card-title-dash">Payment List</h4>
-                            <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{approve_count}}</span> new requests</p>
-                           </div>
+                                <h4 class="card-title card-title-dash">Due Date Pending Payment List</h4>
+                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay_count}}</span> new requests</p>
+                            </div>
+                            <div>
+                                <form class="search-form" action="#" method="post">
+                                    {% csrf_token %}
+                                   
+                                    <div class="searchBox">
+                                        
+                                        <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                        <button type="button" class="close-btn" id="closeBtn">
+                                             <i class="mdi mdi-close"></i>
+                                        </button>
+                                        
+                                    </div>
+                                   
+                                    
+                                    <div class="w-box">
+                                        <input type="date" class="search-date" name="start_date" >
+                                    </div>
+                                    <div class="w-box">
+                                        <input type="date" class="search-date" name="end_date" >
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                                    </div>
+                                </form>
+                            </div>
                           
                          </div>
                          <div class="table-responsive  mt-1">
-                           <table class="table select-table">
+                           <table class="table select-table" id="OJT-register">
                              <thead>
-                               <tr>
+                               <tr class="text-center">
                                     <th>Check</th>  
                                     <th>Full Name</th>
-                                    <th>Msg</th>
+                                    <th>Message </th>
                                     <th>Next Pay AMT</th>
                                     <th>DOF-Join</th>
                                     <th>Reff.</th>
@@ -133,8 +158,8 @@
                                </tr>
                              </thead>
                              <tbody>
-                             {% for i in reg %}
-                               <tr>
+                             {% for i in pay_pending_count %}
+                               <tr class="text-center">
                                
                                  <td>
                                    <div>
@@ -150,7 +175,16 @@
                                      <div>{{i.fullName}}</div>
                                    </div>
                                  </td>
-                                 <td>{{i.next_pay_date}}</td>
+                                 <td>
+                                    {% if i.next_pay_date == cur_date %}
+                                    
+                                    <div class="badge badge-opacity-warning">Due date ahead.</div>
+                                    {% elif i.next_pay_date < cur_date %}
+                                        <div class="badge badge-opacity-danger">Due date exceeded.</div>
+                                        <p>{{i.next_pay_date }}</p>
+                                    {% endif %}
+
+                                 </td>
                                  <td>{{i.next_pat_amt}}</td>
                                  <td>{{i.dofj}}</td>
                                  <td>{{i.refrence}}</td>
@@ -159,12 +193,37 @@
                                  <td>{{i.regbalance_amt}}</td>
                                  <td>{{i.regtotal_amt}}</td>
                                  <td>
-                                    <div class="progress progress-md">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                    {% if i.payment_status == 0 %}
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                          <p class="text-warning">{{i.payprogress}}%</p>
+                                        </div>
+                                        <div class="progress progress-md">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
                                     </div>
+                                    {% elif i.payment_status == 2 %}
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                          <p class="text-danger">{{i.payprogress}}%</p>
+                                        </div>
+                                        <div class="progress progress-md">
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
                                  </td>
 
-                                 <td><div class="badge badge-opacity-warning">wating for approve</div></td>
+                                 <td>
+                                    {% if i.reg_status == 1 %}
+                                    <div class="badge badge-opacity-success">Active</div>
+                                    {% elif i.reg_status == 2 %}
+                                    <div class="badge badge-opacity-danger">Dactive</div>
+                                    {% elif i.reg_status == 0 %}
+                                    <div class="badge badge-opacity-warning">Wating for approve</div>
+                                   
+                                    {% endif %}
+                                </td>
                                </tr>
                                {% endfor %}
                                
@@ -191,6 +250,66 @@
 
  <!-- content-wrapper ends -->
 
+ <script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const ojtTable = document.getElementById('OJT-register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = ojtTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const Cell1 = rows[i].getElementsByTagName('td')[1];
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+            const Cell5 = rows[i].getElementsByTagName('td')[5];
+            const Cell6 = rows[i].getElementsByTagName('td')[6];
+
+            if (Cell1 || Cell4 || Cell4 ) {
+
+                const datacell1 = Cell1.textContent || Cell1.innerText;
+                const datacell2 = Cell2.textContent || Cell2.innerText;
+                const datacell3 = Cell3.textContent || Cell3.innerText;
+                const datacell4 = Cell4.textContent || Cell4.innerText;
+                const datacell5 = Cell5.textContent || Cell5.innerText;
+                const datacell6 = Cell6.textContent || Cell6.innerText;
+                
+
+                if (datacell1.toLowerCase().includes(filterValue) || datacell2.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue)
+                || datacell4.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) || datacell6.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
 
 
 
@@ -199,286 +318,6 @@
 
 
 
-
-
-<!--Container Main start-->
-<main>
-
-{% if content.msg_succes == 1 %}
-<div class="welcome_messagebox" id="msgbox">
-    <div class="msg-box">
-        <p><i class="bi bi-person-check-fill"></i> Login Successfull...</p>
-    </div>
-</div>
-{% endif %}
-
-<div class="container-fluid" id="action-box">
-    <a href="{% url 'analysis' %}">
-        <div class="card">
-            <i class="bi bi-graph-up-arrow"></i><h5>Analysis</h5>
-            
-        </div>
-    </a>
-
-    <a href="{% url 'Register_form' %}">
-       
-        <div class="card">
-            <i class='bi bi-people-fill nav_icon'></i><h5>Register</h5>
-            <div class="nofication">
-                <span>{{content.reg_count}}</span>
-            </div>
-        </div>
-    </a>
-    <a href="{% url 'pyment_form' %}">
-        <div class="card">
-            <i class="bi bi-currency-rupee"></i><h5>Add Payments</h5>
-            <div class="nofication">
-                <span>{{content.pay_pending_count}}</span>
-            </div>
-        </div>
-    </a>
-    <a href="{% url 'track_payments' %}">
-        <div class="card">
-            <i class="bi bi-search"></i><h5>Track Payments</h5>
-            <div class="nofication">
-                <span>{{content.pay_count}}</span>
-            </div>
-        </div>
-    </a>
-    <a href="{% url 'pyments_history' %}">
-        <div class="card">
-            <i class="bi bi-database-fill-add"></i><h5>Payments History</h5>
-        </div>
-    </a>
-    <a href="{% url 'department_form' %}">
-        <div class="card">
-            <i class="bi bi-box-fill"></i><h5>Department</h5>
-            <div class="nofication">
-                <span>{{content.dept_count}}</span>
-            </div>
-        </div>
-    </a>
-    <a href="{% url 'accounts' %}">
-        <div class="card">
-            <i class="bi bi-cash"></i><h5>Accounts</h5>
-            
-        </div>
-    </a>
-</div>
-<!--Container Main end-->
-
-
-
-
-<!-- Register-list Style -->
-
-<!--Container List Show-->
-<div class="container-fluid" id="register-list">
-    <div class="head-btnBox">
-        <div class="pay-head">
-            <h5> PAYMENT LIST</h5>
-        </div>
-        <div class="pay-search">
-          
-
-            <form action="{% url 'Search_data' %}" method="post" id="serach-date">
-
-                {% csrf_token %}
-                <div class="search-box">
-                
-                    <div class="input-date-box">
-                       
-                        <input type="date" name="fr_data" required data-bs-toggle="tooltip" data-bs-placement="top"
-                        data-bs-custom-class="custom-tooltip"
-                        data-bs-title="From Date">
-                    </div>
-                    <div class="input-date-box">
-                        <input type="date" name="to_date" required >
-                    </div>
-                    <div class="submit-box">
-                        <button type="submit"><i class="bi bi-search"></i> </button>
-                    </div>
-                </div>
-            </form>
-
-        </div>
-    </div>
-    
-       
-        {% if msg == 1 %}
-            <div class="message-bx" id="msgbox">
-                <p><i class="bi bi-check"></i>Payments All Completed </p>
-            </div>
-        {% endif %}
-        {% if msgalert %}
-            <div class="msgbox-deactive" id="msgbox">
-                <p style="margin-top: 0.40em;"><i class="bi bi-check"></i> {{msgalert}}</p>
-            </div>
-        {% endif %}
-        <table id="register-details" class="display" >
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Full Name</th>
-                    <th>Message</th>
-                    <th>Next Pay AMT</th>
-                    <th>Date Of Joing</th>
-                    <th>Referenced By</th>
-                    <th>Department</th>
-                    <th>TL Paid</th>
-                    <th>BAL Amount</th>
-                    <th>TL Amount</th>
-                    <th> Pay Progress</th>
-                    <th>Status</th>
-
-                </tr>
-            </thead>
-            <tbody>
-                {% for i in reg %}
-                {% if i.payprogress >= 10 and i.payment_status == 0 %}
-                    <tr >
-                        <td>
-                            {{ forloop.counter }}
-                        
-                        <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                           
-                        </td>
-                        {% if cur_date < i.next_pay_date %}
-                        <td class="warning">{{i.fullName}}</td>
-                        <td class="successmsg warning">
-                            <span >Next Payment On {{ i.next_pay_date}} </span>
-                        </td>
-                        {% elif cur_date > i.next_pay_date %}
-                        <td class="danger">
-                        {{i.fullName}}   
-                        </td>
-                        <td class="warning">
-                            <span class="dangermsg"><i class="bi bi-exclamation-triangle-fill"></i> Payment Date Exceed</span>
-                        </td>
-                        {% else %}
-                        <td class="warning">
-                            {{i.fullName}}
-                        </td>
-                        <td>
-                            <span class="warningmsg"><i class="bi bi-exclamation-triangle-fill"></i> Last Date For Payment</span>
-                        </td>
-                        {% endif %}
-                        <td class="warning"> {{i.next_pat_amt}}</td>
-                        <td class="warning">{{i.dofj}}</td>
-                        <td class="warning">{{i.refrence}}</td>
-                        <td class="warning">{{i.dept_id.department}}</td>
-                        <td class="warning">{{i.reg_payedtotal}}</td>
-                        <td class="warning">{{i.regbalance_amt}}</td>
-                        <td class="warning">{{i.regtotal_amt}}</td>
-                        <td class="payprogress">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-warning" 
-                                role="progressbar" style="width: {{i.payprogress}}%;" 
-                                aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
-
-                                </div>
-                            </div>
-                        </td>
-                        <td > <span class="" style="color: #0c376b;font-size:0.92em;font-weight:600;">Active-User</span></td>
-                    </tr>
-
-                {% elif  i.payprogress == 100 or i.payment_status == 1 and i.next_pay_date == None  %}
-
-                    <tr >
-                        <td>
-                            {{ forloop.counter }}
-                        
-                        <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                          
-                        </td>
-                        <td class="success">{{i.fullName}}</td>
-                        <td class="successmsg success">
-                            
-                            <span style="color: #fff;">Payment All Done.</span>
-                           
-                        </td>
-                        <td class="success"> {{i.next_pat_amt}}</td>
-                        <td class="success">{{i.dofj}}</td>
-                        <td class="success">{{i.refrence}}</td>
-                        <td class="success">{{i.dept_id.department}}</td>
-                        <td class="success">{{i.reg_payedtotal}}</td>
-                        <td class="success">{{i.regbalance_amt}}</td>
-                        <td class="success">{{i.regtotal_amt}}</td>
-                        <td class="payprogress">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-success" 
-                                role="progressbar" style="width: {{i.payprogress}}%;" 
-                                aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
-                            
-                                </div>
-                            </div>
-                        </td>
-                        <td class="actiontd  payprogress">
-                           
-                          
-                            <span class="completed"><i class="bi bi-check-circle-fill px-1"></i> Completed</span>
-                           
-                        </td>
-                    </tr>
-
-                {% else %}
-                    {% if  i.payment_status == 2 or i.reg_status == 2  %}
-
-                        <tr >
-                            <td>
-                                {{ forloop.counter }}
-                            
-                            <a href="{% url 'singleuser_details' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a> 
-                              
-                            </td>
-                            {% if cur_date > i.next_pay_date %}
-                            <td class="danger">
-                            {{i.fullName}}   
-                            </td>
-                            <td>
-                                <span class="dangermsg"><i class="bi bi-exclamation-triangle-fill"></i> Payment Date Exceed</span>
-                            </td>
-                            {% else %}
-                            <td class="danger">
-                                {{i.fullName}}
-                            </td>
-                            <td class="danger">
-                                <span style="color: #fff;"><i class="bi bi-exclamation-triangle-fill"></i>Payments Not Completed</span>
-                            </td>
-                            {% endif %}
-                            <td class="danger"> {{i.next_pat_amt}}</td>
-                            <td class="danger">{{i.dofj}}</td>
-                            <td class="danger">{{i.refrence}}</td>
-                            <td class="danger">{{i.dept_id.department}}</td>
-                            <td class="danger">{{i.reg_payedtotal}}</td>
-                            <td class="danger">{{i.regbalance_amt}}</td>
-                            <td class="danger">{{i.regtotal_amt}}</td>
-                            <td>
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-danger" 
-                                    role="progressbar" style="width: {{i.payprogress}}%;" 
-                                    aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"> {{i.payprogress}}%
-                                
-                                    </div>
-                                </div>
-                            </td>
-                            <td > <span class="" style="color: #f32424;font-size:0.92em;font-weight:700;">Deactive</span></td>
-                        </tr>
-                    
-                    {% endif %}
-                {% endif %}
-                {% endfor %}
-              
-            </tbody>
-           
-        </table>
-
-    </div>
-</div>
-
-
-
-</main>
 
 
 

@@ -31319,6 +31319,31 @@ div.tagsinput span.tag a {
   background-color: rgb(239, 243, 243);
   padding: 0.30rem;
 }
+.arrow-box
+{
+  color: rgb(7, 7, 79);
+  font-size: 0.85rem;
+  margin-left: 0.20rem;
+  margin-right: 0.20rem;
+  font-weight: 700;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(239, 243, 243);
+  padding: 0.30rem;
+}
+.arrow-box:hover{
+  background-color: rgb(234, 233, 242);
+}
+.account-active-delete-Box
+{
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  gap: 1rem;
+}
 .small-text{
   font-style: normal;
   font-weight: 500;

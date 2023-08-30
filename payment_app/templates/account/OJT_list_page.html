@@ -61,7 +61,8 @@
                              <th>BAL. amt</th>
                              <th>TL. amt</th>
                              <th>Progress</th>
-                             <th class="text-center">Status</th>
+                             <th class="text-center">Pay Status</th>
+                             <th class="text-center">Reg.Status</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -89,12 +90,45 @@
                           <td>{{i.regbalance_amt}}</td>
                           <td>{{i.regtotal_amt}}</td>
                           <td>
+                            {% if i.payprogress == 100 and i.payment_status == 1 %}
                              <div class="progress progress-md">
                                  <div class="progress-bar bg-success" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
                              </div>
+                             {% elif i.payprogress >= 10 and i.payment_status == 0 %}
+                             <div class="progress progress-md">
+                              <div class="progress-bar bg-warning" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                             </div>
+                            {% elif i.payment_status == 2  %}
+                            <div class="progress progress-md">
+                              <div class="progress-bar bg-danger" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                             </div>
+                             {% endif %}
                           </td>
 
-                          <td class="text-center"><div class="badge badge-opacity-warning">wating for approve</div></td>
+                          <td class="text-center">
+                            {% if i.payment_status == 0 and i.reg_status != 0 %}
+                              <div class="badge badge-opacity-success">Active</div>
+
+                            {% elif i.payment_status == 0 and i.reg_status == 0 %}
+                              <div class="badge badge-opacity-warning">Wating for approve</div>
+
+                            {% elif i.payment_status == 1 %}
+                              <i class="mdi mdi-checkbox-multiple-marked-circle mdi-18px text-success"></i>
+
+                            {% elif i.payment_status == 2 %}
+                              <i class="mdi mdi-close-circle-outline mdi-18px text-danger"></i>
+                            {% endif %}
+                          </td>
+
+                          <td class="text-center">
+                            {% if i.reg_status == 1 %}
+                            <div class="badge badge-opacity-success">Active</div>
+                            {% elif i.reg_status == 0 %}
+                            <div class="badge badge-opacity-warning">Wating for approve</div>
+                            {% else %}
+                            <div class="badge badge-opacity-danger">Dactive</div>
+                            {% endif %}
+                          </td>
                         </tr>
                         {% endfor %}
                         

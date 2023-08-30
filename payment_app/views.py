@@ -149,8 +149,7 @@ def dashboard(request):
         reg=Register.objects.filter(reg_status=1,reg_state=acc_state)
         reg_count=Register.objects.filter(reg_state=acc_state).count()
         emp_reg_count = EmployeeRegister.objects.filter(empstate=acc_state.state_name).count()
-        dept_count=Department.objects.all().count()
-
+        
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
@@ -259,14 +258,25 @@ def dashboard(request):
                 i.save()
 
 
+        if request.method == 'POST':
 
-        pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
-    
-        pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
+            sdate=request.POST['start_date']
+            edate=request.POST['end_date']
+
+            if sdate and edate:
+
+                pay_pending_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1).order_by('-next_pay_date')
+                pay_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1).count()
+            else:
+                return redirect('dashboard')
+        else:
+
+            pay_pending_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__lte=cur_date,reg_status=1).order_by('-next_pay_date')
+            pay_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__lte=cur_date,reg_status=1).count()
        
         common_accdash_data = account_nav_data(request) # calling for navbar datas       
 
-        content={'account_DHB':account_DHB,'dept_count':dept_count,
+        content={'account_DHB':account_DHB,'cur_date':cur_date,
                  'emp_reg_count':emp_reg_count,
                 'reg_count':reg_count,
                 'pay_count':pay_count,
@@ -330,7 +340,10 @@ def profile_account_details_save(request):
             account_DHB.dsh_name = request.POST['fname']
             account_DHB.dsh_email = request.POST['email']
             account_DHB.dsh_username = request.POST['uname'] 
-            account_DHB.dsh_image = request.FILES.get('profile_pic')
+            if  request.FILES.get('profile_pic'):
+                account_DHB.dsh_image = request.FILES.get('profile_pic')
+            else:
+                account_DHB.dsh_image = account_DHB.dsh_image 
             account_DHB.save()
 
             success_msg= 'Success! Profile Data Updated Successfully'
@@ -444,8 +457,6 @@ def Register_form(request):
         else:
             return redirect('/')
         
-
-        
         account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         depart = Department.objects.filter(dpt_Status=1)
@@ -542,12 +553,161 @@ def Register_form(request):
     else:
         return redirect('/')
 
+# Department register ----------------
+def department_form(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+
+        #-------------------------------------------------
+
+        if request.method =='POST':
+            
+            if request.POST['dept_id']:
+                dept=Department.objects.get(id=int( request.POST['dept_id']))
+                dept.department=request.POST['dept_name'].upper()
+                dept.save()
+                success_msg='Success! Department edited.'
+            else:
+                dept=Department()
+                dept.department=request.POST['dept_name'].upper()
+                dept.dpt_Status=1
+                dept.save()
+                success_msg='Success! Department added.'
+            
+            dept=Department.objects.all()
+            dept_count=Department.objects.all().count()
+            content={'account_DHB':account_DHB,
+                    'dept':dept,
+                    'dept_count':dept_count,
+                    'acc_state':acc_state,'success_msg':success_msg}
+            
+            common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+            content = {**content, **common_accdash_data}
+            return render(request,'account/Department_form.html',content)
+           
+        else:
+
+            dept=Department.objects.all()
+            dept_count=Department.objects.all().count()
+            content={'account_DHB':account_DHB,
+                    'dept':dept,
+                    'dept_count':dept_count,
+                    'acc_state':acc_state}
+            
+            common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+            content = {**content, **common_accdash_data}
+            return render(request,'account/Department_form.html',content)
+       
+    else:
+        return redirect('/')
+
+# Employee register ------------------
 
 
+def emp_Register_form(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        
+        #-------------------------------------------------
+        emp_reg=EmployeeRegister.objects.filter(empstate=acc_state.state_name)
+        emp_reg_count=EmployeeRegister.objects.filter(empstate=acc_state.state_name).count()
+
+        current_year = datetime.now().year
+       
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+
+        if request.method =='POST':
+            emp_reg=EmployeeRegister()
+            emp_reg.empfullName=request.POST['empname']
+            emp_reg.empdept_id=Department.objects.get(id=request.POST['empdept'])
+            emp_reg.empdofj=request.POST['empdfj']
+            emp_reg.empdesignation=request.POST['empdesig'].upper()
+            emp_reg.empidreg=request.POST['empid'].upper()
+            emp_reg.empconfirmsalary=int(request.POST['empconf_salary'])
+          
+            emp_reg.emp_status=1
+            emp_reg.emp_salary_status=1
+
+            emp_reg.save()
+            success_msg='Success! Employee registration completed.'
+        
+       
+            emp_reg=EmployeeRegister.objects.filter(empstate=acc_state.state_name)
+            emp_reg_count=EmployeeRegister.objects.filter(empstate=acc_state.state_name).count()
+
+            content={'account_DHB':account_DHB,
+                    'emp_reg':emp_reg,
+                    'emp_reg_count':emp_reg_count,
+                    'acc_state':acc_state,'success_msg':success_msg}
+    
+    
+        content={'account_DHB':account_DHB,
+                    'emp_reg':emp_reg,
+                    'emp_reg_count':emp_reg_count,
+                    'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/Employee_Register.html',content)
+    
+    else:
+        return redirect('/')
+    
 
 # ======================== All Delete section =====================================
 
 # OJT Delete - This view is used for to delete 
+
+
+    
+# Department Delete - This view is used for to delete    
+def remove_dept(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+
+        #-------------------------------------------------
+        
+        dept=Department.objects.get(id=pk)
+        dept.delete()
+        error_msg = 'Opps! Department Removed'
+        dept=Department.objects.all()
+        dept_count=Department.objects.all().count()
+        content={'account_DHB':account_DHB,
+                    'dept':dept,
+                    'dept_count':dept_count,
+                    'acc_state':acc_state,'error_msg':error_msg}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/Department_form.html',content)
+    
+    else:
+        return redirect('/')
 
 
 def remove(request,pk):
@@ -636,7 +796,40 @@ def payhis_remove(request,pk):
     
     else:
         return redirect('/')
+
+
+# ======================== Edit Section ========================================
+# Department edit----------------
+
+def edit_dept(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+
+        #-------------------------------------------------
+        
+        dept_edit=Department.objects.get(id=pk)
+
+        dept=Department.objects.all()
+        dept_count=Department.objects.all().count()
+        content={'account_DHB':account_DHB,
+                    'dept':dept,
+                    'dept_count':dept_count,
+                    'acc_state':acc_state,'dept_edit':dept_edit}
             
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/Department_form.html',content)
+    
+    else:
+        return redirect('/')         
 
 # ======================== All View section =====================================
 
@@ -687,6 +880,305 @@ def OJT_list_view(request):
 
     else:
         return redirect('/')
+
+#OJT Payment track view-----
+# ------------Payments History--------
+
+def pyments_history(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        reg=Register.objects.filter(reg_state=acc_state)
+
+        if request.method == 'POST':
+
+            sdate=request.POST['start_date']
+            edate=request.POST['end_date']
+
+            if sdate and edate:
+
+                payhistory=PaymentHistory.objects.filter(reg_id__in=reg,paydofj__gte=sdate,paydofj__lte=edate).order_by('-id')
+                payhistory_count=PaymentHistory.objects.filter(reg_id__in=reg,paydofj__gte=sdate,paydofj__lte=edate).count()
+
+                ojt_approve_amt=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=1,paydofj__gte=sdate,paydofj__lte=edate).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                ojt_approve_count=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=1,paydofj__gte=sdate,paydofj__lte=edate).count()
+
+                ojt_pending_amt=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=0,paydofj__gte=sdate,paydofj__lte=edate).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                ojt_pending_count=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=0,paydofj__gte=sdate,paydofj__lte=edate).count()
+
+                
+
+                content={'account_DHB':account_DHB,
+                            'acc_state':acc_state,
+                            'payhistory':payhistory,
+                            'payhistory_count':payhistory_count,
+                            'ojt_approve_amt':ojt_approve_amt,
+                            'ojt_approve_count':ojt_approve_count,
+                            'ojt_pending_amt':ojt_pending_amt,
+                            'ojt_pending_count':ojt_pending_count
+                        }
+                
+            else:
+
+                return redirect('pyments_history')
+
+        else:
+
+            payhistory=PaymentHistory.objects.filter(reg_id__in=reg).order_by('-id')
+            payhistory_count=PaymentHistory.objects.filter(reg_id__in=reg).count()
+
+            ojt_approve_amt=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            ojt_approve_count=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=1).count()
+
+            ojt_pending_amt=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=0).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            ojt_pending_count=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=0).count()
+
+              
+
+            content={'account_DHB':account_DHB,
+                        'acc_state':acc_state,
+                        'payhistory':payhistory,
+                        'payhistory_count':payhistory_count,
+                        'ojt_approve_amt':ojt_approve_amt,
+                        'ojt_approve_count':ojt_approve_count,
+                        'ojt_pending_amt':ojt_pending_amt,
+                        'ojt_pending_count':ojt_pending_count
+                    }
+        common_accdash_data = account_nav_data(request) # calling for navbar datas    
+
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/payments_history.html',content)
+
+    else:
+        return redirect('/')
+
+def pyments_status_view(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        cur_date=datetime.now().date()
+        if pk == 0:
+            reg=Register.objects.filter(reg_state=acc_state,payment_status=0)
+            ojt_count=Register.objects.filter(reg_state=acc_state,payment_status=0).count()
+
+        elif pk == 1:
+
+            reg=Register.objects.filter(reg_state=acc_state,payment_status=1)
+            ojt_count=Register.objects.filter(reg_state=acc_state,payment_status=1).count()
+
+        else:
+            reg=Register.objects.filter(reg_state=acc_state,payment_status=2)
+            ojt_count=Register.objects.filter(reg_state=acc_state,payment_status=2).count()
+
+        common_accdash_data = account_nav_data(request) # calling for navbar datas    
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'reg':reg,
+                    'ojt_count':ojt_count,
+                    'cur_date':cur_date
+                   }
+
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/payments_status_view.html',content)
+
+    else:
+        return redirect('/')
+
+#Single User Payments Viev
+
+def singleuser_details(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        reg=Register.objects.get(id=pk)
+        payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
+        ojt_count = PaymentHistory.objects.filter(reg_id_id=reg.id).count()
+       
+        common_accdash_data = account_nav_data(request) # calling for navbar datas    
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'reg':reg,
+                    'ojt_count':ojt_count,
+                    'payhis':payhis
+                   }
+
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/SingleUser_payments.html',content)
+
+    else:
+        return redirect('/')  
+    
+
+def user_active_reactive(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        
+        reg=Register.objects.get(id=pk)
+        if reg.payment_status == 0:
+           reg.payment_status = 2
+        elif reg.payment_status == 2: 
+            reg.payment_status = 0 
+        reg.save()      
+        
+        payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
+        ojt_count = PaymentHistory.objects.filter(reg_id_id=reg.id).count()
+       
+        common_accdash_data = account_nav_data(request) # calling for navbar datas    
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'reg':reg,
+                    'ojt_count':ojt_count,
+                    'payhis':payhis
+                   }
+
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/SingleUser_payments.html',content)
+    else:
+        return redirect('/')
+    
+
+def delete_user(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #----------------------------------------------------------------
+
+        reg=Register.objects.get(id=pk)
+        reg.payment_status=2
+        if reg.reg_status == 2:
+            reg.reg_status=1
+        elif reg.reg_status == 1:
+            reg.reg_status=2
+        reg.save()
+
+        return redirect('singleuser_details',reg.id)
+       
+    else:
+        return redirect('/')
+
+
+def previous_data(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #----------------------------------------------------------------
+        try:
+            pk=int(pk-1)
+            reg=Register.objects.get(id=pk)
+        
+        except Register.DoesNotExist:
+            reg=Register.objects.filter(reg_status=1).first()
+           
+        
+        payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
+        ojt_count = PaymentHistory.objects.filter(reg_id_id=reg.id).count()
+       
+        common_accdash_data = account_nav_data(request) # calling for navbar datas    
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'reg':reg,
+                    'ojt_count':ojt_count,
+                    'payhis':payhis
+                   }
+
+        content = {**content, **common_accdash_data}
+        return render(request,'account/SingleUser_payments.html',content)
+
+    else:
+        return redirect('/')
+        
+    
+
+def next_data(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #----------------------------------------------------------------
+        
+        try:
+            pk=int(pk+1)
+            reg=Register.objects.get(id=pk)
+
+        except Register.DoesNotExist:
+            reg=Register.objects.filter(reg_status=1).last()
+           
+        
+        payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
+        ojt_count = PaymentHistory.objects.filter(reg_id_id=reg.id).count()
+       
+        common_accdash_data = account_nav_data(request) # calling for navbar datas    
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'reg':reg,
+                    'ojt_count':ojt_count,
+                    'payhis':payhis
+                   }
+
+        content = {**content, **common_accdash_data}
+        return render(request,'account/SingleUser_payments.html',content)
+    else:
+        return redirect('/')
+
 
 
 #Employees List ------------
@@ -838,22 +1330,77 @@ def addpayment_details(request,pk):
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         #---------------------------------------------------------------
 
-        reg_dt=Register.objects.get(id=pk)
+        try:
+            reg_dt=Register.objects.get(id=pk)
+
+        except Register.DoesNotExist:
+
+            reg_dt=None
 
         ojt_reg=Register.objects.filter(reg_status=1,payment_status=0,reg_state=acc_state)
         ojt_count=Register.objects.filter(reg_status=1,payment_status=0,reg_state=acc_state).count()
         pay_history = PaymentHistory.objects.filter(reg_id__in=ojt_reg,admin_payconfirm=0)
 
-        common_accdash_data = account_nav_data(request) # calling for navbar datas       
+        # Payment Edit---------------
+        if request.method =='POST':
+ 
+            
+            pay_amt=int(request.POST['payamount'])
+            next_date=request.POST['pay_nextdate']
+            
+            paymt=PaymentHistory.objects.get(id=int(request.POST['editpayname']))
+          
+            reg_dt=Register.objects.get(id=paymt.reg_id.id)
 
-        content={'account_DHB':account_DHB,
+            paymt.head_name=request.POST['payhead']
+            paymt.payintial_amt=pay_amt
+            paymt.paydofj=request.POST['paydate']
+            paymt.paybalance_amt=int(reg_dt.regbalance_amt) - pay_amt
+            paymt.paytotal_amt=int(reg_dt.reg_payedtotal)
+            paymt.save()
+
+           
+
+            if next_date:
+                reg_dt.next_pay_date=request.POST['pay_nextdate']
+
+            else:
+                # Calculate the date after 30 days
+            
+                current_date = reg_dt.next_pay_date
+
+                if pay_amt >= int(reg_dt.fixed_intial_amt):
+                
+                    after_days = current_date + timedelta(days=30)
+                else:
+                    after_days = current_date + timedelta(days=15)
+
+                reg_dt.next_pay_date=after_days
+           
+            reg_dt.save()
+            success_msg='Success! Payments edit  successful.'
+
+            content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'ojt_reg':ojt_reg,
+                    'ojt_count':ojt_count,
+                    'success_msg':success_msg,
+                    'reg_dt':reg_dt,
+                    'pay_history':pay_history
+                   }
+            
+        #-------------------------------------------------------------
+        else:
+            content={'account_DHB':account_DHB,
                     'acc_state':acc_state,
                     'ojt_reg':ojt_reg,
                     'ojt_count':ojt_count,
                     'reg_dt':reg_dt,
                     'pay_history':pay_history
                    }
-        
+
+        common_accdash_data = account_nav_data(request) # calling for navbar datas       
+
         content = {**content, **common_accdash_data}
 
         return render(request,'account/payment_add_page.html',content)
@@ -1147,87 +1694,6 @@ def edit_user(request,pk):
         return redirect('/')
 
 
-def department_form(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-          
-        else:
-            return redirect('/')
-        
-        dept=Department.objects.all()
-        return render(request,'account/Department_form.html',{'dept':dept})
-       
-    else:
-        return redirect('/')
-
-
-def department_add(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-          
-        else:
-            return redirect('/')
-        
-        if request.method =='POST':
-            
-            if request.POST['dept_id']:
-                dept=Department.objects.get(id=int( request.POST['dept_id']))
-                dept.department=request.POST['dept_name'].upper()
-                dept.save()
-                msg=3
-            else:
-                dept=Department()
-                dept.department=request.POST['dept_name'].upper()
-                dept.dpt_Status=1
-                dept.save()
-                msg=1
-            dept=Department.objects.all()
-            return render(request,'account/Department_form.html',{'msg':msg,'dept':dept})
-        else:
-            return redirect('department_form')
-        
-    else:
-        return redirect('/')   
-    
-def edit_dept(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-          
-        else:
-            return redirect('/')
-        
-        dept_edit=Department.objects.get(id=pk)
-
-        dept=Department.objects.all()
-        return render(request,'account/Department_form.html',{'dept_edit':dept_edit,'dept':dept})
-    
-    else:
-        return redirect('/')
-    
-    
-def remove_dept(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-          
-        else:
-            return redirect('/')
-        
-        dept=Department.objects.get(id=pk)
-        dept.delete()
-        msg=2
-        dept=Department.objects.all()
-        return render(request,'account/Department_form.html',{'msg':msg,'dept':dept})
-    
-    else:
-        return redirect('/')
-    
-
-
-
 
 def payment_details(request,pk):
     if 'uid' in request.session:
@@ -1439,20 +1905,6 @@ def register_edit_save(request,pk):
 #     return render(request,'account/Register_form.html',{'msg':msg,'dept':dept,'reg':reg,'payhis':payhis})
 
 
-#Payments History section 
-
-def pyments_history(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        reg=Register.objects.filter(reg_status=1)
-        payhis=PaymentHistory.objects.all()
-        return render(request,'account/payments_history.html',{'reg':reg,'payhis':payhis})
-    
-    else:
-        return redirect('/')
 
 def paymentfull_view(request):
     if 'uid' in request.session:
@@ -1467,147 +1919,8 @@ def paymentfull_view(request):
         return redirect('/')
 
 
-#Single User Payments Viev
-
-def singleuser_details(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        reg=Register.objects.get(reg_status=1,id=pk)
-        payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
-        return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
-    
-    else:
-        return redirect('/')    
 
 
-def reactivate_user(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        reg=Register.objects.get(reg_status=1,id=pk)
-        reg.payment_status=0
-        reg.save()
-        msgalert=reg.fullName + " User is Reactivated"
-
-        reg=Register.objects.filter(reg_status=1)
-        reg_count=Register.objects.all().count()
-        dept_count=Department.objects.all().count()
-        cur_date=datetime.now().date()
-        
-        pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
-    
-        pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
-        content={'dept_count':dept_count,
-                'reg_count':reg_count,
-                'pay_count':pay_count,
-                'pay_pending_count':pay_pending_count}
-        return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content,'msgalert':msgalert})
-    else:
-        return redirect('/')
-    
-
-def deactive_user(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        reg=Register.objects.get(reg_status=1,id=pk)
-        reg.payment_status=2
-        reg.save()
-        msgalert=reg.fullName + " User is Deactivated"
-        reg=Register.objects.filter(reg_status=1)
-        reg_count=Register.objects.all().count()
-        dept_count=Department.objects.all().count()
-        cur_date=datetime.now().date()
-        
-        pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
-    
-        pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
-        content={'dept_count':dept_count,
-                'reg_count':reg_count,
-                'pay_count':pay_count,
-                'pay_pending_count':pay_pending_count}
-        return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content,'msgalert':msgalert})
-    else:
-        return redirect('/')
-
-    
-def delete_user(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        reg=Register.objects.get(reg_status=1,id=pk)
-        reg.payment_status=2
-        reg.reg_status=2
-        reg.save()
-        msgalert=reg.fullname + " User is Deleted"
-        reg=Register.objects.filter(reg_status=1)
-        reg_count=Register.objects.all().count()
-        dept_count=Department.objects.all().count()
-        cur_date=datetime.now().date()
-        
-        pay_pending_count=PaymentHistory.objects.filter(admin_payconfirm=0).count()
-    
-        pay_count=Register.objects.filter(next_pay_date__lte=cur_date).count()
-        content={'dept_count':dept_count,
-                'reg_count':reg_count,
-                'pay_count':pay_count,
-                'pay_pending_count':pay_pending_count}
-        return render(request,'account/dashboard.html',{'reg':reg,'cur_date':cur_date,'content':content,'msgalert':msgalert})
-    else:
-        return redirect('/')
-
-
-def previous_data(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        try:
-            pk=int(pk-1)
-            reg=Register.objects.get(reg_status=1,id=pk)
-            payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
-            return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
-        
-        except Register.DoesNotExist:
-            reg=Register.objects.filter(reg_status=1).first()
-            payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
-            return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
-    else:
-        return redirect('/')
-        
-    
-
-def next_data(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        try:
-            pk=int(pk+1)
-            reg=Register.objects.get(reg_status=1,id=pk)
-            payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
-            return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
-        except Register.DoesNotExist:
-            reg=Register.objects.filter(reg_status=1).last()
-            payhis=PaymentHistory.objects.filter(reg_id_id=reg.id)
-            return render(request,'account/SingleUser_payments.html',{'reg':reg,'payhis':payhis})
-    else:
-        return redirect('/')
 
 #   Account Section 
 
@@ -2710,26 +3023,6 @@ def income_expence_delete(request,incom_delete):
     else:
         return redirect('/')
 
-
-def emp_Register_form(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        current_year = datetime.now().year
-       
-        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
-        years = [(str(i), str(i)) for i in range(2021, 2031)]
-        
-        dept=Department.objects.filter(dpt_Status=1)
-       
-        emp_reg=EmployeeRegister.objects.all()
-        return render(request,'account/Employee_Register.html',{'current_year':current_year,'dept':dept,'emp_reg':emp_reg,'months':months,'years':years})
-    else:
-        return redirect('/')
-    
 
 
 def employee_register_Details(request):
