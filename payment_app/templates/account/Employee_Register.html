@@ -12,13 +12,13 @@
           <div class="home-tab">
             <div class="d-sm-flex align-items-center justify-content-between border-bottom">
               <ul class="nav nav-tabs" role="tablist">
+               
                 <li class="nav-item">
-                  <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#register-employee" role="tab" aria-controls="register-employee" aria-selected="true">Reg. Employee </a>
+                  <a class="nav-link active ps-0" id="profile-tab" data-bs-toggle="tab" href="#employee-view" role="tab" aria-selected="false">Employee List</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#employee-view" role="tab" aria-selected="false">Employee List</a>
-                </li>
-                
+                    <a class="nav-link " id="home-tab" data-bs-toggle="tab" href="#register-employee" role="tab" aria-controls="register-employee" aria-selected="true">Reg. Employee </a>
+                  </li>
               </ul>
               {% if success_msg %}
                 <div class="messageBox-container" id="message-container">
@@ -41,7 +41,7 @@
               </div>
             </div>
             <div class="tab-content tab-content-basic">
-              <div class="tab-pane fade show active" id="register-employee" role="tabpanel" aria-labelledby="register-employee"> 
+              <div class="tab-pane fade " id="register-employee" role="tabpanel" aria-labelledby="register-employee"> 
                 <div class="row flex-grow">
                     <div class="col-12 grid-margin stretch-card">
                       <div class="card card-rounded">
@@ -108,7 +108,7 @@
      
               </div>
 
-              <div class="tab-pane fade" id="employee-view" role="tabpanel" aria-labelledby="employee-view"> 
+              <div class="tab-pane show active fade" id="employee-view" role="tabpanel" aria-labelledby="employee-view"> 
                 
                 <div class="row flex-grow">
                     <div class="col-12 grid-margin stretch-card">
@@ -151,8 +151,8 @@
                                 
                                 <tr>
                                         <td>
-                                            <a href="{% url 'edit_dept' reg.id %}" class="text-primary mr-1"><i class="mdi mdi-pen mdi-18px"></i> Edit</a>
-                                            <a href="{% url 'remove_dept' reg.id %}" class="text-danger"><i class="mdi mdi-close-circle-outline mdi-18px"></i> Remove</a>
+                                            <a href="{% url 'employee_reg_edit' reg.id %}" class="text-primary mr-1"><i class="mdi mdi-pen mdi-18px"></i> Edit</a>
+                                            <a href="{% url 'emp_reg_delete' reg.id %}" class="text-danger"><i class="mdi mdi-close-circle-outline mdi-18px"></i> Remove</a>
                                         </td>
                                         <td>{{reg.empidreg}}</td>
                                         <td><h6>{{reg.empfullName}}</h6> </td>

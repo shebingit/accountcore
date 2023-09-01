@@ -3,276 +3,198 @@
 {% block body %}
 
 
+<!--- State Holiday Add   -->
+<div class="content-wrapper">
 
-<style>
-
-/*Register Box Register-details  Style */
-
-    #register-box .contaier-fluid
-    {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-       
-       
-    }
-    .register-details
-    {
-        height: 40vh;
-        background: #ffff;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-       
-    }
-
-    .register-details h4, .register-details-table h4{
-      
-        margin-top: 1.1em;
-        font-size: 1.35em;
-        margin-left: 0.40em;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color:rgb(38, 17, 63);
-       
-        
-    }
-    .register-details .line,  .register-details-table .line
-    {
-        width: 60px;
-        height: 3px;
-        border-bottom: 3px solid #000;
-        margin-left: 0.60em;
-
-    }
-
-    /* success Alert box */
-
-    .register-details .message-bx
-    {
-        background: #6fc146;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details .message-bx-delete
-    {
-        background: #d74141;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details form{
-        padding:0.50em 1em;
-        background: #fafafa;
-    }
-    .register-details form .input-group-box
-    {
-        margin-top: 1.5em;
-    }
-    .input-group-box label
-    {
-        width: 35%;
-        font-size: 0.90em;
-        font-weight: 600;
-        padding: 0.40em;
-    }
-    .input-group-box input, select{
-      width: 55%;
-      padding: 0.20em;
-      border: 1px solid #828181;
-      font-size: 0.90em;
-     
-    }
-    .input-group-box input:focus, select:focus
-    {
-        border:0.01rem solid #111158;
-        outline: none;
-        border-radius: 3px;
-    }
-    .input-group-box select option{
-        font-size: 0.90em;
-        padding: 1em 0em;
-    }
-    .submit_button
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 15vh;
-        background: #fafafa;
-        margin-top: 1em;
-    }
-    .submit_button button
-    {
-        padding: 0.40em 1.4em;
-        font-weight: 600;
-        background: #261b52;
-        color: #ffff;
-        margin:none ;
-        border: none;
-        letter-spacing: 0.04em;
-    }
-    #department a
-    {
-        padding: 0em 0.40em;
-        font-size: 1.1em;
-    
-    }
-    #department .edit
-    {
-        font-size: 0.95em;
-    }
-    #department .edit:nth-child(1)
-    {
-      
-        color: #1b126f; 
-    }
-    #department a:nth-child(1)
-    {
-      
-        color: #ec0909;
-    }
-    
-    /* Media Query*/
-    @media(max-width:964px)
-    {
-        #register-box .contaier-fluid
-        {
-        grid-template-columns:repeat(1,1fr) ;
-        }
-        .register-details
-        {
-            height: auto;
-        }
-        
-    }
-    /*Register Box Register-details End Style */
-
-     /*Register Box Register-details Table Style */
-     .register-details-table .container
-     {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        height: 70vh;
-        margin-top: 1.4em;
-        padding-top:2em ;
-     }
-     #department
-     {
-        font-size: 0.90em;
-     }
-      /* Media Query*/
-    @media(max-width:964px)
-    {
-    
-        .register-details-table .container
-        {
-            height: auto;
-            overflow-x: scroll;
-          
+    <div class="row">
+        <div class="col-sm-12">
            
-        }
-        #department
-        {
-          width: 100%; 
-        }
-        .register-details-table 
-        {
-            overflow-x: scroll;
-        }
-    }
-</style>
-
-
-<main>
-    <section id="register-box">
-        <div class="contaier-fluid">
-            <div class="register-details">
-                <h4>Company Holidays Add </h4>
-                <div class="line"></div>
-                {% if msg == 1 %}
-                <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-check-all"></i> Successfull!   Added  </p>
-                </div>
-                {% elif msg == 2 %}
-                <div class="message-bx-delete" id="msgbox-delete">
-                    <p><i class="bi bi-x"></i> Successfull!   Deleted  </p>
-                </div>
-                {% endif %}
-
-
-                <form action="{% url 'company_holiday_add'  %}" method="post">
-                    {% csrf_token %}
-                    <div class="input-group-box">
-                        <label>Month Start date: <br>{{comp_holidays_edit.ch_sdate}}</label>
-                        <input type="date" name="cmphsdate"  required>
-                        <input type="text" name="cmphid" value="{{comp_holidays_edit.id}}"hidden >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Month End Date: <br> {{comp_holidays_edit.ch_edate}}</label>
-                        <input type="date" name="cmphedate" required>
-                    </div>
-                    <div class="input-group-box">
-                        <label>No of HoliDays</label>
-                        <input type="text" name="cmphno" value="{{comp_holidays_edit.ch_no}}" required>
-                    </div>
+            <div class="d-sm-flex align-items-center justify-content-center mb-1">
+            
+                {% if success_msg %}
+                    <div class="messageBox-container" id="message-container">
                     
-                    <div class="submit_button">
-                        <button type="submit">Save</button>
+                            <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                            <p class="text-center success-text">{{success_msg}}</p>
                     </div>
-                </form>
-
+                {% elif error_msg %}
+                    <div class="messageBox-container" id="message-container">
+                            <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                            <p class="text-center error-text">{{error_msg}}</p>
+                    </div>
+                {% endif %}
+            
             </div>
-            <div class="register-details-table">
-                <h4>Company Holidays</h4>
-                <div class="line"></div>
-                <div class="container">
-
-                    <table id="department" class="display" >
-                        <thead>
-                            <tr>
-                                <th>Edit</th>
-                                <th>Start Date </th>
-                                <th>End Date</th>
-                                <th>Month</th>
-                                <th>Company Work Days</th>
-                                <th>No of Holidays</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for i in comp_holidays %}
-                            <tr>
-                                <td><a href="{% url 'company_holidy_edit' i.id %}" class="edit"><i class="bi bi-pen-fill"></i></a></td>
-                                <td>{{i.ch_sdate}}</td>
-                                <td>{{i.ch_edate}}</td>
-                                <td>{{i.ch_sdate|date:"F" }}</td>
-                                <td>{{i.ch_workno}}</td>
-                                <td>{{i.ch_no}}</td>
-                            </tr>
-                            {% endfor %}
-                          
-                        </tbody>
-                       
-                    </table>
-
+        </div>
+        <div class="col-sm-12">
+            <div class="row flex-grow">
+                <div class="col-sm-12 col-md-4 grid-margin stretch-card">
+                    <div class="card card-rounded">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <form action="{% url  'company_holoidays' %}" class="forms-sample" method="post">
+                                        {% csrf_token %}
+                                            <div class="d-flex justify-content-start align-items-center">
+                                                <h4 class="card-title card-title-dash">State Holiday - Add Form</h4>
+                                            
+                                            </div>
+                                           
+                                            <div class="form-group mt-3 ">
+                                                <label for="cmphsdate">Month Start Date</label>
+                                                <input type="date" class="form-control small-text" id="cmphsdate" name="cmphsdate" value="{{comp_holidays_edit.ch_sdate|date:'Y-m-d'}}" placeholder="Month Start Date" required>
+                                            </div>
+                                            
+                                            
+            
+                                            <div class="form-group ">
+                                                <label for="cmphedate">Month End Date</label>
+                                                <input type="date" class="form-control small-text" id="cmphedate" name="cmphedate" value="{{comp_holidays_edit.ch_edate|date:'Y-m-d'}}" placeholder="Month End Date" required>
+                                                <input type="hidden" name="cmphid" value="{{comp_holidays_edit.id}}" >
+                                            </div>
+            
+                                            
+            
+                                            <div class="form-group ">
+                                                <label for="conut"> No of HoliDays</label>
+                                                <input type="text" name="cmphno"  class="form-control small-text" id="conut" value="{{comp_holidays_edit.ch_no}}"  placeholder=" No of HoliDays" required>
+                                            </div>
+            
+                                           
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                {% if comp_holidays_edit %}
+                                                <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-pen"></i>&nbsp; Edit Save</button>
+                                                {% else %}
+                                                <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-plus-circle-outline"></i>&nbsp; ADD</button>
+                                                {% endif %}
+                                               
+                                            </div>
+                                            
+                                    </form>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-8 grid-margin stretch-card">
+                    <div class="card card-rounded">
+                        <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                    <h4 class="card-title card-title-dash">State Holiday  List</h4>
+                                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{comp_holidays_count}}</span> holiday list</p>
+                                </div>
+                                <div class="searchBox">
+                                        
+                                    <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                    <button class="close-btn" id="closeBtn">
+                                            <i class="mdi mdi-close"></i>
+                                    </button>
+                                        
+                                </div>
+                                
+                            </div>
+            
+                            <div class="table-responsive  mt-1">
+                                <table class="table select-table" id="OJT-Register">
+                                    <thead>
+                                        <tr>
+                                            <th>Edit</th>
+                                            <th>Start Date </th>
+                                            <th>End Date</th>
+                                            <th>Month</th>
+                                            <th>State Work Days</th>
+                                            <th>No of Holidays</th>
+                                            <th>State</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            
+                                        {% for i in comp_holidays %}
+                                        <tr>
+                                            <td><a href="{% url 'company_holidy_edit' i.id %}" class="text-primary"><i class="mdi mdi-pen mdi-18px"></i></a></td>
+                                            <td>{{i.ch_sdate}}</td>
+                                            <td>{{i.ch_edate}}</td>
+                                            <td>{{i.ch_sdate|date:"F" }}</td>
+                                            <td class="text-center">{{i.ch_workno}}</td>
+                                            <td  class="text-center">{{i.ch_no}}</td>
+                                            <td  class="text-center">{{i.ch_state.state_name}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-           
         </div>
-    </section>
+    </div>
+</div>
 
-    <!-- Meaage Box fead Out -->
 
 
-</main>
+
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const ojtTable = document.getElementById('OJT-Register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = ojtTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const Cell1 = rows[i].getElementsByTagName('td')[1];
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
+           
+
+            if (Cell1 || Cell2 ) {
+                const dataCell1 = Cell1.textContent || Cell1.innerText;
+                const dataCell2 = Cell2.textContent || Cell2.innerText;
+                
+               
+
+                if (dataCell1.toLowerCase().includes(filterValue) || dataCell2.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+
+
 
 {% endblock %}
+
+
+    
+    
+  

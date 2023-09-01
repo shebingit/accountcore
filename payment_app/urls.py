@@ -61,13 +61,11 @@ urlpatterns = [
     # Account Section 
     path('Account',views.accounts,name='accounts'),
     path('Fixed-Expence',views.fixed_expence,name='fixed_expence'),
-    path('Fixed-Expence-Save',views.fixed_expence_add,name='fixed_expence_add'),
     path('Fixed-Edit/<int:pk>',views.fixed_edit,name="fixed_edit"),
     path('Fixed-Delete/<int:pk>',views.fixed_delete,name="fixed_delete"),
     path('Fixed-Status-Change/<int:pk>',views.fixed_change_status,name="fixed_change_status"),
 
     path('Company-Holoidays',views.company_holoidays,name='company_holoidays'),
-    path('Company-Holoidays-Add',views.company_holiday_add,name='company_holiday_add'),
     path('Company-Holoidays-Edit/<int:pk>',views.company_holidy_edit,name="company_holidy_edit"),
     
     
@@ -79,17 +77,16 @@ urlpatterns = [
     
     path('Salary-Expence',views.salary_expence,name='salary_expence'),
     path('Income-Expence',views.income_expence_form,name='income_expence_form'),
-    path('Income-Expence-Save',views.income_expence_add,name='income_expence_add'),
     
+    path('Income-Expence-Search',views.income_expence_search,name='income_expence_search'),
     path('Income-Expence-Edit/<int:inex_edit>',views.income_expence_edit,name="income_expence_edit"),
-    path('Income-Expence-Edit-Save',views.income_expence_edit_save,name="income_expence_edit_save"),
     path('Income-Expence-Delete/<int:incom_delete>',views.income_expence_delete,name="income_expence_delete"),
     
     
     path('Employee-Register-Form',views.emp_Register_form,name='emp_Register_form'),
     path('Employee-Register',views.employee_register_Details,name='employee_register_Details'),
     path('Employee-Register-Search',views.register_search,name='register_search'),
-    path('Employee-Edit/<int:pk>',views.emp_reg_edit,name="emp_reg_edit"),
+    path('Employee-Edit/<int:pk>',views.employee_reg_edit,name="employee_reg_edit"),
     path('Employee-Edit-Save/<int:pk>',views.employee_register_Details_edit,name="employee_register_Details_edit"),
 
     path('Employee-Deactive/<int:pk>',views.emp_reg_deactive,name="emp_reg_deactive"),
@@ -119,7 +116,7 @@ urlpatterns = [
     
     
     path('Employee-Salary-Details/<int:pk>',views.employee_salary_details,name="employee_salary_details"),
-    path('Employee-Salary-Details-Search/<int:pk>',views.employee_salary_payments_search,name="employee_salary_payments_search"),
+   
     
 
     
@@ -281,20 +278,7 @@ urlpatterns = [
     path('Admin-State-Register',views.admin_state_register,name='admin_state_register'),
     path('Admin-State-Allocation',views.admin_state_allocation,name='admin_state_allocation'),
     path('Admin-State-Re-allocation',views.admin_state_reallocation,name='admin_state_reallocation'),
-     
-    
 
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     path('LogOut',views.logout_page,name='logout_page'),
     

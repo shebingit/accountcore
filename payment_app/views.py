@@ -624,23 +624,20 @@ def emp_Register_form(request):
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         
         #-------------------------------------------------
+        depart= Department.objects.all()
         emp_reg=EmployeeRegister.objects.filter(empstate=acc_state.state_name)
         emp_reg_count=EmployeeRegister.objects.filter(empstate=acc_state.state_name).count()
 
-        current_year = datetime.now().year
        
-        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
-        years = [(str(i), str(i)) for i in range(2021, 2031)]
-
         if request.method =='POST':
             emp_reg=EmployeeRegister()
-            emp_reg.empfullName=request.POST['empname']
-            emp_reg.empdept_id=Department.objects.get(id=request.POST['empdept'])
-            emp_reg.empdofj=request.POST['empdfj']
-            emp_reg.empdesignation=request.POST['empdesig'].upper()
-            emp_reg.empidreg=request.POST['empid'].upper()
-            emp_reg.empconfirmsalary=int(request.POST['empconf_salary'])
-          
+            emp_reg.empfullName=request.POST['emp_Name']
+            emp_reg.empdept_id=Department.objects.get(id=request.POST['emp_dept'])
+            emp_reg.empdofj=request.POST['emp_dfj']
+            emp_reg.empdesignation=request.POST['emp_desig'].upper()
+            emp_reg.empidreg=request.POST['emp_id'].upper()
+            emp_reg.empconfirmsalary=int(request.POST['emp_sal'])
+            emp_reg.empstate=request.POST['emp_state']
             emp_reg.emp_status=1
             emp_reg.emp_salary_status=1
 
@@ -652,6 +649,7 @@ def emp_Register_form(request):
             emp_reg_count=EmployeeRegister.objects.filter(empstate=acc_state.state_name).count()
 
             content={'account_DHB':account_DHB,
+                     'depart':depart,
                     'emp_reg':emp_reg,
                     'emp_reg_count':emp_reg_count,
                     'acc_state':acc_state,'success_msg':success_msg}
@@ -659,6 +657,7 @@ def emp_Register_form(request):
     
         content={'account_DHB':account_DHB,
                     'emp_reg':emp_reg,
+                     'depart':depart,
                     'emp_reg_count':emp_reg_count,
                     'acc_state':acc_state}
             
@@ -669,6 +668,7 @@ def emp_Register_form(request):
     
     else:
         return redirect('/')
+    
     
 
 # ======================== All Delete section =====================================
@@ -797,6 +797,42 @@ def payhis_remove(request,pk):
     else:
         return redirect('/')
 
+# Employee delete ---------------
+
+def emp_reg_delete(request,pk):
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+        depart= Department.objects.filter(dpt_Status=1)
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+       
+        emp_reg.delete()
+
+        error_msg='Opps! Employee details removed.'
+        emp_reg=EmployeeRegister.objects.filter(empstate=acc_state.state_name)
+        emp_reg_count=EmployeeRegister.objects.filter(empstate=acc_state.state_name).count()
+
+        content={'account_DHB':account_DHB,
+                    'emp_reg':emp_reg,
+                     'depart':depart,
+                     'emp_reg_count':emp_reg_count,
+                    'acc_state':acc_state,'error_msg':error_msg}
+        
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/Employee_Register.html',content)
+    
+    else:
+        return redirect('/')
 
 # ======================== Edit Section ========================================
 # Department edit----------------
@@ -830,6 +866,62 @@ def edit_dept(request,pk):
     
     else:
         return redirect('/')         
+
+
+#Employee Edit ---------------
+def employee_reg_edit(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+        depart= Department.objects.filter(dpt_Status=1)
+        
+        emp_reg=EmployeeRegister.objects.get(id=pk)
+
+        if request.method =='POST':
+          
+            emp_reg.empfullName=request.POST['emp_Name']
+            emp_reg.empdept_id=Department.objects.get(id=request.POST['emp_dept'])
+            if request.POST['emp_dfj']:
+                emp_reg.empdofj=request.POST['emp_dfj']
+            else:
+                emp_reg.empdofj=emp_reg.empdofj
+            emp_reg.empdesignation=request.POST['emp_desig'].upper()
+            emp_reg.empidreg=request.POST['emp_id'].upper()
+            emp_reg.empconfirmsalary=int(request.POST['emp_sal'])
+            emp_reg.empstate=request.POST['emp_state']
+            emp_reg.emp_status=1
+            emp_reg.emp_salary_status=1
+
+            emp_reg.save()
+            emp_reg=EmployeeRegister.objects.get(id=pk)
+
+            success_msg='Success! Employee details edited.'
+            content={'account_DHB':account_DHB,
+                    'emp_reg':emp_reg,
+                     'depart':depart,
+                    'acc_state':acc_state,'success_msg':success_msg}
+        else:
+
+    
+            content={'account_DHB':account_DHB,
+                        'emp_reg':emp_reg,
+                        'depart':depart,
+                        'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/Employee_Register_edit.html',content)
+        
+    else:
+        return redirect('/')
 
 # ======================== All View section =====================================
 
@@ -1922,7 +2014,7 @@ def paymentfull_view(request):
 
 
 
-#   Account Section 
+# Account Section-------------- 
 
 def accounts(request):
     if 'uid' in request.session:
@@ -1978,6 +2070,215 @@ def accounts(request):
     else:
         return redirect('/')
     
+
+
+# Income Expence ----------------------
+def income_expence_form(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+
+        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
+        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+
+        exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+
+        if request.method =='POST':
+
+           
+            if request.POST['exincom']:
+                ex_in=IncomeExpence.objects.get(id=int(request.POST['exincom']))
+                ex_in.exin_head_name=request.POST['exin_head_name'].upper()
+
+                if request.POST['exin_date']:
+                    ex_in.exin_date=request.POST['exin_date']
+                else:
+                    request.POST['exin_date']=request.POST['exin_date']
+
+                ex_in.exin_amount=request.POST['exin_amt']
+                ex_in.exin_dese=request.POST['exin_dese']
+                ex_in.exin_typ=request.POST['exin_type']
+                ex_in.exin_status=1
+                ex_in.exin_state=acc_state
+                ex_in.save()
+                success_msg='Success! One Record edit successfully.'
+                exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('exin_date')
+            
+            else:
+
+                ex_in=IncomeExpence()
+                ex_in.exin_head_name=request.POST['exin_head_name'].upper()
+                ex_in.exin_date=request.POST['exin_date']
+                ex_in.exin_amount=request.POST['exin_amt']
+                ex_in.exin_dese=request.POST['exin_dese']
+                ex_in.exin_typ=request.POST['exin_type']
+                ex_in.exin_status=1
+                ex_in.exin_state=acc_state
+                ex_in.save()
+                success_msg='Success! One Record add successfully.'
+            
+            exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
+            exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+
+            exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
+            exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+
+            content={'account_DHB':account_DHB,
+                                'exp_income':exp_income,
+                                'exp_income_count':exp_income_count,
+                                'success_msg':success_msg,
+                                'exp_income_sum':exp_income_sum,
+                                'exp_expence_sum':exp_expence_sum,
+                                'acc_state':acc_state}
+        else:
+             content={'account_DHB':account_DHB,
+                                'exp_income':exp_income,
+                                'exp_income_count':exp_income_count,
+                                'exp_income_sum':exp_income_sum,
+                                'exp_expence_sum':exp_expence_sum,
+                                'acc_state':acc_state}
+
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/income_expence.html',content)
+       
+    else:
+        return redirect('/')
+    
+    
+def income_expence_edit(request,inex_edit):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
+        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+
+        exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+
+        exp_income_edit=IncomeExpence.objects.get(id=inex_edit)
+
+        content={'account_DHB':account_DHB,
+                            'exp_income':exp_income,
+                            'exp_income_count':exp_income_count,
+                            'exp_income_edit':exp_income_edit,
+                            'exp_income_sum':exp_income_sum,
+                            'exp_expence_sum':exp_expence_sum,
+                            'acc_state':acc_state}
+
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/income_expence.html',content)
+
+    else:
+        return redirect('/')
+    
+
+
+def income_expence_delete(request,incom_delete):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+        
+       
+        ex_in=IncomeExpence.objects.get(id=incom_delete)  
+        ex_in.delete()
+        error_msg='Opps! Record removed.'
+        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
+        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+
+        exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+
+        content={'account_DHB':account_DHB,
+                            'exp_income':exp_income,
+                            'exp_income_count':exp_income_count,
+                            'error_msg':error_msg,
+                            'exp_income_sum':exp_income_sum,
+                            'exp_expence_sum':exp_expence_sum,
+                            'acc_state':acc_state}
+
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/income_expence.html',content)
+
+    else:
+        return redirect('/')
+
+def income_expence_search(request):
+     if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+
+        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
+        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+
+        if request.method =='POST':
+
+            sdate=request.POST['start_date']
+            edate=request.POST['end_date']
+
+            if sdate and edate:
+        
+
+                exp_income=IncomeExpence.objects.filter(exin_date__gte=sdate,exin_date__lte=edate,exin_status=1,exin_state=acc_state).order_by('exin_date')
+
+                exp_income_sum=IncomeExpence.objects.filter(exin_date__gte=sdate,exin_date__lte=edate,exin_status=1,exin_state=acc_state,exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
+                exp_expence_sum=IncomeExpence.objects.filter(exin_date__gte=sdate,exin_date__lte=edate,exin_status=1,exin_state=acc_state,exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+                
+                exp_income_count=IncomeExpence.objects.filter(exin_date__gte=sdate,exin_date__lte=edate,exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+
+                content={'account_DHB':account_DHB,
+                                    'exp_income':exp_income,
+                                    'exp_income_count':exp_income_count,
+                                    'exp_income_sum':exp_income_sum,
+                                    'exp_expence_sum':exp_expence_sum,
+                                    'acc_state':acc_state}
+                common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+                content = {**content, **common_accdash_data}
+                return render(request,'account/income_expence.html',content)
+            else:
+                return redirect('income_expence_form')
+
+
+
+# Fixed Expence------------------
 def fixed_expence(request):
     if 'uid' in request.session:
         if request.session.has_key('uid'):
@@ -1985,61 +2286,75 @@ def fixed_expence(request):
         else:
             return redirect('/')
         
-        fixededit=FixedExpence.objects.all()
 
-        if fixededit:
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
 
-            fixededit=None   
+        fixedexp=FixedExpence.objects.filter(fixed_state=acc_state)
+        fixedexp_count=FixedExpence.objects.filter(fixed_state=acc_state).count()
 
-        fixedexp=FixedExpence.objects.all()
-        content=''
-        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
-    else:
-        return redirect('/')
+        if request.method =='POST':
 
+            if request.POST['fixed_id']:
 
-def fixed_expence_add(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
+                fixededit=FixedExpence.objects.get(fixed_status=1,id=int(request.POST['fixed_id']))
+                fixededit.fixed_head_name=request.POST['fixed_head_name'].upper()
+               
+                fixededit.fixed_amount=request.POST['fixed_amt']
+                fixededit.fixed_dese=request.POST['fixed_dese']
+                fixededit.fixed_status=1
+                fixededit.fixed_state=acc_state
+             
+                if request.POST['fixed_date']:
+                    fixededit.fixed_date=request.POST['fixed_date']
+                else:
+                    fixededit.fixed_date=fixedexp_reg.fixed_date
+
+                fixededit.save()
+                success_msg='Success ! Fixed expence edit successfuly.'
+
+                fixedexp=FixedExpence.objects.filter(fixed_state=acc_state)
+                fixedexp_count=FixedExpence.objects.filter(fixed_state=acc_state).count()
         
-        if request.POST['fixed_id']:
 
-            fixededit=FixedExpence.objects.get(fixed_status=1,id=int(request.POST['fixed_id']))
-            fixededit.fixed_head_name=request.POST.get('fixed_head_name').upper()
-
-            if request.POST.get('fixed_date'):
-                fixededit.fixed_date=request.POST.get('fixed_date')
             else:
-                fixededit.fixed_date= fixededit.fixed_date
-
-            fixededit.fixed_amount=request.POST.get('fixed_amt')
-            fixededit.fixed_dese=request.POST.get('fixed_dese')
-            msg=3
-            fixededit.save()
-
-        else:
-        
-            if request.method =='POST':
+    
                 fixedexp_reg=FixedExpence()
                 fixedexp_reg.fixed_head_name=request.POST['fixed_head_name'].upper()
                 fixedexp_reg.fixed_date=request.POST['fixed_date']
                 fixedexp_reg.fixed_amount=request.POST['fixed_amt']
                 fixedexp_reg.fixed_dese=request.POST['fixed_dese']
                 fixedexp_reg.fixed_status=1
+                fixedexp_reg.fixed_state=acc_state
                 fixedexp_reg.save()
-                msg=1
+                success_msg='Success ! Fixed expence add successfuly.'
 
-        fixededit=''
+                fixedexp=FixedExpence.objects.filter(fixed_state=acc_state)
+                fixedexp_count=FixedExpence.objects.filter(fixed_state=acc_state).count()
+
+            content={'account_DHB':account_DHB,
+                            'fixedexp':fixedexp,
+                            'fixedexp_count':fixedexp_count,
+                            'success_msg':success_msg,
+                            'acc_state':acc_state}
+        else:
+
+            content={'account_DHB':account_DHB,
+                            'fixedexp':fixedexp,
+                            'fixedexp_count':fixedexp_count,
+                            'acc_state':acc_state}
+
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/fixed_expence.html',content)
        
-        fixedexp=FixedExpence.objects.all()
-        content={'msg':msg}
-        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+       
     else:
         return redirect('/')
-    
+
 
 def fixed_edit(request,pk):
     
@@ -2048,13 +2363,31 @@ def fixed_edit(request,pk):
             uid = request.session['uid']
         else:
             return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+
+        fixedexp=FixedExpence.objects.filter(fixed_state=acc_state)
+        fixedexp_count=FixedExpence.objects.filter(fixed_state=acc_state).count()
+
         fixededit=FixedExpence.objects.get(id=pk)
-        fixedexp=FixedExpence.objects.all()
-        content=''
-        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
-    
+        content={'account_DHB':account_DHB,
+                        'fixedexp':fixedexp,
+                        'fixedexp_count':fixedexp_count,
+                        'fixededit':fixededit,
+                        'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/fixed_expence.html',content)
+       
+       
     else:
         return redirect('/')
+    
 
 def fixed_delete(request,pk):
     if 'uid' in request.session:
@@ -2062,40 +2395,76 @@ def fixed_delete(request,pk):
             uid = request.session['uid']
         else:
             return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+
         fixededit=FixedExpence.objects.get(fixed_status=1,id=pk)
         fixededit.delete()
-        fixedexp=FixedExpence.objects.all()
-        fixededit=''
-        msg=2
-        content={'msg':msg}
-        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+        error_msg='Opps! Fixed Expence removed.'
+       
+      
+        fixedexp=FixedExpence.objects.filter(fixed_state=acc_state)
+        fixedexp_count=FixedExpence.objects.filter(fixed_state=acc_state).count()
+
+      
+        content={'account_DHB':account_DHB,
+                        'fixedexp':fixedexp,
+                        'fixedexp_count':fixedexp_count,
+                        'error_msg':error_msg,
+                        'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/fixed_expence.html',content)
         
     else:
         return redirect('/')
     
-
-    
+   
 def fixed_change_status(request,pk):
     if 'uid' in request.session:
         if request.session.has_key('uid'):
             uid = request.session['uid']
         else:
             return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
         fixededit=FixedExpence.objects.get(id=pk)
         if fixededit.fixed_status == 1:
             fixededit.fixed_status=0
+            success_msg= 'Deactivated fixed expence'
         else:
              fixededit.fixed_status=1
+             success_msg= 'Activated fixed expence'
         fixededit.save()
-        fixedexp=FixedExpence.objects.all()
-        content=''
-        fixededit=''
-        return render(request,'account/fixed_expence.html',{'fixedexp':fixedexp,'content':content,'fixededit':fixededit})
+
+        fixedexp=FixedExpence.objects.filter(fixed_state=acc_state)
+        fixedexp_count=FixedExpence.objects.filter(fixed_state=acc_state).count()
+
+      
+        content={'account_DHB':account_DHB,
+                        'fixedexp':fixedexp,
+                        'fixedexp_count':fixedexp_count,
+                        'success_msg':success_msg,
+                        'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/fixed_expence.html',content)
         
     else:
         return redirect('/')
     
 
+# state Holiday -------------------
 def company_holoidays(request):
 
     if 'uid' in request.session:
@@ -2104,19 +2473,15 @@ def company_holoidays(request):
         else:
             return redirect('/')
         
-        comp_holidays=Company_Holidays.objects.all()
-        return render(request,'account/company_holidays.html',{'comp_holidays':comp_holidays})
-    else:
-        return redirect('/')
-    
 
-def company_holiday_add(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        if request.method =='POST':
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+
+        comp_holidays=Company_Holidays.objects.filter(ch_state=acc_state).order_by('-ch_sdate')
+        comp_holidays_count=Company_Holidays.objects.filter(ch_state=acc_state).count()
+
+        if request.method == 'POST':
             
             
             if request.POST.get('cmphid'):
@@ -2124,6 +2489,7 @@ def company_holiday_add(request):
                 comp_holidays_edit.ch_sdate=request.POST['cmphsdate']
                 comp_holidays_edit.ch_edate=request.POST['cmphedate']
                 comp_holidays_edit.ch_no=request.POST['cmphno']
+                comp_holidays_edit.ch_state=acc_state
 
                 e = datetime.strptime(request.POST['cmphedate'], '%Y-%m-%d')
                 s = datetime.strptime(request.POST['cmphsdate'], '%Y-%m-%d')
@@ -2132,14 +2498,25 @@ def company_holiday_add(request):
                 comp_holidays_edit.ch_workno=int(month_days) - int(request.POST['cmphno'])
                
                 comp_holidays_edit.save()
-                msg=3
+                success_msg="Success! State Holiday edit Successfuly."
 
+                comp_holidays=Company_Holidays.objects.filter(ch_state=acc_state).order_by('-ch_sdate')
+                comp_holidays_count=Company_Holidays.objects.filter(ch_state=acc_state).count()
+
+                content={'account_DHB':account_DHB,
+                    
+                        'comp_holidays':comp_holidays,
+                        'comp_holidays_count':comp_holidays_count,
+                        'success_msg':success_msg,
+                        'acc_state':acc_state}
+                
             else:
-            
                 comp_holiday=Company_Holidays()
                 comp_holiday.ch_sdate=request.POST['cmphsdate']
                 comp_holiday.ch_edate=request.POST['cmphedate']
                 comp_holiday.ch_no=request.POST['cmphno']
+                comp_holiday.ch_state=acc_state
+
 
                 #company workdays Calculations
                 e = datetime.strptime(request.POST['cmphedate'], '%Y-%m-%d')
@@ -2147,14 +2524,35 @@ def company_holiday_add(request):
 
                 month_days = (e - s).days + 1
                 comp_holiday.ch_workno=int(month_days) - int(request.POST['cmphno'])
-            
+                
                 comp_holiday.save()
-                msg=1
-            comp_holidays=Company_Holidays.objects.all()
-        return render(request,'account/company_holidays.html',{'comp_holidays':comp_holidays,'msg':msg})
+                success_msg="Success! State Holiday Add Successfuly."
+
+                comp_holidays=Company_Holidays.objects.filter(ch_state=acc_state).order_by('-ch_sdate')
+                comp_holidays_count=Company_Holidays.objects.filter(ch_state=acc_state).count()
+
+                content={'account_DHB':account_DHB,
+                        
+                            'comp_holidays':comp_holidays,
+                            'comp_holidays_count':comp_holidays_count,
+                            'success_msg':success_msg,
+                            'acc_state':acc_state}
+
+  
+        else:
+
+            content={'account_DHB':account_DHB,
+                        'comp_holidays':comp_holidays,
+                        'comp_holidays_count':comp_holidays_count,
+                        'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/company_holidays.html',content)
     else:
         return redirect('/')
-
+    
 
 def company_holidy_edit(request,pk):
     if 'uid' in request.session:
@@ -2162,11 +2560,32 @@ def company_holidy_edit(request,pk):
             uid = request.session['uid']
         else:
             return redirect('/')
-        comp_holidays=Company_Holidays.objects.all()
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+        comp_holidays=Company_Holidays.objects.filter(ch_state=acc_state).order_by('-ch_sdate')
+        comp_holidays_count=Company_Holidays.objects.filter(ch_state=acc_state).count()
+
+        
+
         comp_holidays_edit=Company_Holidays.objects.get(id=pk)
-        return render(request,'account/company_holidays.html',{'comp_holidays':comp_holidays,'comp_holidays_edit':comp_holidays_edit})
+
+        content={'account_DHB':account_DHB,
+                        'comp_holidays':comp_holidays,
+                        'comp_holidays_count':comp_holidays_count,
+                        'comp_holidays_edit':comp_holidays_edit,
+                        'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/company_holidays.html',content)
+       
     else:
         return redirect('/')
+
 
 
 def recipt_data(request):
@@ -2254,6 +2673,10 @@ def salary_expence(request):
         else:
             return redirect('/')
         
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
@@ -2283,13 +2706,18 @@ def salary_expence_form(request):
         else:
             return redirect('/')
         
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+        
         months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
         years = [(str(i), str(i)) for i in range(2021, 2031)]
         
         
         current_year = datetime.now().year
 
-        content={'months':months,'years':years}
+       
         cur_date=datetime.now().date()
         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
@@ -2298,10 +2726,24 @@ def salary_expence_form(request):
         emp_salary_all=EmployeeSalary.objects.filter(emp_paidstatus=1)
 
         emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
-        emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
+        emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=acc_state.state_name).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
+        emp_reg_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=acc_state.state_name).exclude(id__in=emp_salary.values_list('empreg_id', flat=True)).count()
 
-        return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,
-                            'emp_salary':emp_salary,'emp_salary_all':emp_salary_all,'content':content,'current_year':current_year})
+
+        content={'account_DHB':account_DHB,
+                    'months':months,'years':years,
+                    'emp_reg':emp_reg,
+                    'emp_salary':emp_salary,
+                    'emp_salary_all':emp_salary_all,
+                    'current_year':current_year,
+                    'emp_reg_count':emp_reg_count,
+                    'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/salary_expence_form.html',content)
+       
     else:
         return redirect('/')
     
@@ -2314,6 +2756,10 @@ def employee_pending_salary(request):
         else:
             return redirect('/')
         
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
        
         
         if request.method =='POST': 
@@ -2329,8 +2775,21 @@ def employee_pending_salary(request):
             my= m + ' ' + request.POST['empsalary_year']
             
             emp_sal=EmployeeSalary.objects.filter(empsalary_month=my)
-            emp_reg=EmployeeRegister.objects.filter(empdofj__lt=startdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_sal.values_list('empreg_id', flat=True))
-            return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,'content':content})
+            emp_reg=EmployeeRegister.objects.filter(empdofj__lt=startdate,emp_status=1,emp_salary_status=1,empstate=acc_state.state_name).exclude(id__in=emp_sal.values_list('empreg_id', flat=True))
+            emp_reg_count=EmployeeRegister.objects.filter(empdofj__lt=startdate,emp_status=1,emp_salary_status=1,empstate=acc_state.state_name).exclude(id__in=emp_sal.values_list('empreg_id', flat=True)).count()
+            
+            content={'account_DHB':account_DHB,
+                    'months':months,'years':years,
+                    'emp_reg':emp_reg,
+                    'current_year':current_year,
+                    'emp_reg_count':emp_reg_count,
+                    'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/salary_expence_form.html',content)
+
     else:
             return redirect('/')
 
@@ -2342,7 +2801,11 @@ def salary_expence_add(request,pk):
             uid = request.session['uid']
         else:
             return redirect('/')
+        
 
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
         
         months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
         years = [(str(i), str(i)) for i in range(2021, 2031)]
@@ -2357,17 +2820,28 @@ def salary_expence_add(request,pk):
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
         emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
 
-        content={'months':months,'years':years}
+       
 
         emp_reg_edit=EmployeeRegister.objects.get(emp_status=1,id=pk)
-        # emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
-        # emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
+    
+        emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=acc_state.state_name).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
+        emp_reg_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=acc_state.state_name).exclude(id__in=emp_salary.values_list('empreg_id', flat=True)).count()
 
-        emp_salary_all=EmployeeSalary.objects.filter(emp_paidstatus=1)
-
-
-        return render(request,'account/salary_expence_form.html',{'emp_reg_edit':emp_reg_edit,
-                                'current_year':current_year,'emp_salary':emp_salary,'content':content,'emp_salary_all':emp_salary_all})
+        content={'account_DHB':account_DHB,
+                    'months':months,'years':years,
+                    'emp_reg':emp_reg,
+                    'emp_salary':emp_salary,
+                    'emp_reg_edit':emp_reg_edit,
+                    'current_year':current_year,
+                    'emp_reg_count':emp_reg_count,
+                    'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/salary_expence_form.html',content)
+        
     else:
         return redirect('/')
     
@@ -2379,6 +2853,12 @@ def employee_salary_save(request):
             uid = request.session['uid']
         else:
             return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+    
         
         months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
         years = [(str(i), str(i)) for i in range(2021, 2031)]
@@ -2393,6 +2873,10 @@ def employee_salary_save(request):
         
         if request.method =='POST':
 
+            if request.POST['Emp_regid'] == '':
+
+               return redirect('salary_expence_form')
+            
             emp_reg=EmployeeRegister.objects.get(id=request.POST['Emp_regid']) # Get the employee details
 
             # Here calculating the working days of selected month
@@ -2412,7 +2896,7 @@ def employee_salary_save(request):
 
             try:
 
-                comp_holiday=Company_Holidays.objects.get(ch_sdate__gte=startdate,ch_edate__lte=enddate)
+                comp_holiday=Company_Holidays.objects.get(ch_sdate__gte=startdate,ch_edate__lte=enddate,ch_state=acc_state.id)
                 work_days=int(month_days) - int(comp_holiday.ch_no) 
                 leavefull=int(request.POST['leave_full'])
                 leavehalf=int(request.POST['leave_half'])
@@ -2447,7 +2931,7 @@ def employee_salary_save(request):
                 if EmployeeSalary.objects.filter(empreg_id=emp_reg,empsalary_month=my).exists():
                     
                     print('Salary Already Payed')
-                    msg=3
+                    success_msg='Success! Salary Already Payed.'
                 
                 else:
 
@@ -2462,8 +2946,12 @@ def employee_salary_save(request):
                     m = date(2000, int(request.POST['empsalary_month']), 1).strftime('%B')
                     
                     emp_salary.empsalary_month= m + ' ' + request.POST['empsalary_year']
+                    
+                    if request.POST['empsalary_date']:
+                        emp_salary.empslaray_date=request.POST['empsalary_date']
+                    else:
+                        emp_salary.empslaray_date=cur_date
 
-                    emp_salary.empslaray_date=request.POST['empsalary_date']
                     emp_salary.emppaid_amt= int(net_salary)
                     emp_salary.empfull_leave=leavefull
                     emp_salary.emphalf_leave=leavehalf
@@ -2475,13 +2963,16 @@ def employee_salary_save(request):
                     emp_salary.emp_other_damt=any_dother
                     emp_salary.emp_paidstatus=1
                     emp_salary.save()
-                    msg=1
+                    success_msg='Sucees! Salary Payment add successfuly.'
 
                     # Salay Expence adding to IncomeExpence Table
                     if EmployeeSalary.objects.exists():
-                    
+                        
+                        if request.POST['empsalary_date']:
 
-                        pay_date = datetime.strptime(request.POST['empsalary_date'], '%Y-%m-%d').date()
+                            pay_date = datetime.strptime(request.POST['empsalary_date'], '%Y-%m-%d').date()
+                        else:
+                           pay_date= cur_date
 
                         print(pay_date)
 
@@ -2491,15 +2982,16 @@ def employee_salary_save(request):
                         last_daymonth = payfr_date.replace(day=28) + timedelta(days=4)
                         payto_date = last_daymonth - timedelta(days=last_daymonth.day)
 
-                        print('Pay date:',payfr_date)
-                        print('Pay End Date:',payto_date)
+                        print(' start date:',payfr_date)
+                        print(' End Date:',payto_date)
 
                        
                     
                         try:
-                            inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=payfr_date,exin_date__lte=payto_date).first()
-                            sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=payfr_date,empslaray_date__lte=payto_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-                            #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
+                            inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=payfr_date,exin_date__lte=payto_date,exin_state=acc_state.id).first()
+                            emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date,empstate=acc_state.state_name)
+                            sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=payfr_date,empslaray_date__lte=payto_date,emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                            
                             
                             if sal_exp: 
 
@@ -2510,6 +3002,8 @@ def employee_salary_save(request):
                                     inexp.exin_typ=2
                                     inexp.exin_date=payto_date
                                     inexp.exin_status=1
+                                    inexp.exin_state=acc_state
+                                    print('salary:',sal_exp)
                                     inexp.save()
                                                 
                                 else:
@@ -2520,6 +3014,8 @@ def employee_salary_save(request):
                                     incexp.exin_typ=2
                                     incexp.exin_date=payto_date
                                     incexp.exin_status=1
+                                    incexp.exin_state=acc_state
+                                    print('salary:',sal_exp)
                                     incexp.save()
                             else:
                                 print('No Data')
@@ -2528,21 +3024,28 @@ def employee_salary_save(request):
                                 print('No Data')
 
             except Company_Holidays.DoesNotExist:
-                msg=2
+                success_msg='Company Holiday not found add it.'
 
+           
             emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+            emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=acc_state.state_name).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
+            emp_reg_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=acc_state.state_name).exclude(id__in=emp_salary.values_list('empreg_id', flat=True)).count()
+            
+           
+            content={'account_DHB':account_DHB,
+                    'months':months,'years':years,
+                    'emp_reg':emp_reg,
+                    'emp_salary':emp_salary,
+                    'current_year':current_year,
+                    'emp_reg_count':emp_reg_count,
+                    'acc_state':acc_state,'success_msg':success_msg}
+            
+            common_accdash_data = account_nav_data(request) # calling for navbar datas  
+            
+            content = {**content, **common_accdash_data}
+            return render(request,'account/salary_expence_form.html',content)
 
             
-
-            content={'months':months,'years':years} 
-
-            emp_salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
-            emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
-            
-            emp_salary_all=EmployeeSalary.objects.filter(emp_paidstatus=1)
-
-            return render(request,'account/salary_expence_form.html',{'emp_reg':emp_reg,'current_year':current_year,
-                                'msg':msg,'content':content,'emp_salary':emp_salary,'emp_salary_all':emp_salary_all})
     else:
         return redirect('/')
     
@@ -2550,13 +3053,18 @@ def employee_salary_save(request):
 def salary_calculate(request):
     if 'uid' in request.session:
         if request.session.has_key('uid'):
-           uid = request.session['uid']
+            uid = request.session['uid']
         else:
-             return redirect('/')
+            return redirect('/')
         
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+    
         emp_reg=EmployeeRegister.objects.get(id=int(request.GET.get('persid'))) # Get the employee details
 
-            # Here calculating the working days of selected month
+        # Here calculating the working days of selected month
 
         mon =int(request.GET.get('sm'))
         ye = int(request.GET.get('sy'))
@@ -2574,6 +3082,8 @@ def salary_calculate(request):
         try:
 
                 comp_holiday=Company_Holidays.objects.get(ch_sdate__gte=startdate,ch_edate__lte=enddate)
+              
+              
                 work_days=int(month_days) - int(comp_holiday.ch_no) 
                 leavefull=int(request.GET.get('lf'))
                 leavehalf=int(request.GET.get('lh'))
@@ -2601,18 +3111,22 @@ def salary_calculate(request):
                 net_salary=int(conf_salary) - int(full_day_leave_amt + half_day_leave_amt + w_delay_amt)
                 net_salary=int(net_salary) + int(any_other)
                 net_salary=int(net_salary) - int(any_dother)
-                print(net_salary)
-                calc=1
-                return render(request,'account/result.html',{'net_salary':net_salary,'calc':calc})
-            
                 
+               
+                # Create a dictionary with the data you want to return
+                response_data = {'net_salary': net_salary}
+
+                # Return the response as a JSON object
+                return JsonResponse(response_data, safe=False)
                 
         except Company_Holidays.DoesNotExist:
-                msg=2
-                return render(request,'account/result.html',{'msg':msg})
+               net_salary='Sorry ! Company holiday not found  '
+               # Create a dictionary with the data you want to return
+               response_data = {'net_salary': net_salary}
 
-        
-
+                # Return the response as a JSON object
+               return JsonResponse(response_data, safe=False)
+                
     else:
         return redirect('/')
     
@@ -2876,11 +3390,45 @@ def all_salary_expence(request):
 
     if 'uid' in request.session:
         if request.session.has_key('uid'):
-           uid = request.session['uid']
+            uid = request.session['uid']
         else:
-             return redirect('/')
-        salary=EmployeeSalary.objects.filter(emp_paidstatus=1).order_by('empslaray_date')
-        return render(request,'account/all_salary_expence.html',{'salary':salary})
+            return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+        
+        emp_reg= EmployeeRegister.objects.filter(empstate=acc_state.state_name)
+        salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).order_by('-empslaray_date')
+        salary_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).count()
+        salary_sum=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+
+        if request.method == 'POST':
+
+            sdate=request.POST['start_date']
+            edate=request.POST['end_date']
+
+            if sdate and edate:
+
+                salary=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=edate,emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).order_by('-empslaray_date')
+                salary_count=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=edate,emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).count()
+                salary_sum=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=edate,emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+
+
+                
+            else:
+                return redirect('all_salary_expence')
+
+        content={'account_DHB':account_DHB,
+                                'salary':salary,
+                                'salary_count':salary_count,
+                                'salary_sum':salary_sum,
+                                'acc_state':acc_state}
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/all_salary_expence.html',content)
 
     else:
         return redirect('/')
@@ -2901,127 +3449,7 @@ def Search_salary_payments(request):
     else:
         return redirect('/')
 
-# def remaining_salary_expence(request):
-     
-#     if 'uid' in request.session:
-#         if request.session.has_key('uid'):
-#             uid = request.session['uid']
-#         else:
-#             return redirect('/')
-        
-#         current_year = datetime.now().year
 
-       
-#         cur_date=datetime.now().date()
-#         fr_date=datetime(cur_date.year, cur_date.month, 1).date()
-#         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
-#         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
-
-        
-#         emp_salary=EmployeeSalary.objects.filter( Q(empslaray_date__lt=fr_date) | Q(empslaray_date__gte=fr_date,empslaray_date__lte=to_date))
-#         print(emp_salary)
-#         emp_reg=EmployeeRegister.objects.filter(empdofj__lt=fr_date).exclude(id__in=emp_salary.values_list('empreg_id', flat=True))
-#         print(emp_reg)
-    
-#         #emp_reg=EmployeeRegister.objects.filter(emp_status=1)
-
-#         return render(request,'account/Remaining_salary_Payments.html',{'emp_reg':emp_reg,
-#                             'current_year':current_year,'emp_salary':emp_salary})
-        
-#     else:
-#         return redirect('/')
-
-
-def income_expence_form(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('exin_date')
-        return render(request,'account/income_expence.html',{'exp_income':exp_income})
-    else:
-        return redirect('/')
-    
-    
-def income_expence_edit(request,inex_edit):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        exp_income=IncomeExpence.objects.get(id=inex_edit)
-        return render(request,'account/income_expence_edit.html',{'exp_income':exp_income})
-    else:
-        return redirect('/')
-    
-
-def income_expence_edit_save(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        if request.method =='POST':
-            incom =int(request.POST['exincom'])
-            ex_in=IncomeExpence.objects.get(id=incom)
-            ex_in.exin_head_name=request.POST['exin_head_name'].upper()
-            ex_in.exin_date=request.POST['exin_date']
-            ex_in.exin_amount=request.POST['exin_amt']
-            ex_in.exin_dese=request.POST['exin_dese']
-            ex_in.exin_typ=request.POST['exin_type']
-            ex_in.exin_status=1
-            ex_in.save()
-            msg=1
-            exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('exin_date')
-
-        return render(request,'account/income_expence.html',{'msg':msg,'exp_income':exp_income})
-    else:
-        return redirect('/')
-
-    
-
-def income_expence_add(request):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        if request.method =='POST':
-            ex_in=IncomeExpence()
-            ex_in.exin_head_name=request.POST['exin_head_name'].upper()
-            ex_in.exin_date=request.POST['exin_date']
-            ex_in.exin_amount=request.POST['exin_amt']
-            ex_in.exin_dese=request.POST['exin_dese']
-            ex_in.exin_typ=request.POST['exin_type']
-            ex_in.exin_status=1
-            ex_in.save()
-            msg=1
-            exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('exin_date')
-
-        return render(request,'account/income_expence.html',{'msg':msg,'exp_income':exp_income})
-    else:
-        return redirect('/')
-
-    
-def income_expence_delete(request,incom_delete):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-       
-        ex_in=IncomeExpence.objects.get(id=incom_delete)  
-        ex_in.delete()
-        msg=2
-        exp_income=IncomeExpence.objects.filter(exin_status=1).order_by('exin_date')
-
-        return render(request,'account/income_expence.html',{'msg':msg,'exp_income':exp_income})
-    else:
-        return redirect('/')
 
 
 
@@ -3079,19 +3507,7 @@ def employee_register_Details(request):
         return redirect('/')
 
 
-def emp_reg_edit(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        emp_reg=EmployeeRegister.objects.get(id=pk)
-        dept= Department.objects.filter(dpt_Status=1)
-        return render(request,'account/Employee_Register_edit.html',{'emp_reg':emp_reg,'dept':dept})
-        
-    else:
-        return redirect('/')
+
     
 
 def employee_register_Details_edit(request,pk):
@@ -3211,20 +3627,7 @@ def emp_salary_deactive(request,pk):
         return redirect('/')
     
 
-def emp_reg_delete(request,pk):
 
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        emp_reg=EmployeeRegister.objects.get(id=pk)
-        name=emp_reg.empfullName
-        emp_reg.delete()
-        messages.info(request, name + ' All Details Permanently')
-        return redirect('emp_Register_form')
-    else:
-        return redirect('/')
     
 
 #Search Data using From Date and To Date 
@@ -3289,28 +3692,44 @@ def employee_salary_details(request,pk):
             uid = request.session['uid']
         else:
             return redirect('/')
+        
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+
         emp_reg_edit=EmployeeRegister.objects.get(id=pk)
-        salary=EmployeeSalary.objects.filter(empreg_id=pk)
-        return render(request,'account/employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit})
+        salary=EmployeeSalary.objects.filter(empreg_id=pk).order_by('-empslaray_date')
+        salary_count=EmployeeSalary.objects.filter(empreg_id=pk).count()
+
+        if request.method =='POST':
+            if request.POST['start_date'] and request.POST['end_date']:
+                emp_reg_edit=EmployeeRegister.objects.get(id=pk)
+                salary=EmployeeSalary.objects.filter(empreg_id=pk,empslaray_date__gte=request.POST['start_date'],empslaray_date__lte=request.POST['end_date']).order_by('-empslaray_date')
+                salary_count=EmployeeSalary.objects.filter(empreg_id=pk,empslaray_date__gte=request.POST['start_date'],empslaray_date__lte=request.POST['end_date']).count()
+            else:
+                emp_reg_edit=EmployeeRegister.objects.get(id=pk)
+                salary=EmployeeSalary.objects.filter(empreg_id=pk).order_by('-empslaray_date')
+                salary_count=EmployeeSalary.objects.filter(empreg_id=pk).count()
+
+
+
+        content={'account_DHB':account_DHB,
+                    'emp_reg_edit':emp_reg_edit,
+                    'salary':salary,
+                    'salary_count':salary_count,
+                    'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+        return render(request,'account/employee_salary_details.html',content)
+        
     else:
         return redirect('/')
     
 
-def employee_salary_payments_search(request,pk):
 
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        if request.method =='POST':
-            emp_reg_edit=EmployeeRegister.objects.get(id=pk)
-            salary=EmployeeSalary.objects.filter(empreg_id=pk,empslaray_date__gte=request.POST['empfr_data'],empslaray_date__lte=request.POST['empto_date'])
-
-        return render(request,'account/employee_salary_details.html',{'salary':salary,'emp_reg_edit':emp_reg_edit})
-    else:
-        return redirect('/')
     
 
 

@@ -3,485 +3,904 @@
 {% block body %}
 
 
+ <!--=========================== ACCOUNT OJT PAYMENT ADD  ========================-->
 
-<style>
-#search-box
-{
-    padding: 1em;
-    background: #fafafa;
-    padding-top: 2em;
-}
-#search-box h5{
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-/*Register Box Register-details  Style */
-
-    #register-box .contaier-fluid
-    {
-        display: grid;
-        grid-template-columns: 1fr 2.2fr;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-       
-       
-    }
-    #register-details thead,  #register-details tbody
-    {
-        font-size: 0.91em;
-    }
-  
-    .register-details
-    {
-       
-        background: #ffff;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-      
-       
-    }
-
-    .register-details h4, .register-details-table h4{
-      
-        margin-top: 1.1em;
-        font-size: 1.35em;
-        margin-left: 0.40em;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color:rgb(38, 17, 63);
-       
-        
-    }
-    #emp_details
-    {
-        padding:1.5em 1em;
-        font-size: 0.92em;
-        line-height: 2.5em;
-        margin-top: 1.3em;
-        border: none;
-        text-align: center;
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-    }
-    #emp_details h5
-    {
-        color: #060654;
-        font-weight: 600;
-    }
-    #emp_details span
-    {
-        margin-left: 0.20em;
-        font-weight: 600;
-    }
-    .register-details .line,  .register-details-table .line
-    {
-        width: 60px;
-        height: 3px;
-        border-bottom: 3px solid #000;
-        margin-left: 0.60em;
-
-    }
-
-    /* Alert box */
-
-    .register-details .message-bx,  .register-details .message-bx-confirm
-    {
-       
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details .message-bx
-    {
-        background: #f0ea4a;
-        height: 8vh;
-        color: #2c2a2a;
-    }
-    .register-details .message-bx-confirm
-    {
-        background: #6fc146;
-    }
-  
-    .register-details .message-bx-delete
-    {
-        background: #f7684c;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em;
-       
-    }
-    .register-details form{
-        padding:0.50em 1em;
-        background: #fafafa;
-    }
-    .register-details form .input-group-box
-    {
-        margin-top: 1.5em;
-    }
-    .input-group-box label
-    {
-        width: 35%;
-        font-size: 0.86em;
-        font-weight: 600;
-        padding: 0.40em;
-    }
-    .input-group-box input, select{
-      width: 55%;
-      padding: 0.20em;
-      border: 1px solid #828181;
-      font-size: 0.90em;
-     
-    }
-    .input-group-box input:focus, select:focus
-    {
-        border:0.01rem solid #111158;
-        outline: none;
-        border-radius: 3px;
-    }
-    .input-group-box select option{
-        font-size: 0.90em;
-        padding: 1em 0em;
-    }
-    .submit_button
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 15vh;
-        background: #fafafa;
-        margin-top: 1em;
-        
-    }
-    .submit_button button
-    {
-        padding: 0.40em 1.4em;
-        font-weight: 600;
-        background: #261b52;
-        color: #ffff;
-        margin:none ;
-        border: none;
-        letter-spacing: 0.04em;
-        margin-right: 0.50em;
-    }
-    #register-details a
-    {
-        padding: 0em 0.40em;
-        font-size: 1.1em;
+ <div class="content-wrapper">
+    <button class="btn btn-primary btn-sm text-white mb-2 me-0" id="all-paymennts" onclick="showform()">All Salary Pending List</button>
     
-    }
-    #register-details .stus span{
-        font-size: 0.85em;
-    }
-    #register-details .edit
-    {
-        font-size: 0.95em;
-    }
-    #register-details .edit:nth-child(1)
-    {
-      
-        color: #1b126f; 
-    }
-    #register-details .check
-    {
-      
-        color: #3da309; 
-    }
-    #register-details .wating
-    {
-        color: #fff308;
-    }
-    #register-details .wating span
-    {
-        color: #d3c90d;
-        font-size: 0.85em;
-        font-weight: 600;
-    }
-    #register-details .notcheck
-    {
-        color: #ec0909;
-    }
-    #register-details .confirmbtn
-    {
-        font-size: 0.89em;
-        font-weight: 600;
-        border: none;
-        padding: 0.40em 0.80em;
-        background: #111158;
-        color: #ffff;
-    }
-    /* Media Query*/
-    @media(max-width:964px)
-    {
-        #register-box .contaier-fluid
-        {
-        grid-template-columns:repeat(1,1fr) ;
-        }
-        .register-details
-        {
-            height: auto;
-        }
-        
-    }
-    /*Register Box Register-details End Style */
-
-     /*Register Box Register-details Table Style */
-     .register-details-table .container
-     {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        height: 70vh;
-        margin-top: 1.4em;
-        padding-top:2em ;
-     }
-     #register-details
-     {
-        font-size: 0.90em;
-     }
-      /* Media Query*/
-    @media(max-width:964px)
-    {
-    
-        .register-details-table .container
-        {
-            height: auto;
-            overflow-x: scroll;
-          
-           
-        }
-        #register-details
-        {
-          width: 100%; 
-        }
-        .register-details-table 
-        {
-            overflow-x: scroll;
-        }
-    }
-</style>
-
-
-<main>
-    <div class="container-fulid" id="search-box">
-        <form action="{% url 'employee_pending_salary'  %}" method="post">
+    <div class="card payment-searchBox" id="payment-searchBox" >
+        <form action="{% url 'employee_pending_salary'  %}" class="card-body" method="post">
             {% csrf_token %}
-            <h5>Pendind Salary Payments</h5>
-            <div class="input-group-box">
+            <div class="d-sm-flex justify-content-between align-items-start">
+                <div>
+                    <h4 class="card-title card-title-dash">All Salary Pending List</h4>
+                    
+                </div>
+                <div>
+                    <span onclick="closeform()" class="text-danger"><i class="mdi mdi-close-circle-outline mdi-18px"></i></span>
+                </div>
+                
+            </div>
+            <div class="form-group ">
                 <label>Salary Month</label>
-                <select name="empsalary_month" id="sm" required>
+                <select name="empsalary_month" id="sm" class="form-control small-text" required>
                                 
-                    {% for value, label in content.months  %}
+                    {% for value, label in months  %}
                     <option value="{{ value }}">{{ label }}</option>
                     {% endfor %}
 
                 </select>
             </div>
         
-            <div class="input-group-box mt-2">
+            <div class="form-group ">
                 <label>Salary Year</label>
-                <select name="empsalary_year" id="sy" >
+                <select name="empsalary_year" id="sy" class="form-control small-text" >
                     <option value="{{current_year}}">{{current_year}}</option>
-                    {% for value, label in content.years  %}
+                    {% for value, label in years  %}
                     <option value="{{ value }}">{{ label }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="submit_button">
+            <div class="d-flex justify-content-between align-items-center">
                
-                <button type="submit">Search</button>
+                <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0"><i class="mdi mdi-magnify "></i>&nbsp; Search </button>
+                <button type="reset" class="btn btn-danger btn-sm text-white mb-0 me-0"><i class="mdi mdi-refresh"></i>&nbsp; Clear</button>
             </div>
+            
         </form>
                         
     </div>
-    <section id="register-box">
-        <div class="contaier-fluid">
-            <div class="register-details">
-                <h4>Employeee Salary Expence Add</h4>
-                <div class="line"></div>
-                {% if msg == 1 %}
-                <div class="message-bx-confirm" id="msgbox">
-                    <p><i class="bi bi-check-all"></i>Employee Salary Added </p>
-                </div>
-                {% elif msg == 2 %}
-                <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-exclamation-triangle-fill"></i> Company Holidays are not added.  Please add at least one holiday  </p>
-                </div>
-                {% elif msg == 3 %}
-                <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-exclamation-triangle-fill"></i> Already Salary Given. </p>
-                </div>
-                
+
+
+    <div class="row">
+        <div class="col-sm-12">
+           
+            <div class="d-sm-flex align-items-center justify-content-start mb-2">
+            
+                {% if success_msg %}
+                    <div class="messageBox-container" id="message-container">
+                    
+                            <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                            <p class="text-center success-text">{{success_msg}}</p>
+                    </div>
+                {% elif error_msg %}
+                    <div class="messageBox-container" id="message-container">
+                            <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                            <p class="text-center error-text">{{error_msg}}</p>
+                    </div>
+              
                 {% endif %}
-
-                <!-- Register Form -->
-
-                <form action="{% url 'employee_salary_save'  %}" method="post">
-                    {% csrf_token %}
-                        {% if emp_reg_edit %}
-                        <div class="card" id="emp_details">
-                            <span><h5>{{emp_reg_edit.empfullName}}</h5></span>
-                                <b>ID: {{emp_reg_edit.empidreg}}</b>
-                            <span ><b>Date Of Joing:</b> {{emp_reg_edit.empdofj}}
-                        
-                            <b style="margin-left: 0.50em;">Confirmed Salary:</b>   {{emp_reg_edit.empconfirmsalary}}</span>
-                        </div>
-                        <input type="text" name="Emp_regid" id="emp_regid" value="{{emp_reg_edit.id}}" required hidden>
-                        {% endif %}
-                    
-                    <div class="line mt-4"></div>
-                    <div class="input-group-box">
-                        <label>Leaves</label>
-                        <input type="number" name="leave_full" id="lf" style="width: 28%;" value="0" min="0" placeholder="Full day" >
-                      
-                        <input type="number"  name="leave_half" id="lh" style="width: 26%;" value="0" min="0" placeholder="Half day" >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Work Delay</label>
-                        <input type="number" name="work_delay" id="wd" min="0" value="0" placeholder="Work delay count" >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Any Other Amount To Add</label>
-                        <input type="number" name="other_amt" id="otamt" min="0" value="0"  >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Any Other Deduction Amount</label>
-                        <input type="number" name="other_damt" id="otdamt" min="0" value="0"  >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Salary Month</label>
-                        <select name="empsalary_month" id="sam" required>
-                           
-                            {% for value, label in content.months  %}
-                            <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
-
-                        </select>
-                        <label>Salary Year</label>
-                        <select name="empsalary_year" id="say" >
-                            <!-- <option value="{{current_year}}">{{current_year}}</option> -->
-                            {% for value, label in content.years  %}
-                            <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Date Of Salary Given</label>
-                        <input type="date" name="empsalary_date" required>
-                    </div>
-                    <div class="input-group-box" id="results">
-                       
-                    </div>
-                    <div class="submit_button">
-                        <button type="button" id="salcal">Calculate Salary</button>
-                        <button type="submit">Save</button>
-                    </div>
-                    
-                </form>
+            
             </div>
+        </div>
+        <style></style>
+        <div class="col-sm-12">
+            <div class="row flex-grow">
+                <div class="col-sm-12 col-md-4 grid-margin stretch-card">
+                    <div class="card card-rounded" id="OJT-Add-Form">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <form action="{% url  'employee_salary_save' %}" class="forms-sample" method="post">
+                                        {% csrf_token %}
+                                            <div class="d-flex justify-content-start align-items-center">
+                                                <h4 class="card-title card-title-dash">Salary - Payment Add Form</h4>
+                                            
+                                            </div>
+                                            {% if emp_reg_edit %}
 
-            <div class="register-details-table">
-                <h4> Employeee  Details</h4>
-                <div class="line"></div>
-                <div class="container">
+                                            <div class="card card-rounded" id="emp_details">
 
-                    <table id="register-details" class="display" >
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th>Full Name</th>
-                                <th>Date Of Joing</th>
-                                <th>Department</th>
-                                <th>Designation</th>
-                                <th>Employee Id</th>
-                                <th>Confirmed Salary</th>
-                                <th>Current Salary </th>
-                               
-                                <!-- <th>Salary Status</th> --> 
+                                                <div class="card-body">
+                                                    <p class="card-subtitle card-subtitle-dash">Full Name : {{emp_reg_edit.empfullName}}</p>
+                                                    <p class="card-subtitle card-subtitle-dash">ID : {{emp_reg_edit.empidreg}} - &nbsp; DOF Join : {{emp_reg_edit.empdofj}}</p>
+                                                  
+                                                    <p class="card-subtitle card-subtitle-dash">Confirmed Salary :  {{emp_reg_edit.empconfirmsalary}}</p>
+                                                </div>
+                                                
+                                            </div>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for i in emp_reg %}
-                            <tr>
-                                <td>{{forloop.counter}} </td>
-                                <td> <a href="{% url 'salary_expence_add' i.id %}" class="#"> <i class="bi bi-pen-fill"></i>  </a></td>
-                                <td><a href="{% url 'employee_salary_details' i.id %}">{{i.empfullName}}</a></td>
-                                <td>{{i.empdofj}}</td>
+                                           
+                                            {% endif %}
+                                            <div class="form-group mt-3">
+                                            <label for="lf">Full Leaves</label>
+                                            <input type="number" class="form-control small-text"  name="leave_full" id="lf"  value="0" min="0" placeholder="Full Leaves" value="{{reg_dt.fullName}}"  >
+                                          
+                                            <input type="hidden" name="Emp_regid" id="emp_regid" value="{{emp_reg_edit.id}}" required >
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="lh">Half Leaves</label>
+                                                <input type="number" class="form-control small-text" name="leave_half" id="lh"  value="0" min="0"  required>
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="wd">Work Delay</label>
+                                                <input type="number" class="form-control small-text" name="work_delay" id="wd" min="0" value="0" required>
+                                            </div>
+            
+            
+                                            <div class="form-group ">
+                                                <label for="otamt">Any Other Amount To Add</label>
+                                                <input type="number" class="form-control small-text" name="other_amt" id="otamt" min="0" value="0" >
+                                            </div>
+                                            
+    
+                                            <div class="form-group ">
+                                                <label for="otdamt">Any Other Deduction Amount</label>
+                                                <input type="number" class="form-control small-text"  name="other_damt" id="otdamt" min="0" value="0" >
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="sam">Salary Month</label>
+                                                <select  class="form-control small-text" name="empsalary_month" id="sam" required>
+                                                    <option value="">Choose Salary Month</option>
+                                                    {% for value, label in months  %}
+                                                    <option value="{{ value }}">{{ label }}</option>
+                                                    {% endfor %}
+                                                    
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="say">Salary Year</label>
+                                                <select  class="form-control small-text" name="empsalary_year" id="say" required>
+                                                    <option value="{{current_year}}" selected>{{current_year}}</option>
+                                                    {% for value, label in years  %}
+                                                    <option value="{{ value }}">{{ label }}</option>
+                                                    {% endfor %}
+                                                    
+                                                </select>
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="Salary_Pay_Date">Date Of Salary Given</label>
+                                                <input type="date"  class="form-control small-text"  name="empsalary_date" >
+                                            </div>
+                                            <div class="form-group" style="display: none;" id="resultDiv">
+                                                <label for="calsalary">Salary Given</label>
+                                                <input type="text" class="form-control small-text"  name="calsalary"  id="calsalary" readonly >
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                {% if emp_reg_edit %}
+                                                <button type="button" class="btn btn-primary btn-sm text-white mb-0 me-0" id="salcal"><i class="mdi mdi-calculator"></i>&nbsp;Calculate</button>
+                                                {% endif %}
+                                                <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0"><i class="mdi mdi-account-plus"></i>&nbsp; Add payment</button>
+                                                <button type="reset" class="btn btn-danger btn-sm text-white mb-0 me-0"><i class="mdi mdi-refresh"></i>&nbsp; Clear</button>
+                                            </div>
+                                            
+                                            
+                                    </form>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                  
+                </div>
+                <div class="col-sm-12 col-md-8 grid-margin stretch-card">
+                    <div class="card card-rounded">
+                        <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                    <h4 class="card-title card-title-dash">{% now 'F' %} Salary Pending List</h4>
+                                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{emp_reg_count}}</span>Salary Pending </p>
+                                </div>
+                                <div class="searchBox">
+                                        
+                                    <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                    <button class="close-btn" id="closeBtn">
+                                            <i class="mdi mdi-close"></i>
+                                    </button>
+                                        
+                                </div>
                                 
-                                <td>{{i.empdept_id.department}}</td>
-                                <td>{{i.empdesignation}}</td>
-                                <td>{{i.empidreg}}</td>
-                                <td>{{i.empconfirmsalary}}</td>
-                                <td>
-                                 <span style="color: #f72824; font-weight: 700;">Not Paid</span> 
-                                </td>
-                               
-                            </tr>
-                            {% endfor %}
-                          
-                        </tbody>
-                       
-                    </table>
-
+                            </div>
+            
+                            <div class="table-responsive  mt-1" >
+                                <table class="table select-table" id="salary-Register">
+                                    <thead>
+                                        <tr class="text-center">
+                                           
+                                            <th>Pay salary</th>
+                                            <th>Sal. Status </th>
+                                            <th>Con. Salary</th>
+                                            <th>Emp. Id</th>
+                                            <th>Full Name</th>
+                                            <th>Dof Joing</th>
+                                            <th>Dept.</th>
+                                            <th>Desig.</th>
+                                            <th>State</th>   
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            
+                                        {% for i in emp_reg %}
+                                    
+                                        <tr  class="text-center">
+                                           
+                                            <td class="text-center"> 
+                                                <a href="{% url 'salary_expence_add' i.id %}">
+                                                    <button type="submit" class="btn btn-primary btn-sm text-white mb-0 me-0">Pay </button>
+                                                </a>
+                                            </td>
+                                            <td class="text-center">
+                                                <span style="color: #f72824; font-weight: 700;">Not Paid</span> 
+                                            </td>
+                                            <td>{{i.empconfirmsalary}}</td>
+                                            <td>{{i.empidreg}}</td>
+                                            <td><a href="{% url 'employee_salary_details' i.id %}">{{i.empfullName}}</a></td>
+                                            <td>{{i.empdofj}}</td>
+                                            
+                                            <td>{{i.empdept_id.department}}</td>
+                                            <td>{{i.empdesignation}}</td>
+                                            <td>{{i.empstate}}</td>
+ 
+                                        </tr>
+                                       
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-           
-           
         </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+
+  // Ajax call for to edit Fixed Expence of state 
+
+function paylistDiv(itemId) {
+   
+ 
+  $.ajax({
+    url: "{% url 'ojt_payment_list_single' %}",
+    type: 'GET',
+    data: {
+        'regid': itemId,
+    },
+    success: function(response) {
+
+        displayEditDiv(response);
+    
+       
+    },
+    error: function(response) {
+      console.error('Error fetching item data.');
+    }
+  });
+}
+// Display the edit form 
+function displayEditDiv(response) {
+    var listDiv = $('#palistDiv');
+    listDiv.css('display', 'block');
+    $("#payment-list-container").html(response);
+  
+  }
+
+
+  // Display the OJT edit form and hide OJT add form
+function openEditDiv(editid) {
+
+    $.ajax({
+        url: "{% url 'ojt_payment_edit' %}",
+        type: 'GET',
+        data: {
+            'payid': editid,
+        },
+        success: function(content) {
+    
+            displayEditdata(content);
         
-    </section>
+           
+        },
+        error: function(content) {
+          console.error('Error fetching item data.');
+        }
+      });
+    }
+  
+    // Display the edit form 
+function displayEditdata(content) {
 
-    <!-- Meaage Box fead Out -->
+    var editDiv = document.getElementById('OJT-Edit-Form');
+    var addDiv = document.getElementById('OJT-Add-Form');
+    addDiv.style.display = 'none';
+    editDiv.style.display = 'block';
+  
+    $('#editname').val(content.name);  
+    $('#editpayid').val(content.edit_id);
+    $('#editPayment_Date').val(content.paydate);
+    $('#editPay_Head').val(content.head_name);
+    $('#editamount').val(content.amount);
+    $('#editNext_Pay_Date').val(content.nextdate);
+  
+  }
+
+// Hide the edit form
+function closeEditform() {
+    var editDiv = document.getElementById('OJT-Edit-Form');
+    var addDiv = document.getElementById('OJT-Add-Form');
+    addDiv.style.display = 'block';
+    editDiv.style.display = 'none';
+  
+  }
+  
+
+// Hide the edit form
+function closeEditDiv() {
+  var payDiv = document.getElementById('palistDiv');
+  payDiv.style.display = 'none';
+}
+
+</script>
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-          $('#salcal').click(function() {
-            const persid = $('#emp_regid').val();
-            const lf = $('#lf').val();
-            const lh = $('#lh').val();
-            const wd = $('#wd').val();
-            const otamt = $('#otamt').val();
-            const otdamt = $('#otdamt').val();
-            const sm = $('#sam').val();
-            const sy = $('#say').val();
-            console.log(persid);
-            console.log(lf); console.log(lh); console.log(wd); console.log(otamt); console.log(otdamt);console.log(sm); console.log(sy);
-            $.ajax({
-                url: '{% url "salary_calculate" %}',
-                data: {
-                    'persid': persid,
-                    'lf':lf,
-                    'lh':lh,
-                    'wd':wd,
-                    'otamt':otamt,
-                    'otdamt':otdamt,
-                    'sm':sm,
-                    'sy':sy
-                },
-              success: function(data) {
-                  $('#results').html(data);
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const salaryTable = document.getElementById('salary-Register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = salaryTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const Cell1 = rows[i].getElementsByTagName('td')[1];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+            const Cell5 = rows[i].getElementsByTagName('td')[5];
+           
+
+            if (Cell1 || Cell3 || Cell4 || Cell5 ) {
+                const dataCell1 = Cell1.textContent || Cell1.innerText;
+                const dataCell3 = Cell3.textContent || Cell3.innerText;
+                const dataCell4 = Cell4.textContent || Cell4.innerText;
+                const dataCell5 = Cell5.textContent || Cell5.innerText;
                 
-              },
-              error: function(xhr, status, error) {
-                // Handle error response
-              }
-            });
-          });
+               
+
+                if (dataCell1.toLowerCase().includes(filterValue) || dataCell3.toLowerCase().includes(filterValue)|| dataCell4.toLowerCase().includes(filterValue)|| dataCell5.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+      $('#salcal').click(function() {
+        const persid = $('#emp_regid').val();
+        const lf = $('#lf').val();
+        const lh = $('#lh').val();
+        const wd = $('#wd').val();
+        const otamt = $('#otamt').val();
+        const otdamt = $('#otdamt').val();
+        const sm = $('#sam').val();
+        const sy = $('#say').val();
+        console.log(persid);
+        console.log(lf); console.log(lh); console.log(wd); console.log(otamt); console.log(otdamt);console.log(sm); console.log(sy);
+        $.ajax({
+            url: '{% url "salary_calculate" %}',
+            data: {
+                'persid': persid,
+                'lf':lf,
+                'lh':lh,
+                'wd':wd,
+                'otamt':otamt,
+                'otdamt':otdamt,
+                'sm':sm,
+                'sy':sy
+            },
+          success: function(data) 
+            {  $('#resultDiv').show(); // Display the div
+                $('#calsalary').val(data.net_salary);
+            },
+          error: function(xhr, status, error) {
+            // Handle error response
+          }
         });
-      </script>
+      });
+    });
+
+    // show the search form
+    function showform() {
+        var searchDiv = document.getElementById('payment-searchBox');
+        var paybtn = document.getElementById('all-paymennts');
+        paybtn.style.display = 'none';
+        searchDiv.style.display = 'block';
+    
+    }
+
+    // Hide the search form
+    function closeform() {
+        var searchDiv = document.getElementById('payment-searchBox');
+        var paybtn = document.getElementById('all-paymennts');
+        paybtn.style.display = 'block';
+        searchDiv.style.display = 'none';
+    
+    }
+  </script>       
+ 
+ {% endblock %}
+
+
+
+<style>
+    #search-box
+    {
+        padding: 1em;
+        background: #fafafa;
+        padding-top: 2em;
+    }
+    #search-box h5{
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    /*Register Box Register-details  Style */
+    
+        #register-box .contaier-fluid
+        {
+            display: grid;
+            grid-template-columns: 1fr 2.2fr;
+            padding: 1em;
+            gap: 1em;
+            background-color:#fafafa;
+           
+           
+        }
+        #register-details thead,  #register-details tbody
+        {
+            font-size: 0.91em;
+        }
       
-
-
-
-</main>
-
-{% endblock %}
+        .register-details
+        {
+           
+            background: #ffff;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+          
+           
+        }
+    
+        .register-details h4, .register-details-table h4{
+          
+            margin-top: 1.1em;
+            font-size: 1.35em;
+            margin-left: 0.40em;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color:rgb(38, 17, 63);
+           
+            
+        }
+        #emp_details
+        {
+            padding:1.5em 1em;
+            font-size: 0.92em;
+            line-height: 2.5em;
+            margin-top: 1.3em;
+            border: none;
+            text-align: center;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        }
+        #emp_details h5
+        {
+            color: #060654;
+            font-weight: 600;
+        }
+        #emp_details span
+        {
+            margin-left: 0.20em;
+            font-weight: 600;
+        }
+        .register-details .line,  .register-details-table .line
+        {
+            width: 60px;
+            height: 3px;
+            border-bottom: 3px solid #000;
+            margin-left: 0.60em;
+    
+        }
+    
+        /* Alert box */
+    
+        .register-details .message-bx,  .register-details .message-bx-confirm
+        {
+           
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em; 
+        }
+        .register-details .message-bx
+        {
+            background: #f0ea4a;
+            height: 8vh;
+            color: #2c2a2a;
+        }
+        .register-details .message-bx-confirm
+        {
+            background: #6fc146;
+        }
+      
+        .register-details .message-bx-delete
+        {
+            background: #f7684c;
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em;
+           
+        }
+        .register-details form{
+            padding:0.50em 1em;
+            background: #fafafa;
+        }
+        .register-details form .input-group-box
+        {
+            margin-top: 1.5em;
+        }
+        .input-group-box label
+        {
+            width: 35%;
+            font-size: 0.86em;
+            font-weight: 600;
+            padding: 0.40em;
+        }
+        .input-group-box input, select{
+          width: 55%;
+          padding: 0.20em;
+          border: 1px solid #828181;
+          font-size: 0.90em;
+         
+        }
+        .input-group-box input:focus, select:focus
+        {
+            border:0.01rem solid #111158;
+            outline: none;
+            border-radius: 3px;
+        }
+        .input-group-box select option{
+            font-size: 0.90em;
+            padding: 1em 0em;
+        }
+        .submit_button
+        {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 15vh;
+            background: #fafafa;
+            margin-top: 1em;
+            
+        }
+        .submit_button button
+        {
+            padding: 0.40em 1.4em;
+            font-weight: 600;
+            background: #261b52;
+            color: #ffff;
+            margin:none ;
+            border: none;
+            letter-spacing: 0.04em;
+            margin-right: 0.50em;
+        }
+        #register-details a
+        {
+            padding: 0em 0.40em;
+            font-size: 1.1em;
+        
+        }
+        #register-details .stus span{
+            font-size: 0.85em;
+        }
+        #register-details .edit
+        {
+            font-size: 0.95em;
+        }
+        #register-details .edit:nth-child(1)
+        {
+          
+            color: #1b126f; 
+        }
+        #register-details .check
+        {
+          
+            color: #3da309; 
+        }
+        #register-details .wating
+        {
+            color: #fff308;
+        }
+        #register-details .wating span
+        {
+            color: #d3c90d;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        #register-details .notcheck
+        {
+            color: #ec0909;
+        }
+        #register-details .confirmbtn
+        {
+            font-size: 0.89em;
+            font-weight: 600;
+            border: none;
+            padding: 0.40em 0.80em;
+            background: #111158;
+            color: #ffff;
+        }
+        /* Media Query*/
+        @media(max-width:964px)
+        {
+            #register-box .contaier-fluid
+            {
+            grid-template-columns:repeat(1,1fr) ;
+            }
+            .register-details
+            {
+                height: auto;
+            }
+            
+        }
+        /*Register Box Register-details End Style */
+    
+         /*Register Box Register-details Table Style */
+         .register-details-table .container
+         {
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            height: 70vh;
+            margin-top: 1.4em;
+            padding-top:2em ;
+         }
+         #register-details
+         {
+            font-size: 0.90em;
+         }
+          /* Media Query*/
+        @media(max-width:964px)
+        {
+        
+            .register-details-table .container
+            {
+                height: auto;
+                overflow-x: scroll;
+              
+               
+            }
+            #register-details
+            {
+              width: 100%; 
+            }
+            .register-details-table 
+            {
+                overflow-x: scroll;
+            }
+        }
+    </style>
+    
+    
+    <main>
+        <div class="container-fulid" id="search-box">
+            <form action="{% url 'employee_pending_salary'  %}" method="post">
+                {% csrf_token %}
+                <h5>Pendind Salary Payments</h5>
+                <div class="input-group-box">
+                    <label>Salary Month</label>
+                    <select name="empsalary_month" id="sm" required>
+                                    
+                        {% for value, label in content.months  %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+    
+                    </select>
+                </div>
+            
+                <div class="input-group-box mt-2">
+                    <label>Salary Year</label>
+                    <select name="empsalary_year" id="sy" >
+                        <option value="{{current_year}}">{{current_year}}</option>
+                        {% for value, label in content.years  %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="submit_button">
+                   
+                    <button type="submit">Search</button>
+                </div>
+            </form>
+                            
+        </div>
+        <section id="register-box">
+            <div class="contaier-fluid">
+                <div class="register-details">
+                    <h4>Employeee Salary Expence Add</h4>
+                    <div class="line"></div>
+                    {% if msg == 1 %}
+                    <div class="message-bx-confirm" id="msgbox">
+                        <p><i class="bi bi-check-all"></i>Employee Salary Added </p>
+                    </div>
+                    {% elif msg == 2 %}
+                    <div class="message-bx" id="msgbox">
+                        <p><i class="bi bi-exclamation-triangle-fill"></i> Company Holidays are not added.  Please add at least one holiday  </p>
+                    </div>
+                    {% elif msg == 3 %}
+                    <div class="message-bx" id="msgbox">
+                        <p><i class="bi bi-exclamation-triangle-fill"></i> Already Salary Given. </p>
+                    </div>
+                    
+                    {% endif %}
+    
+                    <!-- Register Form -->
+    
+                    <form action="{% url 'employee_salary_save'  %}" method="post">
+                        {% csrf_token %}
+                            {% if emp_reg_edit %}
+                            <div class="card" id="emp_details">
+                                <span><h5>{{emp_reg_edit.empfullName}}</h5></span>
+                                    <b>ID: {{emp_reg_edit.empidreg}}</b>
+                                <span ><b>Date Of Joing:</b> {{emp_reg_edit.empdofj}}
+                            
+                                <b style="margin-left: 0.50em;">Confirmed Salary:</b>   {{emp_reg_edit.empconfirmsalary}}</span>
+                            </div>
+                            <input type="text" name="Emp_regid" id="emp_regid" value="{{emp_reg_edit.id}}" required hidden>
+                            {% endif %}
+                        
+                        <div class="line mt-4"></div>
+                        <div class="input-group-box">
+                            <label>Leaves</label>
+                            <input type="number" name="leave_full" id="lf" style="width: 28%;" value="0" min="0" placeholder="Full day" >
+                          
+                            <input type="number"  name="leave_half" id="lh" style="width: 26%;" value="0" min="0" placeholder="Half day" >
+                        </div>
+                        <div class="input-group-box">
+                            <label>Work Delay</label>
+                            <input type="number" name="work_delay" id="wd" min="0" value="0" placeholder="Work delay count" >
+                        </div>
+                        <div class="input-group-box">
+                            <label>Any Other Amount To Add</label>
+                            <input type="number" name="other_amt" id="otamt" min="0" value="0"  >
+                        </div>
+                        <div class="input-group-box">
+                            <label>Any Other Deduction Amount</label>
+                            <input type="number" name="other_damt" id="otdamt" min="0" value="0"  >
+                        </div>
+                        <div class="input-group-box">
+                            <label>Salary Month</label>
+                            <select name="empsalary_month" id="sam" required>
+                               
+                                {% for value, label in content.months  %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+    
+                            </select>
+                            <label>Salary Year</label>
+                            <select name="empsalary_year" id="say" >
+                                <!-- <option value="{{current_year}}">{{current_year}}</option> -->
+                                {% for value, label in content.years  %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group-box">
+                            <label>Date Of Salary Given</label>
+                            <input type="date" name="empsalary_date" required>
+                        </div>
+                        <div class="input-group-box" id="results">
+                           
+                        </div>
+                        <div class="submit_button">
+                            <button type="button" id="salcal">Calculate Salary</button>
+                            <button type="submit">Save</button>
+                        </div>
+                        
+                    </form>
+                </div>
+    
+                <div class="register-details-table">
+                    <h4> Employeee  Details</h4>
+                    <div class="line"></div>
+                    <div class="container">
+    
+                        <table id="register-details" class="display" >
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Full Name</th>
+                                    <th>Date Of Joing</th>
+                                    <th>Department</th>
+                                    <th>Designation</th>
+                                    <th>Employee Id</th>
+                                    <th>Confirmed Salary</th>
+                                    <th>Current Salary </th>
+                                   
+                                    <!-- <th>Salary Status</th> --> 
+    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in emp_reg %}
+                                <tr>
+                                    <td>{{forloop.counter}} </td>
+                                    <td> <a href="{% url 'salary_expence_add' i.id %}" class="#"> <i class="bi bi-pen-fill"></i>  </a></td>
+                                    <td><a href="{% url 'employee_salary_details' i.id %}">{{i.empfullName}}</a></td>
+                                    <td>{{i.empdofj}}</td>
+                                    
+                                    <td>{{i.empdept_id.department}}</td>
+                                    <td>{{i.empdesignation}}</td>
+                                    <td>{{i.empidreg}}</td>
+                                    <td>{{i.empconfirmsalary}}</td>
+                                    <td>
+                                     <span style="color: #f72824; font-weight: 700;">Not Paid</span> 
+                                    </td>
+                                   
+                                </tr>
+                                {% endfor %}
+                              
+                            </tbody>
+                           
+                        </table>
+    
+                    </div>
+                </div>
+               
+               
+            </div>
+            
+        </section>
+    
+        <!-- Meaage Box fead Out -->
+    
+    
+        
+          
+    
+    
+    
+    </main> 
+        <div class="messageBox-container" id="message-container">
+                <div class="messageicon-Box warningBox "><i class="mdi mdi-exclamation icon-sm"></i></div>
+                <p class="text-center warning-text">Warning</p>
+        </div> 

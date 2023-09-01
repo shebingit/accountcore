@@ -31430,12 +31430,21 @@ background: #ffffff;
 {
   background: rgba(226, 25, 25, 0.978);
 }
+.warningBox
+{
+  background: rgba(226, 25, 25, 0.978);
+}
 .messageBox-container .success-text{
   font-weight: 600;
   color:rgba(103, 185, 65, 0.800);
   padding-top: 2px;
 }
 .messageBox-container .error-text{
+  font-weight: 600;
+  color:rgba(226, 26, 26, 0.800);
+  padding-top: 2px;
+}
+.messageBox-container .warning-text{
   font-weight: 600;
   color:rgba(226, 26, 26, 0.800);
   padding-top: 2px;
@@ -31636,7 +31645,7 @@ background: #ffffff;
   animation: opacityChange 0.6s infinite alternate;
   color:#ed170f;
 }
-.OJT-Edit
+.OJT-Edit, .payment-searchBox
 {
   display: none;
 }

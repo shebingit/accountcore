@@ -4,381 +4,475 @@
 
 
 
+<!--- Employee Add   -->
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                {% if success_msg %}
+                <div class="messageBox-container" id="message-container">
+                
+                        <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                        <p class="text-center success-text">{{success_msg}}</p>
+                </div>
+              {% elif error_msg %}
+                <div class="messageBox-container" id="message-container">
+                        <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                        <p class="text-center error-text">{{error_msg}}</p>
+                </div>
+              {% endif %}
+              <div>
+            </div>
+          </div>
+        </div>
+    </div>
+    
+            <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                <div class="card card-rounded">
+                    <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                        <form action="{% url 'employee_reg_edit' emp_reg.id %}" class="forms-sample" method="post">
+                            {% csrf_token %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="card-title card-title-dash">Employee Registration Form</h4>
+                                <div>
+                                    <button type="submit" class="btn btn-primary btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-pen"></i> Edit Save</button>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="empName">Full Name</label>
+                                <input type="text" class="form-control small-text" id="empName" name="emp_Name" value="{{emp_reg.empfullName}}" placeholder="Full Name" required>
+                            </div>
+                            <div class="form-group ">
+                                <label for="Date_ofjoin">Date Of Joing</label>
+                                <input type="date" class="form-control small-text" id="Date_ofjoin" name="emp_dfj"  value="{{ emp_reg.empdofj|date:'Y-m-d' }}" placeholder="Date Of Joing">
+                            </div>
+                            <div class="form-group">
+                                <label for="Department">Department</label>
+                                <select  class="form-control small-text" id="Department" name="emp_dept" required>
+                                    <option value="{{emp_reg.empdept_id.id}}">{{emp_reg.empdept_id.department}}</option>
+                                    {% for dept in depart %}
+                                    <option value="{{dept.id}}">{{dept.department}}</option>
+                                    {% endfor %}
+                                    
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="Designation">Designation</label>
+                                <input type="text" class="form-control small-text" id="Designation" name="emp_desig" value="{{emp_reg.empdesignation}}" placeholder="Designation" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="Department">State</label>
+                                <select  class="form-control small-text" id="state" name="emp_state" required>
+                                <option value="{{emp_reg.empstate}}">{{emp_reg.empstate}}</option>
+                                {% for state in states %}
+                                <option value="{{state.state_name}}">{{state.state_name}}</option>
+                                {% endfor %}
+                                
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label for="Employeeeid">Employeee id</label>
+                                <input type="text" class="form-control small-text" id="Employeeeid" value="{{emp_reg.empidreg}}" name="emp_id" placeholder="Employeee id">
+                            </div>
+                            <div class="form-group ">
+                                <label for="confirmed"> confirmed Salary</label>
+                                <input type="text" class="form-control small-text" id="confirmed"  value="{{emp_reg.empconfirmsalary}}" name="emp_sal" placeholder="confirmed Salary">
+                            </div>
+                            
+                        </form>
+                        
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+
+</div>
+
+
+
+
+{% endblock %}
+
 <style>
 
-/* message-information style */
-
-.message-information
-
-{
-    padding: 1.2em;
-    background: #efefff;
-    text-align: center;
-}
-.message-information ul li{
-    list-style: none;
-    font-size: 0.99em;
-    font-weight: 600;
-
-}
-
-/*Register Box Register-details  Style */
-
-    #register-box .contaier-fluid
+    /* message-information style */
+    
+    .message-information
+    
     {
-        display: flex;
-       align-items: center;
-       justify-content: center;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-       
-       
+        padding: 1.2em;
+        background: #efefff;
+        text-align: center;
     }
-    .register-details
-    {
-      
-        background: #ffff;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-       
-    }
-
-    .register-details h4, .register-details-table h4{
-      
-        margin-top: 1.1em;
-        font-size: 1.35em;
-        margin-left: 0.40em;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color:rgb(38, 17, 63);
-       
-        
-    }
-    .register-details .line,  .register-details-table .line
-    {
-        width: 60px;
-        height: 3px;
-        border-bottom: 3px solid #000;
-        margin-left: 0.60em;
-
-    }
-
-    /* Search Box */
-
-     .search-box
-    {
-        display: flex;
-       flex-wrap: wrap;
-       flex-direction: row;
-       align-items: center;
-       margin-bottom: 1em;
-       justify-content: center;
-       gap: 2em;
-    }
-      .search-box .input-date-box
-    {
-        padding: 0.80em .50em;
-    }
-  .search-box .input-date-box label
-    {
-        font-size: 0.92em;
+    .message-information ul li{
+        list-style: none;
+        font-size: 0.99em;
         font-weight: 600;
-        margin-right: 0.40em;
-    }
-   .search-box .input-date-box input{
-       padding: 0.30em;
-      
-       border: 1px solid #0c1846;
-       margin: none;
-    }
-      .search-box button
-    { background: #0c1846;
-       border: none;
-       margin: none;
-       cursor: pointer;
-       box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-       padding: 0.30em 0.70em;
-       color: #fff;
-    }
-     .search-box button:hover{
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-        background: #040f3b;
-        
-       
-    }
-
-
-
-
-    /* Alert box */
-
-    .register-details .message-bx,  .register-details .message-bx-confirm
-    {
-       
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details .message-bx
-    {
-        background: #e8e340;
-    }
-    .register-details .message-bx-confirm
-    {
-        background: #6fc146;
-    }
-  
-    .register-details .message-bx-delete
-    {
-        background: #f7684c;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em;
-       
-    }
-    .register-details form{
-        padding:0.50em 1em;
-        background: #fafafa;
-    }
-    .register-details form .input-group-box
-    {
-        margin-top: 1.5em;
-    }
-    .input-group-box label
-    {
-        width: 40%;
-        font-size: 0.90em;
-        font-weight: 600;
-        padding: 0.40em;
-    }
-    .input-group-box input, select{
-      width: 50%;
-      padding: 0.20em;
-      border: 1px solid #828181;
-      font-size: 0.90em;
-     
-    }
-    .input-group-box input:focus, select:focus
-    {
-        border:0.01rem solid #111158;
-        outline: none;
-        border-radius: 3px;
-    }
-    .input-group-box select option{
-        font-size: 0.90em;
-        padding: 1em 0em;
-    }
-    .submit_button
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 15vh;
-        background: #fafafa;
-        margin-top: 1em;
-    }
-    .submit_button button
-    {
-        padding: 0.40em 1.4em;
-        font-weight: 600;
-        background: #261b52;
-        color: #ffff;
-        margin:none ;
-        border: none;
-        letter-spacing: 0.04em;
-    }
-    #register-details a
-    {
-        padding: 0em 0.40em;
-        font-size: 1.1em;
     
     }
-    #register-details .stus span{
-        font-size: 0.85em;
-    }
-    #register-details .edit
-    {
-        font-size: 0.95em;
-    }
-    #register-details .edit:nth-child(1)
-    {
-      
-        color: #1b126f; 
-    }
-    #register-details .check
-    {
-      
-        color: #3da309; 
-    }
-    #register-details .wating
-    {
-        color: #fff308;
-    }
-    #register-details .wating span
-    {
-        color: #d3c90d;
-        font-size: 0.85em;
-        font-weight: 600;
-    }
-    #register-details .notcheck
-    {
-        color: #ec0909;
-    }
-    #register-details .confirmbtn
-    {
-        font-size: 0.89em;
-        font-weight: 600;
-        border: none;
-        padding: 0.40em 0.80em;
-        background: #111158;
-        color: #ffff;
-    }
-    .actionbtns
-    {
-        font-size: 0.85em;
-    }
-    .actionbtns a:nth-child(1) i{
-        color: #e61010;
-        margin-bottom: 0.40em;
-    }
-    /* Media Query*/
-    @media(max-width:964px)
-    {
+    
+    /*Register Box Register-details  Style */
+    
         #register-box .contaier-fluid
         {
-        grid-template-columns:repeat(1,1fr) ;
+            display: flex;
+           align-items: center;
+           justify-content: center;
+            padding: 1em;
+            gap: 1em;
+            background-color:#fafafa;
+           
+           
         }
         .register-details
         {
-            height: auto;
-        }
-        
-    }
-    /*Register Box Register-details End Style */
-
-     /*Register Box Register-details Table Style */
-     .register-details-table .container
-     {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        height: 70vh;
-        margin-top: 1.4em;
-        padding-top:2em ;
-     }
-     #register-details
-     {
-        font-size: 0.90em;
-     }
-      /* Media Query*/
-    @media(max-width:964px)
-    {
-    
-        .register-details-table .container
-        {
-            height: auto;
-            overflow-x: scroll;
           
+            background: #ffff;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
            
         }
-        #register-details
-        {
-          width: 100%; 
-        }
-        .register-details-table 
-        {
-            overflow-x: scroll;
-        }
-    }
-</style>
-
-
-<main>
-    <section id="register-box">
-         <!-- Message Infomation Display-->
-
-         <!-- <div class="message-information"  id="msgbox">
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </div> -->
-        <div class="contaier-fluid">
+    
+        .register-details h4, .register-details-table h4{
+          
+            margin-top: 1.1em;
+            font-size: 1.35em;
+            margin-left: 0.40em;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color:rgb(38, 17, 63);
+           
             
-            <!-- End Message Infomation Display-->
-            <div class="register-details">
-                <h4>Employeee Edit Form</h4>
-                <div class="line"></div>
-                {% if msg == 1 %}
-                <div class="message-bx-confirm" id="msgbox">
-                    <p><i class="bi bi-check-all"></i>Employee Edit Completed </p>
-                </div>
-                
+        }
+        .register-details .line,  .register-details-table .line
+        {
+            width: 60px;
+            height: 3px;
+            border-bottom: 3px solid #000;
+            margin-left: 0.60em;
+    
+        }
+    
+        /* Search Box */
+    
+         .search-box
+        {
+            display: flex;
+           flex-wrap: wrap;
+           flex-direction: row;
+           align-items: center;
+           margin-bottom: 1em;
+           justify-content: center;
+           gap: 2em;
+        }
+          .search-box .input-date-box
+        {
+            padding: 0.80em .50em;
+        }
+      .search-box .input-date-box label
+        {
+            font-size: 0.92em;
+            font-weight: 600;
+            margin-right: 0.40em;
+        }
+       .search-box .input-date-box input{
+           padding: 0.30em;
+          
+           border: 1px solid #0c1846;
+           margin: none;
+        }
+          .search-box button
+        { background: #0c1846;
+           border: none;
+           margin: none;
+           cursor: pointer;
+           box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+           padding: 0.30em 0.70em;
+           color: #fff;
+        }
+         .search-box button:hover{
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+            background: #040f3b;
+            
+           
+        }
+    
+    
+    
+    
+        /* Alert box */
+    
+        .register-details .message-bx,  .register-details .message-bx-confirm
+        {
+           
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em; 
+        }
+        .register-details .message-bx
+        {
+            background: #e8e340;
+        }
+        .register-details .message-bx-confirm
+        {
+            background: #6fc146;
+        }
+      
+        .register-details .message-bx-delete
+        {
+            background: #f7684c;
+            color: #fafafa;
+            font-size: 0.98em;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            padding: 0.50em ;
+            height: 5vh;
+            margin-top: 1.2em;
+           
+        }
+        .register-details form{
+            padding:0.50em 1em;
+            background: #fafafa;
+        }
+        .register-details form .input-group-box
+        {
+            margin-top: 1.5em;
+        }
+        .input-group-box label
+        {
+            width: 40%;
+            font-size: 0.90em;
+            font-weight: 600;
+            padding: 0.40em;
+        }
+        .input-group-box input, select{
+          width: 50%;
+          padding: 0.20em;
+          border: 1px solid #828181;
+          font-size: 0.90em;
+         
+        }
+        .input-group-box input:focus, select:focus
+        {
+            border:0.01rem solid #111158;
+            outline: none;
+            border-radius: 3px;
+        }
+        .input-group-box select option{
+            font-size: 0.90em;
+            padding: 1em 0em;
+        }
+        .submit_button
+        {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 15vh;
+            background: #fafafa;
+            margin-top: 1em;
+        }
+        .submit_button button
+        {
+            padding: 0.40em 1.4em;
+            font-weight: 600;
+            background: #261b52;
+            color: #ffff;
+            margin:none ;
+            border: none;
+            letter-spacing: 0.04em;
+        }
+        #register-details a
+        {
+            padding: 0em 0.40em;
+            font-size: 1.1em;
+        
+        }
+        #register-details .stus span{
+            font-size: 0.85em;
+        }
+        #register-details .edit
+        {
+            font-size: 0.95em;
+        }
+        #register-details .edit:nth-child(1)
+        {
+          
+            color: #1b126f; 
+        }
+        #register-details .check
+        {
+          
+            color: #3da309; 
+        }
+        #register-details .wating
+        {
+            color: #fff308;
+        }
+        #register-details .wating span
+        {
+            color: #d3c90d;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        #register-details .notcheck
+        {
+            color: #ec0909;
+        }
+        #register-details .confirmbtn
+        {
+            font-size: 0.89em;
+            font-weight: 600;
+            border: none;
+            padding: 0.40em 0.80em;
+            background: #111158;
+            color: #ffff;
+        }
+        .actionbtns
+        {
+            font-size: 0.85em;
+        }
+        .actionbtns a:nth-child(1) i{
+            color: #e61010;
+            margin-bottom: 0.40em;
+        }
+        /* Media Query*/
+        @media(max-width:964px)
+        {
+            #register-box .contaier-fluid
+            {
+            grid-template-columns:repeat(1,1fr) ;
+            }
+            .register-details
+            {
+                height: auto;
+            }
+            
+        }
+        /*Register Box Register-details End Style */
+    
+         /*Register Box Register-details Table Style */
+         .register-details-table .container
+         {
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            height: 70vh;
+            margin-top: 1.4em;
+            padding-top:2em ;
+         }
+         #register-details
+         {
+            font-size: 0.90em;
+         }
+          /* Media Query*/
+        @media(max-width:964px)
+        {
+        
+            .register-details-table .container
+            {
+                height: auto;
+                overflow-x: scroll;
+              
+               
+            }
+            #register-details
+            {
+              width: 100%; 
+            }
+            .register-details-table 
+            {
+                overflow-x: scroll;
+            }
+        }
+    </style>
+    
+    
+    <main>
+        <section id="register-box">
+             <!-- Message Infomation Display-->
+    
+             <!-- <div class="message-information"  id="msgbox">
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
                 {% endif %}
-
-                <!-- Register Form -->
-
-                <form action="{% url 'employee_register_Details_edit' emp_reg.id %}" method="post">
-                    {% csrf_token %}
-                    <div class="input-group-box" >
-                        <label>Full Name</label>
-                        <input type="text" name="empname" value="{{emp_reg.empfullName}}">
+            </div> -->
+            <div class="contaier-fluid">
+                
+                <!-- End Message Infomation Display-->
+                <div class="register-details">
+                    <h4>Employeee Edit Form</h4>
+                    <div class="line"></div>
+                    {% if msg == 1 %}
+                    <div class="message-bx-confirm" id="msgbox">
+                        <p><i class="bi bi-check-all"></i>Employee Edit Completed </p>
                     </div>
-                    <div class="input-group-box">
-                        <label>Date Of Joing:<br>{{emp_reg.empdofj}}</label>
-                        <input type="date" name="empdfj" >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Department</label>
-                        <select name="empdept" required >
-                            <option value="{{emp_reg.empdept_id.id}}">{{emp_reg.empdept_id.department}} </option>
-                            {% for j in dept %}
-                            <option value="{{j.id}}" >{{j.department}} </option>
-                            {% endfor %}
-                        </select>
+                    
+                    {% endif %}
+    
+                    <!-- Register Form -->
+    
+                    <form action="{% url 'employee_register_Details_edit' emp_reg.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="input-group-box" >
+                            <label>Full Name</label>
+                            <input type="text" name="empname" value="{{emp_reg.empfullName}}">
+                        </div>
+                        <div class="input-group-box">
+                            <label>Date Of Joing:<br>{{emp_reg.empdofj}}</label>
+                            <input type="date" name="empdfj" >
+                        </div>
+                        <div class="input-group-box">
+                            <label>Department</label>
+                            <select name="empdept" required >
+                                <option value="{{emp_reg.empdept_id.id}}">{{emp_reg.empdept_id.department}} </option>
+                                {% for j in dept %}
+                                <option value="{{j.id}}" >{{j.department}} </option>
+                                {% endfor %}
+                            </select>
+                            
+                        </div>
                         
-                    </div>
-                    
-                    <div class="input-group-box">
-                        <label>Designation </label>
-                        <input type="text" name="empdesig" value="{{emp_reg.empdesignation}}">
-                    </div>
-
-                    <div class="input-group-box">
-                        <label>Employeee id </label>
-                        <input type="text" name="empid" value="{{emp_reg.empidreg}}">
-                    </div>
-                    
-                    
-                    <div class="input-group-box">
-                        <label>confirmed Salary</label>
-                        <input type="text" name="empconf_salary" value="{{emp_reg.empconfirmsalary}}">
-                    </div>
-                   
-
-                    <div class="submit_button">
-                        <button type="submit">Save</button>
-                    </div>
-                </form>
+                        <div class="input-group-box">
+                            <label>Designation </label>
+                            <input type="text" name="empdesig" value="{{emp_reg.empdesignation}}">
+                        </div>
+    
+                        <div class="input-group-box">
+                            <label>Employeee id </label>
+                            <input type="text" name="empid" value="{{emp_reg.empidreg}}">
+                        </div>
+                        
+                        
+                        <div class="input-group-box">
+                            <label>confirmed Salary</label>
+                            <input type="text" name="empconf_salary" value="{{emp_reg.empconfirmsalary}}">
+                        </div>
+                       
+    
+                        <div class="submit_button">
+                            <button type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+    
+                
             </div>
-
-            
-        </div>
-    </section>
-
-    <!-- Meaage Box fead Out -->
-
-
-</main>
-
-{% endblock %}
+        </section>
+    
+        <!-- Meaage Box fead Out -->
+    
+    
+    </main>

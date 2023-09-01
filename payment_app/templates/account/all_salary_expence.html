@@ -3,527 +3,176 @@
 {% block body %}
 
 
+<div class="content-wrapper">
 
-<style>
-
-/*Register Box Register-details  Style */
-h6
-{
-    letter-spacing: 0.04em;
-    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    color:rgb(38, 17, 63);
-    text-align: center;
-    font-size: 1em;
-    font-weight: 600;
-    margin-bottom: 1em;
-}
-
-    #register-box .contaier-fluid
-    {
-        display: grid;
-        grid-template-columns:2.2fr;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-       
-       
-    }
-    .register-details
-    {
-        height: 80vh;
-        background: #ffff;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-       
-    }
-    .register-details-table .top-section
-    {
-        display: grid;
-        grid-template-columns: 1.3fr 1fr;
-        justify-content: center;
-    }
- 
-    .register-details-table .quick-search .quick_links
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 1.5em 1em;
-        gap: 1em;
-
-    }
-    .register-details-table .quick-search .quick_links .card
-    {
-        width: 200px;
-        text-align: center;
-        padding: 0.80em 1em;
-        border: none;
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-        font-size: 0.90em;
-        font-weight: 600;
-        background: #020738;
-        color: #fff;
-        border-radius: 20px;
-    }
-
-    .register-details h4, .register-details-table h4{
-      
-        margin-top: 1.1em;
-        font-size: 1.35em;
-        margin-left: 0.40em;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color:rgb(38, 17, 63);
-       
+    <div class="row">
+        <div class="col-lg-12 d-flex flex-column">
         
-    }
-    .register-details .line,  .register-details-table .line
-    {
-        width: 60px;
-        height: 3px;
-        border-bottom: 3px solid #000;
-        margin-left: 0.60em;
-
-    }
-
-    /* Alert box */
-
-    .register-details .message-bx,  .register-details .message-bx-confirm
-    {
-       
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details .message-bx
-    {
-        background: #e8e340;
-    }
-    .register-details .message-bx-confirm
-    {
-        background: #6fc146;
-    }
-  
-    .register-details .message-bx-delete
-    {
-        background: #f7684c;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em;
-       
-    }
-    .register-details form{
-        padding:0.50em 1em;
-        background: #fafafa;
-    }
-    .register-details form .input-group-box
-    {
-        margin-top: 1.5em;
-    }
-    .input-group-box label
-    {
-        width: 35%;
-        font-size: 0.90em;
-        font-weight: 600;
-        padding: 0.40em;
-    }
-    .input-group-box input, select{
-      width: 55%;
-      padding: 0.20em;
-      border: 1px solid #828181;
-      font-size: 0.90em;
-     
-    }
-    .input-group-box input:focus, select:focus
-    {
-        border:0.01rem solid #111158;
-        outline: none;
-        border-radius: 3px;
-    }
-    .input-group-box select option{
-        font-size: 0.90em;
-        padding: 1em 0em;
-    }
-    .submit_button
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 15vh;
-        background: #fafafa;
-        margin-top: 1em;
-    }
-    .submit_button button
-    {
-        padding: 0.40em 1.4em;
-        font-weight: 600;
-        background: #261b52;
-        color: #ffff;
-        margin:none ;
-        border: none;
-        letter-spacing: 0.04em;
-    }
-    #register-details a
-    {
-        padding: 0em 0.40em;
-        font-size: 1.1em;
-    
-    }
-    #register-details .edit
-    {
-        font-size: 0.95em;
-    }
-    #register-details .edit:nth-child(1)
-    {
-      
-        color: #1b126f; 
-    }
-    #register-details .check
-    {
-      
-        color: #3da309; 
-    }
-    #register-details .wating
-    {
-        color: #fff308;
-    }
-    #register-details .wating span
-    {
-        color: #d3c90d;
-        font-size: 0.85em;
-        font-weight: 600;
-    }
-    #register-details .notcheck
-    {
-        color: #ec0909;
-    }
-    #register-details .confirmbtn
-    {
-        font-size: 0.89em;
-        font-weight: 600;
-        border: none;
-        padding: 0.40em 0.80em;
-        background: #111158;
-        color: #ffff;
-    }
-    .down-load
-    {
-        color: #ec0909;
-        cursor: pointer;
-    }
-    .not-download
-    {
-        color: #f7ea2d;
-    }
-    /* Media Query*/
-    @media(max-width:964px)
-    {
-        #register-box .contaier-fluid
-        {
-        grid-template-columns:repeat(1,1fr) ;
-        }
-        .register-details
-        {
-            height: auto;
-        }
-        
-    }
-    /*Register Box Register-details End Style */
-
-     /*Register Box Register-details Table Style */
-     .register-details-table .container
-     {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-      
-        margin-top: 1.4em;
-        padding-top:2em ;
-        padding-bottom:2em ;
-     }
-     #register-details
-     {
-        font-size: 0.90em;
-     }
-      /* Media Query*/
-    @media(max-width:964px)
-    {
-    
-        .register-details-table .container
-        {
-            height: auto;
-            overflow-x: scroll;
-          
-           
-        }
-        #register-details
-        {
-          width: 100%; 
-        }
-        .register-details-table 
-        {
-            overflow-x: scroll;
-        }
-    }
-    #register-details .start
-    {
-        background: #ec0909;
-        color: #fff;
-    }
-    #register-details .progressing
-    {
-        background: #ffff53;
-    }
-    #register-details .end
-    {
-        background: #74f342;
-    }
-
-     /*Search Box styling */
-     .register-details-table .form
-     {
-         padding: 0.80em 0.60em;
-         margin-bottom: 1em;
-     }
-
-     .register-details-table  .search-box
-     {
-         display: flex;
-        flex-wrap: wrap;
-        flex-direction: row;
-        align-items: center;
-        margin-bottom: 1em;
-        justify-content: center;
-        gap: 2em;
-     }
-     .register-details-table  .search-box .input-date-box
-     {
-         padding: 0.80em .50em;
-     }
-     .register-details-table  .search-box .input-date-box label
-     {
-         font-size: 0.92em;
-         font-weight: 600;
-         margin-right: 0.40em;
-     }
-     .register-details-table  .search-box .input-date-box input{
-        padding: 0.30em;
-       
-        border: 1px solid #0c1846;
-        margin: none;
-     }
-     .register-details-table  .search-box button
-     { background: #0c1846;
-        border: none;
-        margin: none;
-        cursor: pointer;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        padding: 0.30em 0.70em;
-        color: #fff;
-     }
-     .register-details-table .search-box button:hover{
-         box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-         background: #040f3b;
-         
-        
-     }
-
-       /* End Search Box styling */
-       .allexp
-       {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-       
-       }
-       .addexp
-       {
-      
-        text-align: center;
-        margin-top: 3em;
-        
-       
-       }
-       .addexp .exp_link, .allexp .exp_link
-       {
-        padding: 0.50em 1em;
-        background: #141f49;
-        color:#ffff;
-        font-size: 0.89em;
-        font-weight: 600;
-        margin-left: 0.40em;
-     
-       }
-       .addexp.exp_link i, .allexp  .exp_link i
-       {
-        margin-right: 0.30em;
-       }
-       
-       .notice 
-       {
-        background: #f1f0f0;
-        text-align: center;
-        padding:1em;
-       
-       }
-       .notice p
-       {
-        font-weight: 600;
-        color: #ec0909;
-        font-size: 0.93em;
-       }
-       .notice p span{
-        color: #221854;
-       }
-   
-       .danger
-       {
-        color: #ec0909;
-        font-weight: 600;
-       }
-       .notice  .amount
-       {
-        font-weight: 800;
-        font-size: 1.3em;
-       }
-       @media (max-width:832px)
-       {
-        h6
-        {
-           
-            font-size: 1.1em;
-            
-        }
-       
-            .register-details-table .top-section
-            {
-                display: grid;
-                grid-template-columns:repeat(1,1fr) 
-            }
-            .register-details-table .quick-search .quick_links
-            {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                margin: 1.5em 1em;
-                gap: 1em;
-
-            }
-            .register-details-table  .search-box
-            {
-                display: flex;
-        
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 1em;
-               
-            }
-       }
-</style>
-
-
-<main>
-    <section id="register-box">
-        <div class="contaier-fluid">
-            
-            <div class="register-details-table">
-                <h4>All Month Salary Expence <span style="margin-left: 0.60em;"><a href="{% url 'salary_expence' %}"><i class="bi bi-arrow-left-square-fill"></i></a></span> </h4>
-                <div class="line mb-5"></div>
-
-                <form action="{% url 'Search_salary_payments' %}" method="post">
-                    {% csrf_token %}
-                    <p class="text-center mb-4 mt-2"><span style="color: #f83b3b;"> Note :</span> Search Payments By Paid Date </p>
-                       
-                    <div class="search-box">
-                        
-                        <div class="input-date-box">
-                            <label>From Date :</label>
-                            <input type="date" name="spfr_data">
-                        </div>
-                        <div class="input-date-box">
-                            <label>To Date :</label>
-                            <input type="date" name="spto_date">
-                        </div>
-                        <div class="submit-box">
-                            <button type="submit"><i class="bi bi-search"></i></button>
-                        </div>
+          <div class="row flex-grow">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card card-rounded">
+                <div class="card-body">
+                  <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                      <h4 class="card-title card-title-dash">Employee - Payment List</h4>
+                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{salary_count}}</span> Payments <span class="count-value">{{salary_sum}}</span> </p>
                     </div>
-                </form>
 
-        
-                <div class="container">
-
-                    <table id="register-details" class="display" >
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th>Date of Joing</th>
-                                <th>Full Name</th>
-                                <th>Department</th>
-                                <th>Designation</th>
-                                <th>Confirmed Salary</th>
-                                <th>Salary Month</th>
-                                <th>Paid Date</th>
-                                <th>Paid Amount</th>
-                                <th> Srtatus</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for i in salary %}
-                               
-                                    <tr>
-                                        <td>{{ forloop.counter }}</td>
-                                        <td> <a href="{% url 'salary_expence_edit' i.id %}" class="#"> <i class="bi bi-pen-fill"></i>  </a></td>
-                                        <td>{{i.empreg_id.empdofj}}</td>
-                                        <td><a href="{% url 'employee_salary_details' i.empreg_id.id %}" style="font-size: 0.93em;">{{i.empreg_id.empfullName}}</a></td>
-                                        <td>{{i.empreg_id.empdept_id.department}}</td>
-                                        <td>{{i.empreg_id.empdesignation}}</td>
-                                        <td>{{i.empreg_id.empconfirmsalary}}</td>
-                                        <td>{{i.empsalary_month}}</td>
-                                        <td>{{i.empslaray_date}}</td>
-                                        <td>{{i.emppaid_amt}}</td>
-                                        <td>
-                                            {%if i.emp_paidstatus == 1 %}
-                                            <span style="color: #286f05;">Paid</span>
-                                            {% else %}
-                                            <span style="color: #ff2c25;">Not Paid</span>
-                                            {% endif %}
-
-                                        </td>
-                                         
-                                    </tr>
+                    <div>
+                        <form class="search-form" action="#" method="post">
+                            {% csrf_token %}
+                           
+                            <div class="searchBox">
                                 
-                            {% endfor %}
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                            </div>
+                           
+                            
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="start_date" >
+                            </div>
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="end_date" >
+                            </div>
+                            <div>
+                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    
+                  </div>
+                  <div class="table-responsive  mt-1">
+                    <table class="table select-table" id="Emp-register">
+                      <thead>
+                        <tr>
+                            <th>no</th>
+                         
+                            <th>Date of Joing</th>
+                            <th>Full Name</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                            <th>Confirmed Salary</th>
+                            <th>Salary Month</th>
+                            <th>Paid Date</th>
+                            <th>Paid Amount</th>
+                            <th> Srtatus</th>
+
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in salary %}
+                                   
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
                           
-                        </tbody>
-                       
+                            <td>{{i.empreg_id.empdofj}}</td>
+                            <td><a href="{% url 'employee_salary_details' i.empreg_id.id %}" style="font-size: 0.93em;">{{i.empreg_id.empfullName}}</a></td>
+                            <td>{{i.empreg_id.empdept_id.department}}</td>
+                            <td>{{i.empreg_id.empdesignation}}</td>
+                            <td class="text-center">{{i.empreg_id.empconfirmsalary}}</td>
+                            <td>{{i.empsalary_month}}</td>
+                            <td>{{i.empslaray_date}}</td>
+                            <td>{{i.emppaid_amt}}</td>
+                            <td>
+                                {%if i.emp_paidstatus == 1 %}
+                                <span style="color: #286f05;">Paid</span>
+                                {% else %}
+                                <span style="color: #ff2c25;">Not Paid</span>
+                                {% endif %}
+
+                            </td>
+                             
+                        </tr>
+                    
+                {% endfor %}
+                        
+                      </tbody>
                     </table>
-
+                  </div>
                 </div>
+              </div>
             </div>
-           
+          </div>
+         
         </div>
-    </section>
+       
+    </div>
 
-    <!-- Meaage Box fead Out -->
 
-    <script>
-        function goBack() {
-          history.go(-1); // Go back one page in the browser history
+ </div>
+
+ 
+
+ <script>
+
+    // Table data Search Script
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const empTable = document.getElementById('Emp-register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = empTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+            const Cell5 = rows[i].getElementsByTagName('td')[5];
+            const Cell6 = rows[i].getElementsByTagName('td')[6];
+         
+
+            if (Cell2 || Cell3 || Cell4 || Cell5  || Cell6 ) {
+
+                const datacell2 = Cell2.textContent || Cell2.innerText;
+                const datacell3 = Cell3.textContent || Cell3.innerText;
+                const datacell4 = Cell4.textContent || Cell4.innerText;
+                const datacell5 = Cell5.textContent || Cell5.innerText;
+                const datacell6 = Cell6.textContent || Cell6.innerText;
+                
+                
+
+                if (datacell2.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue) || datacell4.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) 
+                ||datacell6.toLowerCase().includes(filterValue)  ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
         }
-    </script>
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
 
 
-</main>
+
 
 {% endblock %}
+

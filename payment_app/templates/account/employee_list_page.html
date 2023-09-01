@@ -52,7 +52,7 @@
                     <table class="table select-table" id="Emp-register">
                       <thead>
                         <tr>
-                             <th>Check</th>  
+                             <th>No</th>  
                              <th>DOF-Join</th>
                              <th>Employee Id</th>
                              <th>Name and Details </th>
@@ -68,12 +68,7 @@
                         <tr>
                         
                           <td>
-                            <div>
-                              <div class="btn-wrapper">
-                                 
-                                <a href="{% url 'singleuser_details' i.id %}" class=" text-primary me-0"><i class="mdi mdi-arrow-right-drop-circle-outline mdi-18px"></i> </a>
-                              </div>
-                            </div>
+                            {{forloop.counter}}
                           </td>
                           <td>{{i.empdofj}}</td>
                           <td>{{i.empidreg}}</td>
@@ -146,16 +141,21 @@
             const Cell3 = rows[i].getElementsByTagName('td')[3];
             const Cell4 = rows[i].getElementsByTagName('td')[4];
             const Cell5 = rows[i].getElementsByTagName('td')[5];
+            const Cell7 = rows[i].getElementsByTagName('td')[7];
+            const Cell8= rows[i].getElementsByTagName('td')[8];
 
             if (Cell2 || Cell4 || Cell4 || Cell5 ) {
 
                 const datacell2 = Cell2.textContent || Cell2.innerText;
                 const datacell3 = Cell3.textContent || Cell3.innerText;
                 const datacell4 = Cell4.textContent || Cell4.innerText;
-                const datacell5 = Cell5.textContent || Cell.innerText;
+                const datacell5 = Cell5.textContent || Cell5.innerText;
+                const datacell7 = Cell7.textContent || Cell7.innerText;
+                const datacell8 = Cell5.textContent || Cell8.innerText;
                 
 
-                if (datacell2.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue) || datacell4.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) ) 
+                if (datacell2.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue) || datacell4.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) 
+                ||datacell7.toLowerCase().includes(filterValue) || datacell8.toLowerCase().includes(filterValue) ) 
                 {
                     rows[i].style.display = '';
                 } else {
