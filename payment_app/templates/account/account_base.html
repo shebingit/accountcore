@@ -161,7 +161,7 @@
               </ul>
             </div>
           </li>
-          <li class="nav-item nav-category">Analysis</li>
+          <!-- <li class="nav-item nav-category">Analysis</li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#Analysis" aria-expanded="false" aria-controls="Analysis">
               <i class="menu-icon mdi mdi-chart-bar"></i>
@@ -178,7 +178,7 @@
                 
               </ul>
             </div>
-          </li>
+          </li> -->
           <li class="nav-item nav-category">OJT Payments</li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#Payments" aria-expanded="false" aria-controls="Payments">
@@ -201,6 +201,7 @@
             </a>
             <div class="collapse" id="Payments-status">
               <ul class="nav flex-column sub-menu">
+               
                 <li class="nav-item"> <a class="nav-link" href="{% url 'pyments_status_view' 0 %}">Pending</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{% url 'pyments_status_view' 2 %}">Incomplete</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{% url 'pyments_status_view' 1 %}">Complete</a></li>
@@ -217,7 +218,7 @@
             </a>
             <div class="collapse" id="account">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="#"> Employees List </a></li>
+                <li class="nav-item"> <a class="nav-link" href="{% url 'allocate_list' 9 %}">All allocates</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{% url 'income_expence_form' %}"> Income & Expence </a></li>
                 <li class="nav-item"> <a class="nav-link" href="{% url 'all_salary_expence' %}"> Salary Expence </a></li>
                 <li class="nav-item"> <a class="nav-link" href="{% url 'fixed_expence' %}">  Fixed Expence </a></li>

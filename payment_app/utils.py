@@ -185,8 +185,12 @@ def upcoming_payments(request):
 
         next_month = cur_date.replace(day=28) + timedelta(days=4)  # get the next month by adding 4 days to the 28th day
         next_month_start = next_month.replace(day=1)  # get the first day of the next month
-        next_month_end = next_month_start.replace(day=28) - timedelta(days=1)  # get the last day of the next month by subtracting 1 day from the 28th day
-    
+        year = next_month.year
+        month = next_month.month
+        last_day = calendar.monthrange(year, month)[1]
+        next_month_end = next_month.replace(day=last_day)
+
+        #------------------------------------------------------------
         after_6_days = fr_date + timedelta(days=6)
         after_8_days = (fr_date + timedelta(days=7))
         after_15days = (fr_date + timedelta(days=14))
@@ -252,8 +256,14 @@ def upcoming_state_payments(request,state):
 
         next_month = cur_date.replace(day=28) + timedelta(days=4)  # get the next month by adding 4 days to the 28th day
         next_month_start = next_month.replace(day=1)  # get the first day of the next month
-        next_month_end = next_month_start.replace(day=28) - timedelta(days=1)  # get the last day of the next month by subtracting 1 day from the 28th day
-    
+        year = next_month.year
+        month = next_month.month
+        last_day = calendar.monthrange(year, month)[1]
+        next_month_end = next_month.replace(day=last_day)
+        
+        
+        #----------------------------------------------------------------------
+
         after_6_days = fr_date + timedelta(days=6)
         after_8_days = (fr_date + timedelta(days=7))
         after_15days = (fr_date + timedelta(days=14))
@@ -279,6 +289,7 @@ def upcoming_state_payments(request,state):
         paynext_count=Register.objects.filter(next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end,reg_status=1,reg_state=state).count()
         paynext_amt=Register.objects.filter(next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end,reg_status=1,reg_state=state).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
 
+     
        
         state_name=Register_State.objects.get(id=state.id)
 

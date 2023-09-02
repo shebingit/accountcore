@@ -114,9 +114,12 @@ def login_dashboard(request):
                     
                         
                     account_DHB=Dashboard_Register.objects.get(id=uid)
+                    acc_state = Register_State.objects.get(allocate_dash=account_DHB)
                     success_msg = 'Authentication Success!'
 
-                    content = {'account_DHB':account_DHB}
+                    content = {'account_DHB':account_DHB,
+                               'success_msg':success_msg,
+                               'acc_state':acc_state}
 
                     return render(request,'account/dashboard.html',content)
                     
@@ -155,108 +158,7 @@ def dashboard(request):
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
-        #Income adding to IncomeExpence Table
-        if PaymentHistory.objects.exists():
-            try:
-                inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
-                payhis=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-                #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
-                
-                if payhis:
-                                
-                    if inexpe:
-                        inexpe.exin_head_name='OJT'
-                        inexpe.exin_amount=payhis
-                        inexpe.exin_typ=1
-                        inexpe.exin_date=to_date
-                        inexpe.exin_status=1
-                        inexpe.save()
-
-                    else:
-
-                        incexpence=IncomeExpence()
-                        incexpence.exin_head_name='OJT'
-                        incexpence.exin_amount=payhis
-                        incexpence.exin_typ=1
-                        incexpence.exin_date=cur_date
-                        incexpence.exin_status=1
-                        incexpence.save()
-                else:
-                    print('No Data')
-
-            except PaymentHistory.DoesNotExist:
-                    print('No Data')
-        else:
-            print('No Data')
-     
-
-
-        # Salay Expence adding to IncomeExpence Table
-        if EmployeeSalary.objects.exists():
-            try:
-                inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=fr_date,exin_date__lte=to_date).first()
-                sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-                #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
-                
-                if sal_exp: 
-
-                    if inexp:
-
-                        inexp.exin_head_name='SALARY'
-                        inexp.exin_amount=sal_exp
-                        inexp.exin_typ=2
-                        inexp.exin_date=to_date
-                        inexp.exin_status=1
-                        inexp.save()
-                                    
-                    else:
-
-                        incexp=IncomeExpence()
-                        incexp.exin_head_name='SALARY'
-                        incexp.exin_amount=sal_exp
-                        incexp.exin_typ=2
-                        incexp.exin_date=cur_date
-                        incexp.exin_status=1
-                        incexp.save()
-                else:
-                    print('No Data')
-
-            except EmployeeSalary.DoesNotExist:
-                    print('No Data')
-                            
-        else:
-            print('No Data')
-            # Fixed Expence adding to the IncomeEpence Table
-
-        fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date,fixed_status=1)
-                        
-        inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True)).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True))
-        if inex:
-            print('Data Found')
-
-        else:
-
-            not_in_inex = fixexp.exclude(fixed_date__in=inex.values_list('exin_date', flat=True)).exclude(fixed_head_name__in=inex.values_list('exin_head_name', flat=True)).values_list('id', flat=True)
-            fixexp=FixedExpence.objects.filter(id__in=not_in_inex)
-            for i in fixexp:
-                incomeexp = IncomeExpence()
-                incomeexp.exin_head_name=i.fixed_head_name
-                incomeexp.exin_date=i.fixed_date
-                incomeexp.exin_amount=i.fixed_amount
-                incomeexp.exin_typ=2
-                incomeexp.exin_dese=i.fixed_dese
-                incomeexp.exin_status=1
-                incomeexp.save()
-                exp_date=i.fixed_date
-                today = date.today()
-
-                # Calculate the number of days in the current month
-                days_in_month = (today.replace(month=today.month+1, day=1) - timedelta(days=1)).day
-                            
-                fr_date=exp_date + timedelta(days=days_in_month)
-                i.fixed_date=fr_date
-                i.save()
-
+       
 
         if request.method == 'POST':
 
@@ -265,14 +167,14 @@ def dashboard(request):
 
             if sdate and edate:
 
-                pay_pending_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1).order_by('-next_pay_date')
-                pay_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1).count()
+                pay_pending_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1,reg_state=acc_state).order_by('-next_pay_date')
+                pay_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1,reg_state=acc_state).count()
             else:
                 return redirect('dashboard')
         else:
 
-            pay_pending_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__lte=cur_date,reg_status=1).order_by('-next_pay_date')
-            pay_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__lte=cur_date,reg_status=1).count()
+            pay_pending_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__lte=cur_date,reg_status=1,reg_state=acc_state).order_by('-next_pay_date')
+            pay_count=Register.objects.filter(Q(payment_status=0) | Q(payment_status=2),next_pay_date__lte=cur_date,reg_status=1,reg_state=acc_state).count()
        
         common_accdash_data = account_nav_data(request) # calling for navbar datas       
 
@@ -446,9 +348,11 @@ def account_password_change(request):
 
 
 
-# ===============================All Registration section ==================================
 
-# OJT register- This view is used for to register
+
+#======================= OJT Section ====================
+
+# OJT register -------------------------------
 
 def Register_form(request):
     if 'uid' in request.session:
@@ -552,6 +456,175 @@ def Register_form(request):
         return render(request,'account/Register_form.html',content)
     else:
         return redirect('/')
+
+
+# OJT registration edit ----------------------
+def register_edit(request,pk):
+  
+
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------
+
+        # Edit saveing the employee details
+
+        if request.method =='POST':
+            reg=Register.objects.get(id=pk)
+            reg.fullName=request.POST['name']
+            reg.Phone=request.POST['phno']
+            if request.POST['dfj']:
+                reg.dofj=request.POST['dfj']
+            else:
+                 reg.dofj= reg.dofj
+            reg.refrence=request.POST['refby']
+            intial_amt=int(request.POST['init_amunt'])
+            total_amt=int(request.POST['tot_amount'])
+            reg.fixed_intial_amt= int(request.POST['fixedinit_amunt'])
+            cal=int(request.POST['fixedinit_amunt'])
+          
+    
+            reg.regtotal_amt=total_amt
+            reg.dept_id=Department.objects.get(id=request.POST['dept'])
+            next_date=request.POST['nxtpdof']
+
+            if next_date:
+                reg.next_pay_date=request.POST['nxtpdof']
+
+            else:
+               
+                current_date = request.POST['dfj']
+                current_date = datetime.strptime(current_date, "%Y-%m-%d").date()
+                # Calculate the date after 30 days
+                if intial_amt >= cal:
+                    after_days = current_date + timedelta(days=30)
+                   
+                # Calculate the date after 15 days
+                else:
+                     after_days = current_date + timedelta(days=15)
+                   
+                reg.next_pay_date=after_days
+            
+            reg.reg_state = acc_state
+
+            reg.save()
+
+            payhis=PaymentHistory.objects.get(reg_id_id=reg.id,admin_payconfirm=0)
+            payhis.head_name='Initial Payment'
+
+            if request.POST['dfpayment']:
+                payhis.paydofj=request.POST['dfpayment']
+            else:
+                payhis.paydofj=payhis.paydofj
+
+            payhis.payintial_amt=intial_amt
+            payhis.paytotal_amt=total_amt
+            
+            payhis.pay_status=1
+            payhis.reg_id=reg
+            payhis.pay_state = acc_state
+            payhis.save()
+
+            reg.firstpay_id=payhis.id
+            reg.save()
+
+            success_msg="Success! You have edit OJT tainee details."
+            reg=Register.objects.get(id=pk)
+            payhis=PaymentHistory.objects.get(reg_id_id=reg.id,admin_payconfirm=0)
+        
+            depart = Department.objects.filter(dpt_Status=1)
+        
+        
+
+            if payhis.admin_payconfirm == 0:
+            
+                content={'account_DHB':account_DHB,
+                        'depart':depart,
+                        'payhis':payhis,
+                        'reg':reg,
+                        'success_msg':success_msg,
+                        'acc_state':acc_state}
+
+
+        else:
+
+            reg=Register.objects.get(id=pk)
+            payhis=PaymentHistory.objects.get(reg_id_id=reg.id,admin_payconfirm=0)
+        
+            depart = Department.objects.filter(dpt_Status=1)
+        
+        
+
+            if payhis.admin_payconfirm == 0:
+            
+                content={'account_DHB':account_DHB,
+                        'depart':depart,
+                        'payhis':payhis,
+                        'reg':reg,
+                        'acc_state':acc_state}
+            else:
+                return redirect('Register_form')
+            
+        common_accdash_data = account_nav_data(request) # calling for navbar datas  
+            
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/register_edit_form.html',content)
+           
+           
+    else:
+        return redirect('/')
+
+
+# OJT register remove ------------------------
+def remove(request,pk):
+        
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        
+        
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        depart = Department.objects.filter(dpt_Status=1)
+        #-------------------------------------------------
+
+        
+        reg=Register.objects.get(id=pk)
+        reg.delete()
+        error_msg="Opps! You have removed OJT trainee details."
+
+        reg=Register.objects.filter(reg_status=0)
+        reg_count=Register.objects.filter(reg_status=0).count()
+        payhis=PaymentHistory.objects.filter(reg_id__in=reg)
+
+        common_accdash_data = account_nav_data(request) # calling for navbar datas       
+
+        content={'account_DHB':account_DHB,
+                    'depart':depart,
+                    'payhis':payhis,
+                    'reg':reg,
+                    'reg_count':reg_count,
+                    'acc_state':acc_state,
+                    'error_msg':error_msg}
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/Register_form.html',content)
+    
+    else:
+        return redirect('/')
+
+
+#=================== OJT Section End ======================
 
 # Department register ----------------
 def department_form(request):
@@ -671,6 +744,10 @@ def emp_Register_form(request):
     
     
 
+
+
+
+
 # ======================== All Delete section =====================================
 
 # OJT Delete - This view is used for to delete 
@@ -710,46 +787,7 @@ def remove_dept(request,pk):
         return redirect('/')
 
 
-def remove(request,pk):
-        
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        
-        
-        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
-        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
-        depart = Department.objects.filter(dpt_Status=1)
-        #-------------------------------------------------
 
-        
-        reg=Register.objects.get(id=pk)
-        reg.delete()
-        error_msg="Opps! You have removed OJT trainee details."
-
-        reg=Register.objects.filter(reg_status=0)
-        reg_count=Register.objects.filter(reg_status=0).count()
-        payhis=PaymentHistory.objects.filter(reg_id__in=reg)
-
-        common_accdash_data = account_nav_data(request) # calling for navbar datas       
-
-        content={'account_DHB':account_DHB,
-                    'depart':depart,
-                    'payhis':payhis,
-                    'reg':reg,
-                    'reg_count':reg_count,
-                    'acc_state':acc_state,
-                    'error_msg':error_msg}
-        
-        content = {**content, **common_accdash_data}
-
-        return render(request,'account/Register_form.html',content)
-    
-    else:
-        return redirect('/')
         
 # OJT Payment delete ---------------
 def payhis_remove(request,pk):
@@ -988,7 +1026,15 @@ def pyments_history(request):
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         #---------------------------------------------------------------
 
+        # Current month start date and End date
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+
         reg=Register.objects.filter(reg_state=acc_state)
+
 
         if request.method == 'POST':
 
@@ -1024,14 +1070,14 @@ def pyments_history(request):
 
         else:
 
-            payhistory=PaymentHistory.objects.filter(reg_id__in=reg).order_by('-id')
-            payhistory_count=PaymentHistory.objects.filter(reg_id__in=reg).count()
+            payhistory=PaymentHistory.objects.filter(reg_id__in=reg,paydofj__gte=fr_date,paydofj__lte=to_date).order_by('-id')
+            payhistory_count=PaymentHistory.objects.filter(reg_id__in=reg,paydofj__gte=fr_date,paydofj__lte=to_date).count()
 
-            ojt_approve_amt=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-            ojt_approve_count=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=1).count()
+            ojt_approve_amt=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=1,paydofj__gte=fr_date,paydofj__lte=to_date).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            ojt_approve_count=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=1,paydofj__gte=fr_date,paydofj__lte=to_date).count()
 
-            ojt_pending_amt=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=0).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-            ojt_pending_count=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=0).count()
+            ojt_pending_amt=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=0,paydofj__gte=fr_date,paydofj__lte=to_date).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+            ojt_pending_count=PaymentHistory.objects.filter(reg_id__in=reg,admin_payconfirm=0,paydofj__gte=fr_date,paydofj__lte=to_date).count()
 
               
 
@@ -1065,27 +1111,53 @@ def pyments_status_view(request,pk):
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         #---------------------------------------------------------------
 
-        cur_date=datetime.now().date()
-        if pk == 0:
-            reg=Register.objects.filter(reg_state=acc_state,payment_status=0)
-            ojt_count=Register.objects.filter(reg_state=acc_state,payment_status=0).count()
+        if request.method == 'POST':
 
-        elif pk == 1:
+            sdate= request.POST['start_date']
+            edate= request.POST['end_date']
 
-            reg=Register.objects.filter(reg_state=acc_state,payment_status=1)
-            ojt_count=Register.objects.filter(reg_state=acc_state,payment_status=1).count()
+            if sdate and sdate :
+
+                if pk == 0:
+                    reg=Register.objects.filter(dofj__gte=sdate,dofj__lte=edate,reg_state=acc_state,payment_status=0)
+                    ojt_count=Register.objects.filter(dofj__gte=sdate,dofj__lte=edate,reg_state=acc_state,payment_status=0).count()
+
+                elif pk == 1:
+
+                    reg=Register.objects.filter(dofj__gte=sdate,dofj__lte=edate,reg_state=acc_state,payment_status=1)
+                    ojt_count=Register.objects.filter(dofj__gte=sdate,dofj__lte=edate,reg_state=acc_state,payment_status=1).count()
+
+                else:
+                    reg=Register.objects.filter(dofj__gte=sdate,dofj__lte=edate,reg_state=acc_state,payment_status=2)
+                    ojt_count=Register.objects.filter(dofj__gte=sdate,dofj__lte=edate,reg_state=acc_state,payment_status=2).count()
+
+            
+            else:
+                return redirect('pyments_status_view',pk)
+        
 
         else:
-            reg=Register.objects.filter(reg_state=acc_state,payment_status=2)
-            ojt_count=Register.objects.filter(reg_state=acc_state,payment_status=2).count()
+
+            if pk == 0:
+                reg=Register.objects.filter(reg_state=acc_state,payment_status=0)
+                ojt_count=Register.objects.filter(reg_state=acc_state,payment_status=0).count()
+
+            elif pk == 1:
+
+                reg=Register.objects.filter(reg_state=acc_state,payment_status=1)
+                ojt_count=Register.objects.filter(reg_state=acc_state,payment_status=1).count()
+
+            else:
+                reg=Register.objects.filter(reg_state=acc_state,payment_status=2)
+                ojt_count=Register.objects.filter(reg_state=acc_state,payment_status=2).count()
+
 
         common_accdash_data = account_nav_data(request) # calling for navbar datas    
-
         content={'account_DHB':account_DHB,
                     'acc_state':acc_state,
                     'reg':reg,
                     'ojt_count':ojt_count,
-                    'cur_date':cur_date
+                    'pk':pk
                    }
 
         content = {**content, **common_accdash_data}
@@ -1293,18 +1365,18 @@ def employee_list_view(request):
 
             if sdate and edate:
 
-                reg_emp= EmployeeRegister.objects.filter(acc_dashid=account_DHB,empdofj__gte=sdate,empdofj__lte=edate)
-                reg_emp_count= EmployeeRegister.objects.filter(acc_dashid=account_DHB,empdofj__gte=sdate,empdofj__lte=edate).count()
+                reg_emp= EmployeeRegister.objects.filter(empstate=acc_state.state_name,empdofj__gte=sdate,empdofj__lte=edate)
+                reg_emp_count= EmployeeRegister.objects.filter(empstate=acc_state.state_name,empdofj__gte=sdate,empdofj__lte=edate).count()
 
             else:
-                reg_emp= EmployeeRegister.objects.filter(acc_dashid=account_DHB)
-                reg_emp_count= EmployeeRegister.objects.filter(acc_dashid=account_DHB).count()
+                reg_emp= EmployeeRegister.objects.filter(empstate=acc_state.state_name)
+                reg_emp_count= EmployeeRegister.objects.filter(empstate=acc_state.state_name).count()
 
 
         else:
 
-            reg_emp= EmployeeRegister.objects.filter(acc_dashid=account_DHB)
-            reg_emp_count= EmployeeRegister.objects.filter(acc_dashid=account_DHB).count()
+            reg_emp= EmployeeRegister.objects.filter(empstate=acc_state.state_name)
+            reg_emp_count= EmployeeRegister.objects.filter(empstate=acc_state.state_name).count()
 
         common_accdash_data = account_nav_data(request) # calling for navbar datas       
 
@@ -1322,6 +1394,156 @@ def employee_list_view(request):
         return redirect('/')
 
 
+#Employee Allocate List--------
+
+def allocate_list(request,pk):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+           
+        else:
+            return redirect('/')
+        
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        if request.method == 'POST':
+
+            if pk == 4:
+
+                try:
+                    state_names = Register_State.objects.get(id=int(request.POST['search_select'])) 
+                    selected_ojt = request.POST.getlist('select_OJT')
+
+                    for i in selected_ojt:
+                        ojt=Register.objects.get(id=i)
+                        ojt.reg_state=state_names
+                        ojt.save()
+
+                        payhis=PaymentHistory.objects.filter(reg_id=ojt)
+                        for j in payhis:
+                            payment=PaymentHistory.objects.get(id=j.id)
+                            payment.pay_state=state_names
+                            payment.save()
+
+                    
+                    reg_ojt= Register.objects.filter(reg_state=None)
+                    reg_ojt_count= Register.objects.filter(reg_state=None).count()
+
+                except Register_State.DoesNotExist:
+                    return redirect('allocate_list',9)
+           
+
+            elif pk == 5:
+
+                try:
+                    state_names = Register_State.objects.get(id=int(request.POST['search_select'])) 
+                    selected_employees = request.POST.getlist('select_emp')
+
+                    for i in selected_employees:
+                        emp=EmployeeRegister.objects.get(id=i)
+                        emp.empstate=state_names.state_name
+                        emp.acc_dashid=account_DHB
+                        emp.save()
+                    
+                    reg_emp= EmployeeRegister.objects.filter(empstate='')
+                    reg_emp_count= EmployeeRegister.objects.filter(empstate='').count()
+
+                except Register_State.DoesNotExist:
+                    return redirect('allocate_list',9)
+                
+            elif pk == 6:
+
+                try:
+                    state_names = Register_State.objects.get(id=int(request.POST['search_select'])) 
+                    selected_inex = request.POST.getlist('search_inex')
+
+                    for i in selected_inex:
+                        inexp=IncomeExpence.objects.get(id=i)
+                        inexp.exin_state=state_names
+                        inexp.save()
+                    
+                    inex= IncomeExpence.objects.filter(exin_state=None)
+                    inex_count= IncomeExpence.objects.filter(exin_state=None).count()
+
+                except Register_State.DoesNotExist:
+                    return redirect('allocate_list',9)
+
+            
+            elif pk == 7:
+
+                try:
+                    state_names = Register_State.objects.get(id=int(request.POST['search_select'])) 
+                    selected_fix = request.POST.getlist('select_fix')
+
+                    for i in selected_fix:
+                        fix=FixedExpence.objects.get(id=i)
+                        fix.fixed_state=state_names
+                        fix.save()
+                    
+                    fxex= FixedExpence.objects.filter(fixed_state=None)
+                    fxex_count= FixedExpence.objects.filter(fixed_state=None).count()
+
+
+                except Register_State.DoesNotExist:
+                    return redirect('allocate_list',9)
+
+            elif pk == 8:
+
+                try:
+                    state_names = Register_State.objects.get(id=int(request.POST['search_select'])) 
+                    selected_holi = request.POST.getlist('select_holiday')
+
+                    for i in selected_holi:
+                        holidays=Company_Holidays.objects.get(id=i)
+                        holidays.ch_state=state_names
+                        holidays.save()
+                    
+                    holid= Company_Holidays.objects.filter(ch_state=None)
+                    holid_count= Company_Holidays.objects.filter(ch_state=None).count()
+
+
+                except Register_State.DoesNotExist:
+                    return redirect('allocate_list',9)
+           
+        
+
+        reg_emp= EmployeeRegister.objects.filter(empstate='')
+        reg_emp_count= EmployeeRegister.objects.filter(empstate='').count()
+
+        reg_ojt= Register.objects.filter(reg_state=None)
+        reg_ojt_count= Register.objects.filter(reg_state=None).count()
+
+        inex= IncomeExpence.objects.filter(exin_state=None)
+        inex_count= IncomeExpence.objects.filter(exin_state=None).count()
+
+        fxex= FixedExpence.objects.filter(fixed_state=None)
+        fxex_count= FixedExpence.objects.filter(fixed_state=None).count()
+
+        holid= Company_Holidays.objects.filter(ch_state=None)
+        holid_count= Company_Holidays.objects.filter(ch_state=None).count()
+
+        common_accdash_data = account_nav_data(request) # calling for navbar datas       
+
+        content={'account_DHB':account_DHB,
+                    'acc_state':acc_state,
+                    'reg_emp':reg_emp,
+                    'reg_emp_count':reg_emp_count,
+                    'reg_ojt':reg_ojt,
+                    'reg_ojt_count':reg_ojt_count,
+                    'inex':inex,
+                    'inex_count':inex_count,
+                    'fxex':fxex,'fxex_count':fxex_count,
+                    'holid':holid,'holid_count':holid_count
+                   }
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/emplyee_allocate_list.html',content)
+
+    else:
+        return redirect('/')
 
 #======================= ALL Payment Section ====================================
 
@@ -1357,6 +1579,7 @@ def pyment_form(request):
             paymt.paydofj=request.POST['paydate']
             paymt.paybalance_amt=int(reg.regbalance_amt) - pay_amt
             paymt.paytotal_amt=int(reg.reg_payedtotal)
+            paymt.pay_state=acc_state
             paymt.save()
 
            
@@ -1449,6 +1672,7 @@ def addpayment_details(request,pk):
             paymt.paydofj=request.POST['paydate']
             paymt.paybalance_amt=int(reg_dt.regbalance_amt) - pay_amt
             paymt.paytotal_amt=int(reg_dt.reg_payedtotal)
+            paymt.pay_state =acc_state
             paymt.save()
 
            
@@ -1540,13 +1764,28 @@ def track_payments(request):
     if 'uid' in request.session:
         if request.session.has_key('uid'):
             uid = request.session['uid']
-          
+           
         else:
             return redirect('/')
         
-        reg=Register.objects.filter(reg_status=1,payment_status=0)
-        cur_date=datetime.now().date()
-        return render(request,'account/track_Payments.html',{'reg':reg,'cur_date':cur_date})
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #---------------------------------------------------------------
+
+        
+    
+        up_payments = upcoming_state_payments(request,acc_state)  
+
+        content={'account_DHB':account_DHB,
+                        'acc_state':acc_state,
+                        
+                    }
+        common_accdash_data = account_nav_data(request) # calling for navbar datas    
+
+        content = {**content, **common_accdash_data, **up_payments}
+
+        return render(request,'account/track_Payments.html',content) 
+
     
     else:
         return redirect('/')
@@ -1915,66 +2154,8 @@ def edit_Details(request,pk):
     else:
         return redirect('/')
 
-def register_edit(request,pk):
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        reg=Register.objects.get(id=pk)
-        payhis=PaymentHistory.objects.get(reg_id_id=reg)
-        dept=Department.objects.all()
-        payhist=PaymentHistory.objects.all()
-        if payhis.admin_payconfirm == 0:
-            return render(request,'account/register_edit_form.html',{'reg':reg,'dept':dept,'payhist':payhist})
-        else:
-            return redirect('Register_form')
-    else:
-        return redirect('/')
-    
 
-def register_edit_save(request,pk):
 
-    if 'uid' in request.session:
-        if request.session.has_key('uid'):
-            uid = request.session['uid']
-        else:
-            return redirect('/')
-        
-        if request.method =='POST':
-            reg=Register.objects.get(id=pk)
-            reg.fullName=request.POST['name']
-            reg.Phone=request.POST['phno']
-        
-            if request.POST['dfj']:
-                reg.dofj=request.POST['dfj']
-            else:
-                reg.dofj=reg.dofj
-
-            reg.refrence=request.POST['refby']
-            reg.fixed_intial_amt=int(request.POST['fixedinit_amunt'])
-            reg.regtotal_amt=int(request.POST['tot_amount'])
-            reg.dept_id=Department.objects.get(id=request.POST['dept'])
-
-            if request.POST['nxtpdof']:
-                reg.next_pay_date=request.POST['nxtpdof']
-            else:
-                reg.next_pay_date= reg.next_pay_date
-
-            payhis=PaymentHistory.objects.get(id=reg.firstpay_id)
-            payhis.payintial_amt=request.POST['init_amunt']
-            if request.POST['dfpayment']:
-                payhis.paydofj=request.POST['dfpayment']
-            else:
-                payhis.paydofj= payhis.paydofj
-            payhis.paytotal_amt= int(request.POST['tot_amount'])  
-            payhis.save()
-            reg.save()
-            return redirect('Register_form')
-        else:
-            return redirect('Register_form')
-    else:
-        return redirect('/')
 
     
 
@@ -2085,11 +2266,18 @@ def income_expence_form(request):
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         #-----------------------------------------------------------------------------
 
-        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
-        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+        # --------------------Current month --------------------
 
-        exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
-        exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date')
+        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date').count()
+
+        exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
 
         if request.method =='POST':
 
@@ -2125,11 +2313,11 @@ def income_expence_form(request):
                 ex_in.save()
                 success_msg='Success! One Record add successfully.'
             
-            exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
-            exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+            exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date')
+            exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date').count()
 
-            exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
-            exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+            exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+            exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
 
             content={'account_DHB':account_DHB,
                                 'exp_income':exp_income,
@@ -2167,11 +2355,20 @@ def income_expence_edit(request,inex_edit):
         account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         #-----------------------------------------------------------------------------
-        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
-        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
 
-        exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
-        exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        # --------------------Current month --------------------
+
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+
+        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date')
+        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date').count()
+
+        exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
 
         exp_income_edit=IncomeExpence.objects.get(id=inex_edit)
 
@@ -2206,15 +2403,21 @@ def income_expence_delete(request,incom_delete):
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         #-----------------------------------------------------------------------------
         
+        # --------------------Current month --------------------
+
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
        
         ex_in=IncomeExpence.objects.get(id=incom_delete)  
         ex_in.delete()
         error_msg='Opps! Record removed.'
-        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
-        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date')
+        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date').count()
 
-        exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1).aggregate(Sum('exin_amount'))['exin_amount__sum']
-        exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        exp_income_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=1,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
+        exp_expence_sum=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_typ=2,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(Sum('exin_amount'))['exin_amount__sum']
 
         content={'account_DHB':account_DHB,
                             'exp_income':exp_income,
@@ -2245,8 +2448,15 @@ def income_expence_search(request):
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         #-----------------------------------------------------------------------------
 
-        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date')
-        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state).order_by('exin_date').count()
+        # --------------------Current month --------------------
+
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
+
+        exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date')
+        exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=acc_state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('exin_date').count()
 
         if request.method =='POST':
 
@@ -3398,11 +3608,18 @@ def all_salary_expence(request):
         account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
         acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
         #-----------------------------------------------------------------------------
+
+        # --------------------Current month --------------------
+
+        cur_date=datetime.now().date()
+        fr_date=datetime(cur_date.year, cur_date.month, 1).date()
+        last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
+        to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
         
         emp_reg= EmployeeRegister.objects.filter(empstate=acc_state.state_name)
-        salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).order_by('-empslaray_date')
-        salary_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).count()
-        salary_sum=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        salary=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).order_by('-empslaray_date')
+        salary_count=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).count()
+        salary_sum=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1,empreg_id__in=emp_reg.values_list('id', flat=True)).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
 
         if request.method == 'POST':
 

@@ -1,0 +1,618 @@
+{% extends 'account/account_base.html' %}
+{% load static %}
+{% block body %}
+
+
+<!--=========================== ACCOUNT OJT LIST  ========================-->
+
+<div class="content-wrapper">
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="home-tab">
+        <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+          <ul class="nav nav-tabs" role="tablist">
+             
+            <li class="nav-item">
+              <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#ojt" role="tab" aria-controls="ojt" aria-selected="true">OJT allocate </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link " id="profile-tab" data-bs-toggle="tab" href="#employee" role="tab" aria-selected="false">Employee allocate</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link " id="#" data-bs-toggle="tab" href="#income_expence" role="tab" aria-selected="false">Income Expence allocate</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link " id="#" data-bs-toggle="tab" href="#fixed_expence" role="tab" aria-selected="false">Fixed Expence allocate</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " id="#" data-bs-toggle="tab" href="#Holidays" role="tab" aria-selected="false">Holidays allocate</a>
+            </li>
+
+            
+          </ul>
+          
+        </div>
+          <div class="tab-content tab-content-basic">
+            
+
+            <div class="tab-pane show active fade" id="ojt" role="tabpanel" aria-labelledby="ojt"> 
+              <div class="row">
+                <div class="col-lg-12 d-flex flex-column">
+                
+                  <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card card-rounded">
+                        <div class="card-body">
+                          <div class="d-sm-flex justify-content-between align-items-start">
+                            <div>
+                              <h4 class="card-title card-title-dash">OJT - Allocate  List</h4>
+                             <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{reg_ojt_count}}</span> Registration</p>
+                            </div>
+        
+                            <div>
+                              <div class="searchBox">
+                                        
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                              </div>
+                            </div>
+                            
+                            
+                          </div>
+                          
+                            <div class="table-responsive  mt-1">
+        
+                              <form  action="{% url 'allocate_list' 4 %}" method="post">
+                                {% csrf_token %}
+                                <div class="d-sm-flex justify-content-end align-items-start">
+            
+                                  <div class="w-box" >
+                                      <select name="search_select" class="search-select">
+                                        
+                                          <option value="0"> All states </option>
+                                          {% for state in states %}
+                                          <option value="{{state.id}}">{{state.state_name}}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div>
+                                      <button type="submit" class="search-button">  <i class="icon-check"></i></button>
+                                  </div>
+                                </div>
+                              
+        
+                              <table class="table select-table" id="Emp-register">
+                                <thead>
+                                  <tr>
+                                      <th>No</th>  
+                                      <th>Check</th>
+                                      <th>DOF-Join</th>
+                                      <th>Name and Details </th>
+                                      <th>Department.</th>
+                                     
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                {% for i in reg_ojt %}
+                                  <tr>
+                                  
+                                    <td>
+                                      {{forloop.counter}}
+                                    </td>
+                                    <td><input type="checkbox" value="{{i.id}}" name="select_OJT"></td>
+                                    <td>{{i.dofj}}</td>
+                                    <td>
+                                      <div class="d-flex ">
+                                        <div>{{i.fullName}}
+                                          <p>{{i.Phone}}</p>
+                                        </div>
+                                        
+                                      </div>
+                                    </td>
+                                
+                                    <td>{{i.dept_id.department}}</td>
+                                  
+                                  
+                                  </tr>
+                                  {% endfor %}
+                                  
+                                </tbody>
+                              </table>
+                            </form>
+                            </div>
+                            
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                 
+                </div>
+               
+            </div>
+             
+            </div>
+
+            <div class="tab-pane fade " id="employee" role="tabpanel" aria-labelledby="employee"> 
+              
+              <div class="row">
+                <div class="col-lg-12 d-flex flex-column">
+                
+                  <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card card-rounded">
+                        <div class="card-body">
+                          <div class="d-sm-flex justify-content-between align-items-start">
+                            <div>
+                              <h4 class="card-title card-title-dash">Employee - Allocate  List</h4>
+                             <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{reg_emp_count}}</span> Registration</p>
+                            </div>
+        
+                            <div>
+                              <div class="searchBox">
+                                        
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                              </div>
+                            </div>
+                            
+                            
+                          </div>
+                          
+                            <div class="table-responsive  mt-1">
+        
+                              <form  action="{% url 'allocate_list' 5 %}" method="post">
+                                {% csrf_token %}
+                                <div class="d-sm-flex justify-content-end align-items-start">
+            
+                                  <div class="w-box" >
+                                      <select name="search_select" class="search-select">
+                                        
+                                          <option value="0"> All states </option>
+                                          {% for state in states %}
+                                          <option value="{{state.id}}">{{state.state_name}}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div>
+                                      <button type="submit" class="search-button">  <i class="icon-check"></i></button>
+                                  </div>
+                                </div>
+                              
+        
+                              <table class="table select-table" id="Emp-register">
+                                <thead>
+                                  <tr>
+                                      <th>No</th>  
+                                      <th>Check</th>
+                                      <th>DOF-Join</th>
+                                      <th>Employee Id</th>
+                                      <th>Name and Details </th>
+                                      <th>Designation</th>
+                                      <th>Department.</th>
+                                     
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                {% for i in reg_emp %}
+                                  <tr>
+                                  
+                                    <td>
+                                      {{forloop.counter}}
+                                    </td>
+                                    <td><input type="checkbox" value="{{i.id}}" name="select_emp"></td>
+                                    <td>{{i.empdofj}}</td>
+                                    <td>{{i.empidreg}}</td>
+                                    
+                                    <td>
+                                      <div class="d-flex ">
+                                        <div>{{i.empfullName}}</div>
+                                        <p>{{i.empPhone}}</p>
+                                        <p>{{i.empemail}}</p>
+        
+                                      </div>
+                                    </td>
+                                    <td>{{i.empdesignation}}</td>
+                                    <td>{{i.empdept_id.department}}</td>
+                                  
+                                  
+                                  </tr>
+                                  {% endfor %}
+                                  
+                                </tbody>
+                              </table>
+                            </form>
+                            </div>
+                            
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                 
+                </div>
+               
+            </div>
+        
+   
+            </div>
+
+            <div class="tab-pane fade " id="income_expence" role="tabpanel" aria-labelledby="income_expence"> 
+              
+              <div class="row">
+                <div class="col-lg-12 d-flex flex-column">
+                
+                  <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card card-rounded">
+                        <div class="card-body">
+                          <div class="d-sm-flex justify-content-between align-items-start">
+                            <div>
+                              <h4 class="card-title card-title-dash">Income Expence - Allocate  List</h4>
+                             <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{inex_count}}</span> Registration</p>
+                            </div>
+        
+                            <div>
+                              <div class="searchBox">
+                                        
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                              </div>
+                            </div>
+                            
+                            
+                          </div>
+                          
+                            <div class="table-responsive  mt-1">
+        
+                              <form  action="{% url 'allocate_list' 6 %}" method="post">
+                                {% csrf_token %}
+                                <div class="d-sm-flex justify-content-end align-items-start">
+            
+                                  <div class="w-box" >
+                                      <select name="search_select" class="search-select">
+                                        
+                                          <option value="0"> All states </option>
+                                          {% for state in states %}
+                                          <option value="{{state.id}}">{{state.state_name}}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div>
+                                      <button type="submit" class="search-button">  <i class="icon-check"></i></button>
+                                  </div>
+                                </div>
+                              
+        
+                              <table class="table select-table" id="Emp-register">
+                                <thead>
+                                  <tr>
+                                      <th>No</th>  
+                                      <th>Check</th>
+                                      <th>Date</th>
+                                      <th>Head</th>
+                                      <th>Amount </th>
+                                      <th>Type</th>
+                                      
+                                     
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                {% for i in inex %}
+                                  <tr>
+                                  
+                                    <td>
+                                      {{forloop.counter}}
+                                    </td>
+                                    <td><input type="checkbox" value="{{i.id}}" name="search_inex"></td>
+                                    <td>{{i.exin_date}}</td>
+                                    <td>{{i.exin_head_name}}</td>
+                                    
+                              
+                                    <td>{{i.exin_amount}}</td>
+                                    <td>
+                                      {% if i.exin_typ == 1 %}
+                                      <p>Income</p>
+                                      {% else %}
+                                      <p>Expence</p>
+                                      {% endif %}
+                                    </td>
+                                  
+                                  
+                                  </tr>
+                                  {% endfor %}
+                                  
+                                </tbody>
+                              </table>
+                            </form>
+                            </div>
+                            
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                 
+                </div>
+               
+            </div>
+        
+   
+            </div>
+
+            <div class="tab-pane fade " id="fixed_expence" role="tabpanel" aria-labelledby="fixed_expence"> 
+              
+              <div class="row">
+                <div class="col-lg-12 d-flex flex-column">
+                
+                  <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card card-rounded">
+                        <div class="card-body">
+                          <div class="d-sm-flex justify-content-between align-items-start">
+                            <div>
+                              <h4 class="card-title card-title-dash">Fixed Expence - Allocate  List</h4>
+                             <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{fxex_count}}</span> Registration</p>
+                            </div>
+        
+                            <div>
+                              <div class="searchBox">
+                                        
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                              </div>
+                            </div>
+                            
+                            
+                          </div>
+                          
+                            <div class="table-responsive  mt-1">
+        
+                              <form  action="{% url 'allocate_list' 7 %}" method="post">
+                                {% csrf_token %}
+                                <div class="d-sm-flex justify-content-end align-items-start">
+            
+                                  <div class="w-box" >
+                                      <select name="search_select" class="search-select">
+                                        
+                                          <option value="0"> All states </option>
+                                          {% for state in states %}
+                                          <option value="{{state.id}}">{{state.state_name}}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div>
+                                      <button type="submit" class="search-button">  <i class="icon-check"></i></button>
+                                  </div>
+                                </div>
+                              
+        
+                              <table class="table select-table" id="Emp-register">
+                                <thead>
+                                  <tr>
+                                      <th>No</th>  
+                                      <th>Check</th>
+                                      <th>Date</th>
+                                      <th>Head Name</th>
+                                      <th>Amount </th>
+
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                {% for i in fxex %}
+                                  <tr>
+                                  
+                                    <td>
+                                      {{forloop.counter}}
+                                    </td>
+                                    <td><input type="checkbox" value="{{i.id}}" name="select_fix"></td>
+                                    <td>{{i.fixed_date}}</td>
+                                    <td>{{i.fixed_head_name}}</td>
+                                   
+                                    <td>{{i.fixed_amount}}</td>
+                                  </tr>
+                                  {% endfor %}
+                                  
+                                </tbody>
+                              </table>
+                            </form>
+                            </div>
+                            
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                 
+                </div>
+               
+            </div>
+        
+   
+            </div>
+
+            <div class="tab-pane fade " id="Holidays" role="tabpanel" aria-labelledby="Holidays"> 
+              
+              <div class="row">
+                <div class="col-lg-12 d-flex flex-column">
+                
+                  <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card card-rounded">
+                        <div class="card-body">
+                          <div class="d-sm-flex justify-content-between align-items-start">
+                            <div>
+                              <h4 class="card-title card-title-dash">Holidays - Allocate  List</h4>
+                             <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{holid_count}}</span> Registration</p>
+                            </div>
+        
+                            <div>
+                              <div class="searchBox">
+                                        
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                              </div>
+                            </div>
+                            
+                            
+                          </div>
+                          
+                            <div class="table-responsive  mt-1">
+        
+                              <form  action="{% url 'allocate_list' 8 %}" method="post">
+                                {% csrf_token %}
+                                <div class="d-sm-flex justify-content-end align-items-start">
+            
+                                  <div class="w-box" >
+                                      <select name="search_select" class="search-select">
+                                        
+                                          <option value="0"> All states </option>
+                                          {% for state in states %}
+                                          <option value="{{state.id}}">{{state.state_name}}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div>
+                                      <button type="submit" class="search-button">  <i class="icon-check"></i></button>
+                                  </div>
+                                </div>
+                              
+        
+                              <table class="table select-table" id="Emp-register">
+                                <thead>
+                                  <tr>
+                                      <th>No</th>  
+                                      <th>Check</th>
+                                      <th>Start DATE</th>
+                                      <th>End DATE </th>
+                                      <th>Holidays </th>
+                                      <th>Days</th>
+
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                {% for i in holid %}
+                                  <tr>
+                                  
+                                    <td>
+                                      {{forloop.counter}}
+                                    </td>
+                                    <td><input type="checkbox" value="{{i.id}}" name="select_holiday"></td>
+                                    <td>{{i.ch_sdate}}</td>
+                                    <td>{{i.ch_edate}}</td>
+                                    <td>{{i.ch_no}}</td>
+                                    <td>{{i.ch_workno}}</td>
+                                  
+                                  
+                                  </tr>
+                                  {% endfor %}
+                                  
+                                </tbody>
+                              </table>
+                            </form>
+                            </div>
+                            
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                 
+                </div>
+               
+            </div>
+        
+   
+            </div>
+
+            
+
+          </div>
+        </div>
+      </div>
+  </div>
+
+</div>
+
+
+ 
+
+ <script>
+
+    // Table data Search Script
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const empTable = document.getElementById('Emp-register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = empTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+            const Cell5 = rows[i].getElementsByTagName('td')[5];
+            const Cell7 = rows[i].getElementsByTagName('td')[7];
+            const Cell8= rows[i].getElementsByTagName('td')[8];
+
+            if (Cell2 || Cell4 || Cell4 || Cell5 ) {
+
+                const datacell2 = Cell2.textContent || Cell2.innerText;
+                const datacell3 = Cell3.textContent || Cell3.innerText;
+                const datacell4 = Cell4.textContent || Cell4.innerText;
+                const datacell5 = Cell5.textContent || Cell5.innerText;
+                const datacell7 = Cell7.textContent || Cell7.innerText;
+                const datacell8 = Cell5.textContent || Cell8.innerText;
+                
+
+                if (datacell2.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue) || datacell4.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) 
+                ||datacell7.toLowerCase().includes(filterValue) || datacell8.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+ 
+{% endblock %}

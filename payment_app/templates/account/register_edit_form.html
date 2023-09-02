@@ -3,319 +3,118 @@
 {% block body %}
 
 
+<!--- OJT Edit   -->
+<div class="content-wrapper">
 
-<style>
-
-/*Register Box Register-details  Style */
-
-    #register-box .contaier-fluid
-    {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 1em;
-        gap: 1em;
-        background-color:#fafafa;
-       
-       
-    }
-    .register-details
-    {
-        height: 80vh;
-        width: 600px;
-        background: #ffff;
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-
-       
-    }
-
-    .register-details h4, .register-details-table h4{
-      
-        margin-top: 1.1em;
-        font-size: 1.35em;
-        margin-left: 0.40em;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color:rgb(38, 17, 63);
-       
-        
-    }
-    .register-details .line,  .register-details-table .line
-    {
-        width: 60px;
-        height: 3px;
-        border-bottom: 3px solid #000;
-        margin-left: 0.60em;
-
-    }
-
-    /* Alert box */
-
-    .register-details .message-bx,  .register-details .message-bx-confirm
-    {
-       
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em; 
-    }
-    .register-details .message-bx
-    {
-        background: #e8e340;
-    }
-    .register-details .message-bx-confirm
-    {
-        background: #6fc146;
-    }
-  
-    .register-details .message-bx-delete
-    {
-        background: #f7684c;
-        color: #fafafa;
-        font-size: 0.98em;
-        font-weight: 600;
-        font-family: 'Times New Roman', Times, serif;
-        padding: 0.50em ;
-        height: 5vh;
-        margin-top: 1.2em;
-       
-    }
-    .register-details form{
-        padding:0.50em 1em;
-        background: #fafafa;
-    }
-    .register-details form .input-group-box
-    {
-        margin-top: 1.5em;
-    }
-    .input-group-box label
-    {
-        width: 35%;
-        font-size: 0.90em;
-        font-weight: 600;
-        padding: 0.40em;
-    }
-    .input-group-box input, select{
-      width: 55%;
-      padding: 0.20em;
-      border: 1px solid #828181;
-      font-size: 0.90em;
-     
-    }
-    .input-group-box input:focus, select:focus
-    {
-        border:0.01rem solid #111158;
-        outline: none;
-        border-radius: 3px;
-    }
-    .input-group-box select option{
-        font-size: 0.90em;
-        padding: 1em 0em;
-    }
-    .submit_button
-    {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 15vh;
-        background: #fafafa;
-        margin-top: 1em;
-    }
-    .submit_button button
-    {
-        padding: 0.40em 1.4em;
-        font-weight: 600;
-        background: #261b52;
-        color: #ffff;
-        margin:none ;
-        border: none;
-        letter-spacing: 0.04em;
-    }
-    #register-details a
-    {
-        padding: 0em 0.40em;
-        font-size: 1.1em;
-    
-    }
-    #register-details .edit
-    {
-        font-size: 0.95em;
-    }
-    #register-details .edit:nth-child(1)
-    {
-      
-        color: #1b126f; 
-    }
-    #register-details .check
-    {
-      
-        color: #3da309; 
-    }
-    #register-details .wating
-    {
-        color: #fff308;
-    }
-    #register-details .wating span
-    {
-        color: #d3c90d;
-        font-size: 0.85em;
-        font-weight: 600;
-    }
-    #register-details .notcheck
-    {
-        color: #ec0909;
-    }
-    #register-details .confirmbtn
-    {
-        font-size: 0.89em;
-        font-weight: 600;
-        border: none;
-        padding: 0.40em 0.80em;
-        background: #111158;
-        color: #ffff;
-    }
-    /* Media Query*/
-    @media(max-width:964px)
-    {
-        #register-box .contaier-fluid
-        {
-        grid-template-columns:repeat(1,1fr) ;
-        }
-        .register-details
-        {
-            height: auto;
-        }
-        
-    }
-    /*Register Box Register-details End Style */
-
-     /*Register Box Register-details Table Style */
-     .register-details-table .container
-     {
-        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-        height: 70vh;
-        margin-top: 1.4em;
-        padding-top:2em ;
-     }
-     #register-details
-     {
-        font-size: 0.90em;
-     }
-      /* Media Query*/
-    @media(max-width:964px)
-    {
-    
-        .register-details-table .container
-        {
-            height: auto;
-            overflow-x: scroll;
-          
+    <div class="row">
+        <div class="col-sm-12">
            
-        }
-        #register-details
-        {
-          width: 100%; 
-        }
-        .register-details-table 
-        {
-            overflow-x: scroll;
-        }
-    }
-</style>
-
-
-<main>
-    <section id="register-box">
-        <div class="contaier-fluid">
-            <div class="register-details">
-                <h4>Register Edit Form</h4>
-                <div class="line"></div>
-                {% if msg == 1 %}
-                <div class="message-bx" id="msgbox">
-                    <p><i class="bi bi-check"></i>Registeration Wating For Admin Approve. </p>
-                </div>
-                {% elif  msg == 2 %}
-                <div class="message-bx-confirm" id="msgbox">
-                    <p><i class="bi bi-check-all"></i>Registeration Completed </p>
-                </div>
-                {% elif  msg == 3 %}
-                <div class="message-bx-delete" id="msgbox">
-                    <p><i class="bi bi-x"></i></i>Oops Deleted the User </p>
-                </div>
+            <div class="d-sm-flex align-items-center justify-content-center mb-1">
+            
+                {% if success_msg %}
+                    <div class="messageBox-container" id="message-container">
+                    
+                            <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                            <p class="text-center success-text">{{success_msg}}</p>
+                    </div>
+                {% elif error_msg %}
+                    <div class="messageBox-container" id="message-container">
+                            <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                            <p class="text-center error-text">{{error_msg}}</p>
+                    </div>
                 {% endif %}
-
-                <!-- Register Form -->
-
-                <form action="{% url 'register_edit_save' reg.id %}" method="post">
-                    {% csrf_token %}
-                    <div class="input-group-box" >
-                        <label>Full Name</label>
-                        <input type="text" name="name" value="{{reg.fullName}}" required>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Date Of Joing <br>{{reg.dofj}}</label>
-                        <input type="date" name="dfj" value="{{reg.fullName}}" >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Phone Number</label>
-                        <input type="tel" name="phno" value="{{reg.Phone}}" pattern="[6789][0-9]{9}">
-                    </div>
-                    <div class="input-group-box">
-                        <label>Referenced By</label>
-                        <input type="text" name="refby" value="{{reg.refrence}}" required>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Department</label>
-                        <select name="dept" required >
-                            <option value="{{reg.dept_id.id}}" > {{reg.dept_id.department}}</option>
-                            {% for j in dept %}
-                            <option value="{{j.id}}" >{{j.department}} </option>
-                            {% endfor %}
-                        </select>
-                        
-                    </div>
-                    {% for i in payhist %}
-                    {% if i.id == reg.firstpay_id %}
-                    <div class="input-group-box">
-                        <label>Date Of Payment <br>{{i.paydofj}}</label>
-                        <input type="date" name="dfpayment" value="{{i.paydofj}}" >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Fixed Initial Amount</label>
-                        <input type="text" name="fixedinit_amunt" value="{{reg.fixed_intial_amt}}" required>
-                    </div>
-                    <div class="input-group-box">
-                        <label>Initial Amount</label>
-                        <input type="text" name="init_amunt" value="{{i.payintial_amt}}" required>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                    <div class="input-group-box">
-                        <label>Next Payment Date <br>
-                            {{reg.next_pay_date}} </label>
-                        <input type="date" name="nxtpdof" >
-                    </div>
-                    <div class="input-group-box">
-                        <label>Total Amount</label>
-                        <input type="text" name="tot_amount" value="{{reg.regtotal_amt}}" required>
-                    </div>
-                    <div class="submit_button">
-                        <button type="submit">Save</button>
-                    </div>
-                </form>
+            
             </div>
-           
-           
         </div>
-    </section>
+        <div class="col-sm-12">
+            <div class="row flex-grow">
+                <div class="col-sm-12 col-md-12 grid-margin stretch-card">
+                    <div class="card card-rounded">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <form action=""  class="forms-sample" method="post">
+                                        {% csrf_token %}
+                                            <div class="d-flex justify-content-start align-items-center">
+                                                <h4 class="card-title card-title-dash">Onthe Job Training - Edit Form</h4>
+                                            
+                                            </div>
+                                            <div class="form-group mt-3">
+                                            <label for="empName">Full Name</label>
+                                            <input type="text" class="form-control small-text" id="empName" name="name" value="{{reg.fullName}}" placeholder="Full Name" required>
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="Date_ofjoin">Date Of Joing</label>
+                                                <input type="date" class="form-control small-text" id="Date_ofjoin" name="dfj" value="{{reg.dofj|date:'Y-m-d'}}" placeholder="Date Of Joing">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="phno-number">Phone Number</label>
+                                                <input type="text" class="form-control small-text" id="phno-number" name="phno" value="{{reg.Phone}}" pattern="[6789][0-9]{9}" placeholder="Phone Number">
+                                            </div>
+            
+                                            <div class="form-group">
+                                                <label for="Department">Department</label>
+                                                <select  class="form-control small-text" id="Department" name="dept" required>
+                                                    <option value="{{reg.dept_id.id}}"> {{reg.dept_id.department}}</option>
+                                                    {% for dept in depart %}
+                                                    <option value="{{dept.id}}">{{dept.department}}</option>
+                                                    {% endfor %}
+                                                    
+                                                </select>
+                                            </div>
+                                        
+                                        
+                                            <div class="form-group ">
+                                                <label for="refference">Refference By</label>
+                                                <input type="text" class="form-control small-text" id="refference" name="refby" value="{{reg.refrence}}"  placeholder="Employeee id">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="fixedinit_amunt"> Fixed Initial Amount</label>
+                                                <input type="text" class="form-control small-text" id="fixedinit_amunt" name="fixedinit_amunt"  value="{{reg.fixed_intial_amt}}">
+                                            </div>
+            
+                                            <div class="form-group ">
+                                                <label for="tot_amount"> Training Total Course Fee</label>
+                                                <input type="text" class="form-control small-text" id="tot_amount" name="tot_amount"  value="{{reg.regtotal_amt}}" placeholder="Amount">
+                                            </div>
+                                            
+            
+                                            <div class="form-group ">
+                                                <label for="dfpayment">Date Of Payment</label>
+                                                <input type="date" class="form-control small-text" id="dfpayment" name="dfpayment" value="{{payhis.paydofj|date:'Y-m-d'}}" placeholder="Date Of Payment">
+                                            </div>
+            
+                                            
+            
+                                            <div class="form-group ">
+                                                <label for="init_amunt"> Initial Amount</label>
+                                                <input type="text" class="form-control small-text" id="init_amunt" name="init_amunt" value="{{payhis.payintial_amt}}" placeholder=" Initial Amount">
+                                            </div>
+            
+                                            <div class="form-group ">
+                                                <label for="nxtpdof">Next Payment Date</label>
+                                                <input type="date" class="form-control small-text" id="nxtpdof" name="nxtpdof" value="{{reg.next_pay_date|date:'Y-m-d'}}" placeholder="Next Payment Date">
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-pen"></i>&nbsp; Edit Save</button>
+                                            </div>
+                                            
+                                    </form>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- Meaage Box fead Out -->
 
 
-</main>
+
 
 {% endblock %}

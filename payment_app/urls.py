@@ -23,6 +23,8 @@ urlpatterns = [
     path('Account-Dashboard',views.dashboard,name='dashboard'),
     path('Account-OJT-List',views.OJT_list_view,name='OJT_list_view'),
     path('Account-Employee-List',views.employee_list_view,name='employee_list_view'),
+    path('Allocate-List/<int:pk>',views.allocate_list,name='allocate_list'),
+    
 
     #----------------------Sidebar section --------------
 
@@ -83,7 +85,7 @@ urlpatterns = [
     path('Income-Expence-Delete/<int:incom_delete>',views.income_expence_delete,name="income_expence_delete"),
     
     
-    path('Employee-Register-Form',views.emp_Register_form,name='emp_Register_form'),
+    path('Employee-Register',views.emp_Register_form,name='emp_Register_form'),
     path('Employee-Register',views.employee_register_Details,name='employee_register_Details'),
     path('Employee-Register-Search',views.register_search,name='register_search'),
     path('Employee-Edit/<int:pk>',views.employee_reg_edit,name="employee_reg_edit"),
@@ -124,8 +126,7 @@ urlpatterns = [
     path('Edit-User/<int:pk>',views.edit_user,name="edit_user"),
     path('Edit-User-Details/<int:pk>',views.edit_Details,name="edit_Details"),
     path('Edit-Register-User/<int:pk>',views.register_edit,name="register_edit"),
-    path('Edit-Register-Save/<int:pk>',views.register_edit_save,name="register_edit_save"),
-    
+   
     
     
     

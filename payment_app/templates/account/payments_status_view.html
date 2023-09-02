@@ -19,7 +19,7 @@
                          <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{ojt_count}}</span> entries</p>
                      </div>
                      <div>
-                         <form class="search-form" action="#" method="post">
+                         <form class="search-form" action="{% url 'pyments_status_view' pk %}" method="post">
                              {% csrf_token %}
                             
                              <div class="searchBox">
@@ -49,7 +49,7 @@
                     <table class="table select-table" id="OJT-register">
                       <thead>
                         <tr class="text-center">
-                             <th>Check</th>  
+                             <th>Pay List</th>  
                              <th>Full Name</th>
                              <th>Message </th>
                              <th>Next Pay AMT</th>
@@ -97,6 +97,10 @@
                            
                              {% elif i.next_pay_date < cur_date %}
                                  <div class="badge badge-opacity-danger">Due date exceeded.</div>
+                                 <p>{{i.next_pay_date }}</p>
+
+                            {% elif i.next_pay_date > cur_date %}
+                                 
                                  <p>{{i.next_pay_date }}</p>
                              {% endif %}
 
