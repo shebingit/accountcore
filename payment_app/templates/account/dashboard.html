@@ -113,7 +113,7 @@
                                 <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay_count}}</span> new requests</p>
                             </div>
                             <div>
-                                <form class="search-form" action="#" method="post">
+                                <form class="search-form" action="{% url 'dashboard' %}" method="post">
                                     {% csrf_token %}
                                    
                                     <div class="searchBox">

@@ -50,6 +50,7 @@
                       <thead>
                         <tr class="text-center">
                              <th>Pay List</th>  
+                             <th>Receipt</th> 
                              <th>Full Name</th>
                              <th>Message </th>
                              <th>Next Pay AMT</th>
@@ -81,6 +82,14 @@
                                 </div>
                             </div>
                           </td>
+                          <td>
+                            <a href="{% url 'singelUserfull_receipt' i.id %}">
+                              <span>
+                                  <i class="mdi mdi-file-pdf mdi-18px text-danger"></i>
+                                  
+                              </span>
+                          </a>
+                          </td>
                           
                           <td>
                             <div class="d-flex ">
@@ -88,9 +97,10 @@
                             </div>
                           </td>
                           <td>
+                           
                              {% if i.next_pay_date == cur_date %}
                              
-                             <div class="badge badge-opacity-warning">Due date ahead.</div>
+                              <div class="badge badge-opacity-warning">Due date ahead.</div>
                              {% elif i.payment_status == 1 %}
                                  <div class="badge badge-opacity-success">All payments done.</div>
                                  

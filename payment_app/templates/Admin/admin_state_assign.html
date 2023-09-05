@@ -156,11 +156,28 @@
                                                 </td>
                                                 <td>                                          
                                                 <div class="d-flex ">
-                                                    <img src="images/faces/face1.jpg" alt="">
-                                                    <div>
-                                                    <h6>{{state.allocateid.empfullName}}</h6>
-                                                    <p>{{state.allocateid.empdesignation}}</p>
-                                                    </div>
+                                                    {% if state.allocate_dash %}
+                                                        {% if state.allocate_dash.dsh_image %}
+                                                            <img src="{{state.allocate_dash.dsh_image.url}}" alt="Profile Image">
+                                                        
+                                                        {% else %}
+                                                        <img src="{% static 'aimages/faces/face1.jpg' %}" alt="Profile">
+
+                                                        {% endif%}
+                                                        <div>
+                                                        <h6>{{state.allocateid.empfullName}}&nbsp;
+                                                             <span class="text-primary" id="toggleButton{{state.id}}"><i class="mdi mdi-eye-off-outline mdi-18px" id="icon{{state.id}}" ></i></span></h6>
+                                                        <p>{{state.allocateid.empdesignation}}</p>
+
+                                                        <div id="myDiv{{state.id}}" style="display: none;" >
+                                                            <p> User Name: {{state.allocate_dash.dsh_username}}</p>
+                                                            <p> Password: {{state.allocate_dash.dsh_password}}</p>
+                                                        </div>
+                                                        
+                                                        </div>
+                                                    {% else %}
+                                                        <p>Not Allocated</p>
+                                                    {% endif %}
                                                 </div>
                                                 </td>
                                                 
@@ -312,5 +329,17 @@
       </div>
 
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% for state in reg_states %}
+<script>
+$(document).ready(function() {
+    $("#toggleButton{{state.id}}").click(function() {
+        $("#myDiv{{state.id}}").toggle();
+        $("#icon{{state.id}}").toggleClass("mdi-eye-off-outline mdi-eye-outline");
+    });
+});
+</script>
+{% endfor %}
 
 {% endblock %}

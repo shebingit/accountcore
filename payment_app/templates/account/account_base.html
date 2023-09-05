@@ -80,13 +80,13 @@
               {% endif %}
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
-              <a  href="{% url 'admin_dashboard' %}" class="dropdown-item py-3 border-bottom">
+              <a  href="#" class="dropdown-item py-3 border-bottom">
                 <p class="mb-0 font-weight-medium float-left">You have&nbsp; {{approve_count}}&nbsp; new approval request </p>
                 <span class="badge badge-pill badge-primary float-right">View all</span>
               </a>
               
               {% for approve in  approvels %}
-              <a href="{% url 'admin_dashboard' %}" class="dropdown-item preview-item py-3">
+              <a href="#" class="dropdown-item preview-item py-3">
                 <div class="preview-thumbnail">
                   <i class="mdi mdi-marker-check m-auto text-success mdi-18px"></i>
                 </div>

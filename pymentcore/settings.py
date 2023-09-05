@@ -78,8 +78,8 @@ WSGI_APPLICATION = 'pymentcore.wsgi.application'
 DATABASES = {
     'default': {
          'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'account_dbcore',
-         #'NAME': 'infoxtec_account_dbcore',
+        # 'NAME': 'account_dbcore',
+         'NAME': 'payment_test',
         
         'USER': 'root',
         'PASSWORD': '',
@@ -129,6 +129,9 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR,"static"),)
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = 'media/'
 NEWPATH = 'D:/django/pymentcore'
+
+
+
 
 # SMTP email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

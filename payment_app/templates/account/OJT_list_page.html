@@ -52,7 +52,8 @@
                     <table class="table select-table" id="OJT-register">
                       <thead>
                         <tr>
-                             <th>Check</th>  
+                             <th>Check</th> 
+                             <th> Receipt</th> 
                              <th>Full Name</th>
                              <th>DOF-Join</th>
                              <th>Reff.</th>
@@ -63,6 +64,7 @@
                              <th>Progress</th>
                              <th class="text-center">Pay Status</th>
                              <th class="text-center">Reg.Status</th>
+                           
                         </tr>
                       </thead>
                       <tbody>
@@ -76,6 +78,14 @@
                                 <a href="{% url 'singleuser_details' i.id %}" class=" text-primary me-0"><i class="mdi mdi-arrow-right-drop-circle-outline mdi-18px"></i> </a>
                               </div>
                             </div>
+                          </td>
+                          <td>
+                            <a href="{% url 'singelUserfull_receipt' i.id %}">
+                              <span>
+                                  <i class="mdi mdi-file-pdf mdi-18px text-danger"></i>
+                                  
+                              </span>
+                          </a>
                           </td>
                           
                           <td>
@@ -147,6 +157,8 @@
                             <div class="badge badge-opacity-danger">Dactive</div>
                             {% endif %}
                           </td>
+                          
+                         
                         </tr>
                         {% endfor %}
                         

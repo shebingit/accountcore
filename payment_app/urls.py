@@ -91,10 +91,9 @@ urlpatterns = [
     path('Employee-Edit/<int:pk>',views.employee_reg_edit,name="employee_reg_edit"),
     path('Employee-Edit-Save/<int:pk>',views.employee_register_Details_edit,name="employee_register_Details_edit"),
 
-    path('Employee-Deactive/<int:pk>',views.emp_reg_deactive,name="emp_reg_deactive"),
-    path('Employee-Active/<int:pk>',views.emp_reg_reactive,name="emp_reg_reactive"),
-    path('Employee-Salary-Active/<int:pk>',views.emp_salary_active,name="emp_salary_active"),
-    path('Employee-Salary-Deactive/<int:pk>',views.emp_salary_deactive,name="emp_salary_deactive"),
+    path('Employee-Active-Deactive/<int:pk>',views.emp_reg_active_deactive,name="emp_reg_active_deactive"),
+    path('Employee-Salary-Active-Deactive/<int:pk>',views.emp_salary_active_deactive,name="emp_salary_active_deactive"),
+   
     path('Employee-Delete/<int:pk>',views.emp_reg_delete,name="emp_reg_delete"),
     
     
@@ -171,10 +170,7 @@ urlpatterns = [
     #path('Payment-Completed/<int:pk>',views.payment_completed,name="payment_completed"),
 
 
-    # Analyis section 
-    path('Analysis',views.analysis,name='analysis'),
-    path('Analysis-on-Month',views.analysis_months,name='analysis_months'),
-    path('Analysis-Search',views.analysis_search,name='analysis_search'),
+   
     
     
     
