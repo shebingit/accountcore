@@ -96,7 +96,8 @@
                                                 <input type="date" class="form-control small-text" id="nxtpdof" name="nxtpdof" value="{{reg.next_pay_date|date:'Y-m-d'}}" placeholder="Next Payment Date">
                                             </div>
                                             
-                                            <div class="d-flex justify-content-center align-items-center">
+                                            <div class="d-flex justify-content-center g-1 align-items-center">
+                                                <a href="{% url 'Register_form' %}"  class="btn btn-danger btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-refresh"></i>&nbsp; close</a>
                                                 <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-pen"></i>&nbsp; Edit Save</button>
                                             </div>
                                             

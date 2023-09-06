@@ -45,7 +45,7 @@
                          <div class="media">
                          <i class="mdi mdi-account-check icon-md text-info d-flex align-self-start me-3"></i>
                          <div class="media-body">
-                             <p class="card-text"> Total registrations for  OJT, details of trainees </p>
+                             <p class="card-text"> Total registrations for  OJT and details of trainees </p>
                          </div>
                          </div>
                      </div>
@@ -110,7 +110,10 @@
                          <div class="d-sm-flex justify-content-between align-items-start">
                            <div>
                                 <h4 class="card-title card-title-dash">Due Date Pending Payment List</h4>
-                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay_count}}</span> new requests</p>
+                                <p class="card-subtitle card-subtitle-dash">
+                                  You have <span class="count-value">{{pay_count}}</span> pending payments
+                                  <span><i class="mdi mdi-comment-text-outline mdi-18px" id="show-infocard"></i></span>
+                                 </p>
                             </div>
                             <div>
                                 <form class="search-form" action="{% url 'dashboard' %}" method="post">
@@ -139,11 +142,31 @@
                             </div>
                           
                          </div>
+
+                         <!--Information section -->
+                        
+
+                         <div class="card card-round" id="Infomation-Popup" style="display: none;">
+                          <div class="card-body">
+                            <span class="close-x text-danger" id="close-x"><i class="mdi mdi-close"></i></span>
+                            <h6 class="fw-bold">Infomation</h6>
+                            <ul>
+                              <li>This table displays the details of OJT trainees whose payment date has either exceeded or is today.</li>
+                              <li>The data can be searched by using Name, Due date, Next pay amount, Date of join, Reference, or Department</li>
+                              <li>We provide a searching option using dates. This data search is based on the trainee's joining date.</li>
+                            </ul>
+                         
+                           
+                          </div>
+                         </div>
+
+                         <!------------------------->
+
                          <div class="table-responsive  mt-1">
                            <table class="table select-table" id="OJT-register">
                              <thead>
                                <tr class="text-center">
-                                    <th>Check</th>  
+                                    <th>Pay List</th>  
                                     <th>Full Name</th>
                                     <th>Message </th>
                                     <th>Next Pay AMT</th>
@@ -165,7 +188,7 @@
                                    <div>
                                      <div class="btn-wrapper">
                                         
-                                       <a href="{% url 'singleuser_details' i.id %}" class=" text-primary me-0"><i class="mdi mdi-pen"></i> Edit</a>
+                                       <a href="{% url 'singleuser_details' i.id %}" class=" text-primary me-0"><i class="mdi mdi-checkbox-multiple-blank"></i></a>
                                      </div>
                                    </div>
                                  </td>
@@ -272,7 +295,7 @@
             const Cell5 = rows[i].getElementsByTagName('td')[5];
             const Cell6 = rows[i].getElementsByTagName('td')[6];
 
-            if (Cell1 || Cell4 || Cell4 ) {
+            if (Cell1 || Cell2 || Cell3 || Cell4 || Cell5 || Cell6 ) {
 
                 const datacell1 = Cell1.textContent || Cell1.innerText;
                 const datacell2 = Cell2.textContent || Cell2.innerText;
@@ -311,7 +334,20 @@
     });
 </script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // Show the information card when clicking on the "show-infocard" element
+    $("#show-infocard").click(function() {
+      $("#Infomation-Popup").show();
+    });
 
+    // Hide the information card when clicking on the "close-x" element
+    $("#close-x").click(function() {
+      $("#Infomation-Popup").hide();
+    });
+  });
+</script>
 
 {% endblock %}
 

@@ -129,7 +129,7 @@
                                    <p class="text-warning">{{i.payprogress}}%</p>
                                  </div>
                                  <div class="progress progress-md">
-                                     <div class="progress-bar bg-warning" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                     <div class="progress-bar bg-warning" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"></div>
                                  </div>
                              </div>
                              {% elif i.payment_status == 1 %}
@@ -138,7 +138,7 @@
                                    <p class="text-success">{{i.payprogress}}%</p>
                                  </div>
                                  <div class="progress progress-md">
-                                     <div class="progress-bar bg-success" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                     <div class="progress-bar bg-success" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"></div>
                                  </div>
                              </div>
                              
@@ -148,7 +148,7 @@
                                    <p class="text-danger">{{i.payprogress}}%</p>
                                  </div>
                                  <div class="progress progress-md">
-                                     <div class="progress-bar bg-danger" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                     <div class="progress-bar bg-danger" role="progressbar" style="width:{{i.payprogress}}%" aria-valuenow="{{i.payprogress}}" aria-valuemin="0" aria-valuemax="100"></div>
                                  </div>
                              </div>
                              {% endif %}
@@ -204,6 +204,7 @@
             const Cell4 = rows[i].getElementsByTagName('td')[4];
             const Cell5 = rows[i].getElementsByTagName('td')[5];
             const Cell6 = rows[i].getElementsByTagName('td')[6];
+            const Cell7 = rows[i].getElementsByTagName('td')[7];
 
             if (Cell1 || Cell4 || Cell4 ) {
 
@@ -213,10 +214,11 @@
                 const datacell4 = Cell4.textContent || Cell4.innerText;
                 const datacell5 = Cell5.textContent || Cell5.innerText;
                 const datacell6 = Cell6.textContent || Cell6.innerText;
+                const datacell7 = Cell7.textContent || Cell7.innerText;
                 
 
                 if (datacell1.toLowerCase().includes(filterValue) || datacell2.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue)
-                || datacell4.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) || datacell6.toLowerCase().includes(filterValue) ) 
+                || datacell4.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) || datacell6.toLowerCase().includes(filterValue) || datacell7.toLowerCase().includes(filterValue) ) 
                 {
                     rows[i].style.display = '';
                 } else {

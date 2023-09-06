@@ -52,7 +52,7 @@
                     <table class="table select-table" id="OJT-register">
                       <thead>
                         <tr>
-                             <th>Check</th> 
+                             <th>Pay List</th> 
                              <th> Receipt</th> 
                              <th>Full Name</th>
                              <th>DOF-Join</th>
@@ -75,7 +75,7 @@
                             <div>
                               <div class="btn-wrapper">
                                  
-                                <a href="{% url 'singleuser_details' i.id %}" class=" text-primary me-0"><i class="mdi mdi-arrow-right-drop-circle-outline mdi-18px"></i> </a>
+                                <a href="{% url 'singleuser_details' i.id %}" class=" text-primary me-0"><i class="mdi mdi-checkbox-multiple-blank mdi-18px"></i> </a>
                               </div>
                             </div>
                           </td>
@@ -192,18 +192,18 @@
         const rows = ojtTable.getElementsByTagName('tr');
 
         for (let i = 1; i < rows.length; i++) {
-            const Cell1 = rows[i].getElementsByTagName('td')[1];
-            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
             const Cell4 = rows[i].getElementsByTagName('td')[4];
+            const Cell5 = rows[i].getElementsByTagName('td')[5];
 
-            if (Cell1 || Cell4 || Cell4 ) {
+            if (Cell2 || Cell4 || Cell5 ) {
 
-                const datacell1 = Cell1.textContent || Cell1.innerText;
-                const datacell3 = Cell3.textContent || Cell3.innerText;
+                const datacell2 = Cell2.textContent || Cell2.innerText;
                 const datacell4 = Cell4.textContent || Cell4.innerText;
+                const datacell5 = Cell5.textContent || Cell5.innerText;
                 
 
-                if (datacell1.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue) || datacell4.toLowerCase().includes(filterValue) ) 
+                if (datacell2.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) || datacell4.toLowerCase().includes(filterValue) ) 
                 {
                     rows[i].style.display = '';
                 } else {

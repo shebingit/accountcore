@@ -109,7 +109,9 @@ urlpatterns = [
     
     path('Salary-Expence-Add/<int:pk>',views.salary_expence_add,name="salary_expence_add"),
     path('Salary-Expence-Edit/<int:pk>',views.salary_expence_edit,name="salary_expence_edit"),
-    path('Salary-Expence-Edit-Save',views.salary_edit_save,name="salary_edit_save"),
+    path('Salary-Expence-Edit-Save/<int:pk>',views.salary_edit_save,name="salary_edit_save"),
+    path('Salary-Expence-Remove/<int:pk>',views.salary_expence_remove,name="salary_expence_remove"),
+    
     
     
     path('Salary-Expence-Save',views.employee_salary_save,name='employee_salary_save'),
@@ -125,6 +127,7 @@ urlpatterns = [
     path('Edit-User/<int:pk>',views.edit_user,name="edit_user"),
     path('Edit-User-Details/<int:pk>',views.edit_Details,name="edit_Details"),
     path('Edit-Register-User/<int:pk>',views.register_edit,name="register_edit"),
+    path('Edit-UserDetails/<int:pk>',views.register_edit_details,name="register_edit_details"),
    
     
     

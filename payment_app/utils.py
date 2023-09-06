@@ -136,6 +136,7 @@ def income_expence_check(request):
                 incomeexp.exin_date=i.fixed_date
                 incomeexp.exin_amount=i.fixed_amount
                 incomeexp.exin_typ=2
+                incomeexp.exin_state=state
                 incomeexp.exin_dese=i.fixed_dese
                 incomeexp.exin_status=1
                 incomeexp.save()
@@ -269,23 +270,23 @@ def upcoming_state_payments(request,state):
         after_15days = (fr_date + timedelta(days=14))
        
 
-        pay_current=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,reg_status=1,reg_state=state)
+        pay_current=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,reg_status=1,reg_state=state).order_by('next_pay_date')
         pay_current_count=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,reg_status=1,reg_state=state).count()
         pay_current_amt=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,reg_status=1,reg_state=state).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
 
-        pay1_7=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,reg_status=1,reg_state=state)
+        pay1_7=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,reg_status=1,reg_state=state).order_by('next_pay_date')
         pay1_7_count=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,reg_status=1,reg_state=state).count()
         pay1_7_amt=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=after_6_days,reg_status=1,reg_state=state).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
 
-        pay8_15=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,reg_status=1,reg_state=state)
+        pay8_15=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,reg_status=1,reg_state=state).order_by('next_pay_date')
         pay8_15_count=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,reg_status=1,reg_state=state).count()
         pay8_15_amt=Register.objects.filter(next_pay_date__gte=after_8_days,next_pay_date__lte=after_15days,reg_status=1,reg_state=state).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
        
-        pay15_end=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,reg_status=1,reg_state=state)
-        pay15_end_count=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,reg_status=1,reg_state=state).count()
-        pay15_end_amt=Register.objects.filter(next_pay_date__gte=after_15days,next_pay_date__lte=to_date,reg_status=1,reg_state=state).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+        pay15_end=Register.objects.filter(next_pay_date__gt=after_15days,next_pay_date__lte=to_date,reg_status=1,reg_state=state).order_by('next_pay_date')
+        pay15_end_count=Register.objects.filter(next_pay_date__gt=after_15days,next_pay_date__lte=to_date,reg_status=1,reg_state=state).count()
+        pay15_end_amt=Register.objects.filter(next_pay_date__gt=after_15days,next_pay_date__lte=to_date,reg_status=1,reg_state=state).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
 
-        paynext=Register.objects.filter(next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end,reg_status=1,reg_state=state)
+        paynext=Register.objects.filter(next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end,reg_status=1,reg_state=state).order_by('next_pay_date')
         paynext_count=Register.objects.filter(next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end,reg_status=1,reg_state=state).count()
         paynext_amt=Register.objects.filter(next_pay_date__gte=next_month_start,next_pay_date__lte=next_month_end,reg_status=1,reg_state=state).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
 
@@ -318,16 +319,17 @@ def upcoming_state_payments(request,state):
 #================================= ACCOUNT SECTION =====================================================
 
 
-def account_nav_data(request): #Account Navbar data 
+def account_nav_data(request,stateId): #Account Navbar data 
 
-    # reg1=Register.objects.filter(reg_status=1)
-    # payhis_list=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-    # approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-    # approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+    reg1=Register.objects.filter(reg_status=1,reg_state=stateId)
+    approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
+    approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
  
     states = Register_State.objects.filter(allocate_status=1)
 
     comman_data={
-                 'states':states
+                 'states':states,
+                 'approvels':approvels,
+                 'approve_count':approve_count
                  }
     return comman_data

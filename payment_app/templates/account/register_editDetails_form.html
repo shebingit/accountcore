@@ -1,0 +1,99 @@
+{% extends 'account/account_base.html' %}
+{% load static %}
+{% block body %}
+
+
+<!--- OJT Edit   -->
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-sm-12">
+           
+            <div class="d-sm-flex align-items-center justify-content-center mb-1">
+            
+                {% if success_msg %}
+                    <div class="messageBox-container" id="message-container">
+                    
+                            <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                            <p class="text-center success-text">{{success_msg}}</p>
+                    </div>
+                {% elif error_msg %}
+                    <div class="messageBox-container" id="message-container">
+                            <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                            <p class="text-center error-text">{{error_msg}}</p>
+                    </div>
+                {% endif %}
+            
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="row flex-grow">
+                <div class="col-sm-12 col-md-12 grid-margin stretch-card">
+                    <div class="card card-rounded">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <form action="{% url 'register_edit_details' reg.id %}"  class="forms-sample" method="post">
+                                        {% csrf_token %}
+                                            <div class="d-flex justify-content-start align-items-center">
+                                                <h4 class="card-title card-title-dash">Onthe Job Training - Edit Form</h4>
+                                            
+                                            </div>
+                                            <div class="form-group mt-3">
+                                            <label for="empName">Full Name</label>
+                                            <input type="text" class="form-control small-text" id="empName" name="name" value="{{reg.fullName}}" placeholder="Full Name" required>
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="Date_ofjoin">Date Of Joing</label>
+                                                <input type="date" class="form-control small-text" id="Date_ofjoin" name="dfj" value="{{reg.dofj|date:'Y-m-d'}}" placeholder="Date Of Joing">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="phno-number">Phone Number</label>
+                                                <input type="text" class="form-control small-text" id="phno-number" name="phno" value="{{reg.Phone}}" pattern="[6789][0-9]{9}" placeholder="Phone Number">
+                                            </div>
+            
+                                            <div class="form-group">
+                                                <label for="Department">Department</label>
+                                                <select  class="form-control small-text" id="Department" name="dept" required>
+                                                    <option value="{{reg.dept_id.id}}"> {{reg.dept_id.department}}</option>
+                                                    {% for dept in depart %}
+                                                    <option value="{{dept.id}}">{{dept.department}}</option>
+                                                    {% endfor %}
+                                                    
+                                                </select>
+                                            </div>
+                                        
+                                        
+                                            <div class="form-group ">
+                                                <label for="refference">Refference By</label>
+                                                <input type="text" class="form-control small-text" id="refference" name="refby" value="{{reg.refrence}}"  placeholder="Employeee id">
+                                            </div>
+                                            
+                                            <div class="form-group ">
+                                                <label for="nxtpdof">Next Payment Date</label>
+                                                <input type="date" class="form-control small-text" id="nxtpdof" name="nxtpdof" value="{{reg.next_pay_date|date:'Y-m-d'}}" placeholder="Next Payment Date">
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-center g-1 align-items-center">
+                                                <a href="{% url 'Register_form' %}"  class="btn btn-danger btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-refresh"></i>&nbsp; close</a>
+                                                <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-pen"></i>&nbsp; Edit Save</button>
+                                            </div>
+                                            
+                                    </form>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

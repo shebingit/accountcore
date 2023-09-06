@@ -31649,5 +31649,14 @@ background: #ffffff;
 {
   display: none;
 }
+.g-1{
+  gap: 1rem;
+}
+.close-x
+{
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
 
        

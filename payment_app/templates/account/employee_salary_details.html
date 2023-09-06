@@ -11,11 +11,32 @@
         <div class="col-lg-12 d-flex flex-column">
         
           <div class="row flex-grow">
+              <div class="col-sm-12">
+            
+                <div class="d-sm-flex align-items-center justify-content-start mb-2">
+                
+                    {% if success_msg %}
+                        <div class="messageBox-container" id="message-container">
+                        
+                                <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                                <p class="text-center success-text">{{success_msg}}</p>
+                        </div>
+                    {% elif error_msg %}
+                        <div class="messageBox-container" id="message-container">
+                                <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                                <p class="text-center error-text">{{error_msg}}</p>
+                        </div>
+                  
+                    {% endif %}
+                
+                </div>
+            </div>
             <div class="col-12 grid-margin stretch-card">
               <div class="card card-rounded">
                 <div class="card-body">
                   <div class="d-sm-flex justify-content-between align-items-start">
                     <div>
+                      <span><a href="{% url 'all_salary_expence' %}"><i class="mdi mdi-arrow-left-bold"></i></a></span>
                       <h4 class="card-title card-title-dash">{{emp_reg_edit.empfullName}} - Salary Payments List</h4>
                      <p class="card-subtitle card-subtitle-dash">{{emp_reg_edit.empfullName}}  has <span class="count-value">{{salary_count}}</span> payments</p>
                     </div>
@@ -52,7 +73,8 @@
                     <table class="table select-table" id="Emp-register">
                       <thead>
                         <tr>
-                            <th></th>
+                            <th>No</th>
+                            <th>Edit/Delete</th>
                             <th>Salary Month</th>
                             <th>Paid Date</th>
                             <th> Full day Leave /Amount</th>
@@ -67,7 +89,11 @@
                       <tbody>
                         {% for i in salary %}
                         <tr class="text-center">
-                            <td>{{ forloop.counter }}</td>
+                          <td>{{ forloop.counter }}</td>
+                            <td>
+                              <a href="{% url 'salary_expence_edit' i.id %}" class="text-primary mr-1"><i class="mdi mdi-pen mdi-18px"></i>Edit </a>
+                              <a href="{% url 'salary_expence_remove' i.id %}" class="text-danger"><i class="mdi mdi-close-circle-outline mdi-18px"></i>Remove</a>
+                            </td>
                            
                             <td>{{i.empsalary_month}}</td>
                             <td>{{i.empslaray_date}}</td>
@@ -121,16 +147,16 @@
         const rows = empTable.getElementsByTagName('tr');
 
         for (let i = 1; i < rows.length; i++) {
-            const Cell0 = rows[i].getElementsByTagName('td')[0];
             const Cell1 = rows[i].getElementsByTagName('td')[1];
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
            
-            if (Cell0 || Cell1 ) {
+            if (Cell1 || Cell2 ) {
 
-                const datacell0 = Cell0.textContent || Cell0.innerText;
                 const datacell1 = Cell1.textContent || Cell1.innerText;
+                const datacell2 = Cell2.textContent || Cell2.innerText;
               
 
-                if (datacell0.toLowerCase().includes(filterValue) || datacell1.toLowerCase().includes(filterValue)  ) 
+                if (datacell1.toLowerCase().includes(filterValue) || datacell2.toLowerCase().includes(filterValue)  ) 
                 {
                     rows[i].style.display = '';
                 } else {

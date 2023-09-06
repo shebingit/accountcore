@@ -2,197 +2,234 @@
 {% load static %}
 {% block body %}
 
-
 <!--- OJT Add   -->
+
 <div class="content-wrapper">
 
     <div class="row">
         <div class="col-sm-12">
-           
-            <div class="d-sm-flex align-items-center justify-content-center mb-1">
-            
-                {% if success_msg %}
-                    <div class="messageBox-container" id="message-container">
-                    
-                            <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
-                            <p class="text-center success-text">{{success_msg}}</p>
-                    </div>
-                {% elif error_msg %}
-                    <div class="messageBox-container" id="message-container">
-                            <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
-                            <p class="text-center error-text">{{error_msg}}</p>
-                    </div>
-                {% endif %}
-            
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+              <ul class="nav nav-tabs" role="tablist">
+               
+                <li class="nav-item">
+                  <a class="nav-link active ps-0" id="profile-tab" data-bs-toggle="tab" href="#ojt-view" role="tab" aria-selected="false">OJT-Register List</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " id="home-tab" data-bs-toggle="tab" href="#register-ojt" role="tab" aria-controls="register-ojt" aria-selected="true">Reg. OJT </a>
+                  </li>
+              </ul>
+              {% if success_msg %}
+                <div class="messageBox-container" id="message-container">
+                
+                        <div class="messageicon-Box successBox "><i class="mdi mdi-check icon-sm"></i></div>
+                        <p class="text-center success-text">{{success_msg}}</p>
+                </div>
+              {% elif error_msg %}
+                <div class="messageBox-container" id="message-container">
+                        <div class="messageicon-Box errorBox "><i class="mdi mdi-close icon-sm"></i></div>
+                        <p class="text-center error-text">{{error_msg}}</p>
+                </div>
+              {% endif %}
+              <div>
+                <div class="btn-wrapper">
+                  <a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
+                  <a href="#" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
+                  <a href="#" class="btn btn-primary text-white me-0"><i class="icon-download"></i> Export</a>
+                </div>
+              </div>
             </div>
-        </div>
-        <div class="col-sm-12">
-            <div class="row flex-grow">
-                <div class="col-sm-12 col-md-4 grid-margin stretch-card">
-                    <div class="card card-rounded">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <form action="{% url  'Register_form' %}" class="forms-sample" method="post">
-                                        {% csrf_token %}
-                                            <div class="d-flex justify-content-start align-items-center">
-                                                <h4 class="card-title card-title-dash">Onthe Job Training - Registration Form</h4>
+            <div class="tab-content tab-content-basic">
+              <div class="tab-pane fade " id="register-ojt" role="tabpanel" aria-labelledby="register-ojt"> 
+                <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <form action="{% url  'Register_form' %}" class="forms-sample" method="post">
+                                            {% csrf_token %}
+                                                <div class="d-flex justify-content-start align-items-center">
+                                                    <h4 class="card-title card-title-dash">Onthe Job Training - Registration Form</h4>
+                                                
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                <label for="empName">Full Name</label>
+                                                <input type="text" class="form-control small-text" id="empName" name="name" placeholder="Full Name" required>
+                                                </div>
+                                                <div class="form-group ">
+                                                    <label for="Date_ofjoin">Date Of Joing</label>
+                                                    <input type="date" class="form-control small-text" id="Date_ofjoin" name="dfj" placeholder="Date Of Joing">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="phno-number">Phone Number</label>
+                                                    <input type="text" class="form-control small-text" id="phno-number" name="phno"  pattern="[6789][0-9]{9}" placeholder="Phone Number">
+                                                </div>
+                
+                                                <div class="form-group">
+                                                    <label for="Department">Department</label>
+                                                    <select  class="form-control small-text" id="Department" name="dept" required>
+                                                        <option value="">Choose Department</option>
+                                                        {% for dept in depart %}
+                                                        <option value="{{dept.id}}">{{dept.department}}</option>
+                                                        {% endfor %}
+                                                        
+                                                    </select>
+                                                </div>
                                             
-                                            </div>
-                                            <div class="form-group mt-3">
-                                            <label for="empName">Full Name</label>
-                                            <input type="text" class="form-control small-text" id="empName" name="name" placeholder="Full Name" required>
-                                            </div>
-                                            <div class="form-group ">
-                                                <label for="Date_ofjoin">Date Of Joing</label>
-                                                <input type="date" class="form-control small-text" id="Date_ofjoin" name="dfj" placeholder="Date Of Joing">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="phno-number">Phone Number</label>
-                                                <input type="text" class="form-control small-text" id="phno-number" name="phno"  pattern="[6789][0-9]{9}" placeholder="Phone Number">
-                                            </div>
-            
-                                            <div class="form-group">
-                                                <label for="Department">Department</label>
-                                                <select  class="form-control small-text" id="Department" name="dept" required>
-                                                    <option value="">Choose Department</option>
-                                                    {% for dept in depart %}
-                                                    <option value="{{dept.id}}">{{dept.department}}</option>
-                                                    {% endfor %}
-                                                    
-                                                </select>
-                                            </div>
+                                            
+                                                <div class="form-group ">
+                                                    <label for="refference">Refference By</label>
+                                                    <input type="text" class="form-control small-text" id="refference" name="refby" placeholder="Refference By">
+                                                </div>
+                                                <div class="form-group ">
+                                                    <label for="fixedinit_amunt"> Fixed Initial Amount</label>
+                                                    <input type="text" class="form-control small-text" id="fixedinit_amunt" name="fixedinit_amunt" value="10000">
+                                                </div>
+                
+                                                <div class="form-group ">
+                                                    <label for="tot_amount"> Training Total Course Fee</label>
+                                                    <input type="text" class="form-control small-text" id="tot_amount" name="tot_amount" placeholder="Amount">
+                                                </div>
+                                                
+                
+                                                <div class="form-group ">
+                                                    <label for="dfpayment">Date Of Payment</label>
+                                                    <input type="date" class="form-control small-text" id="dfpayment" name="dfpayment" placeholder="Date Of Payment">
+                                                </div>
+                
+                                                
+                
+                                                <div class="form-group ">
+                                                    <label for="init_amunt"> Initial Amount</label>
+                                                    <input type="text" class="form-control small-text" id="init_amunt" name="init_amunt" placeholder=" Initial Amount">
+                                                </div>
+                
+                                                <div class="form-group ">
+                                                    <label for="nxtpdof">Next Payment Date</label>
+                                                    <input type="date" class="form-control small-text" id="nxtpdof" name="nxtpdof" placeholder="Next Payment Date">
+                                                </div>
+                                                
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-account-plus"></i>&nbsp; Register</button>
+                                                </div>
+                                                
+                                        </form>
                                         
-                                        
-                                            <div class="form-group ">
-                                                <label for="refference">Refference By</label>
-                                                <input type="text" class="form-control small-text" id="refference" name="refby" placeholder="Employeee id">
-                                            </div>
-                                            <div class="form-group ">
-                                                <label for="fixedinit_amunt"> Fixed Initial Amount</label>
-                                                <input type="text" class="form-control small-text" id="fixedinit_amunt" name="fixedinit_amunt" value="10000">
-                                            </div>
-            
-                                            <div class="form-group ">
-                                                <label for="tot_amount"> Training Total Course Fee</label>
-                                                <input type="text" class="form-control small-text" id="tot_amount" name="tot_amount" placeholder="Amount">
-                                            </div>
-                                            
-            
-                                            <div class="form-group ">
-                                                <label for="dfpayment">Date Of Payment</label>
-                                                <input type="date" class="form-control small-text" id="dfpayment" name="dfpayment" placeholder="Date Of Payment">
-                                            </div>
-            
-                                            
-            
-                                            <div class="form-group ">
-                                                <label for="init_amunt"> Initial Amount</label>
-                                                <input type="text" class="form-control small-text" id="init_amunt" name="init_amunt" placeholder=" Initial Amount">
-                                            </div>
-            
-                                            <div class="form-group ">
-                                                <label for="nxtpdof">Next Payment Date</label>
-                                                <input type="date" class="form-control small-text" id="nxtpdof" name="nxtpdof" placeholder="Next Payment Date">
-                                            </div>
-                                            
-                                            <div class="d-flex justify-content-center align-items-center">
-                                                <button type="submit" class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-account-plus"></i>&nbsp; Register</button>
-                                            </div>
-                                            
-                                    </form>
-                                    
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-12 col-md-8 grid-margin stretch-card">
-                    <div class="card card-rounded">
-                        <div class="card-body">
-                            <div class="d-sm-flex justify-content-between align-items-start">
-                                <div>
-                                    <h4 class="card-title card-title-dash">Registered OJT List</h4>
-                                    <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{reg_count}}</span> registraions</p>
-                                </div>
-                                <div class="searchBox">
-                                        
-                                    <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
-                                    <button class="close-btn" id="closeBtn">
-                                            <i class="mdi mdi-close"></i>
-                                    </button>
-                                        
-                                </div>
-                                
-                            </div>
-            
-                            <div class="table-responsive  mt-1">
-                                <table class="table select-table" id="OJT-Register">
-                                    <thead>
-                                        <tr>
-                                            <th>Edit / Delete</th>
-                                            <th>Full Name and Details</th>
-                                            <th>Date Of Joing</th>
-                                            <th>Pay Amount</th>
-                                            <th>Tl. Amount</th>
-                                            <th class="text-center">Pay Staus</th>
-                                            <th class="text-center">Reg. Status</th>
-                                        
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                            
-                                    {% for i in reg %}
-                                        {% for pay in payhis %}
+                  </div>
+     
+              </div>
 
-                                        {% if pay.reg_id.id == i.id %}
-                                    
-                                        
-                                            <tr>
-                                                <td>
-                                                    <a href="{% url 'register_edit' i.id %}" class="text-primary mr-1"><i class="mdi mdi-pen mdi-18px"></i> Edit</a>
-                                                    <a href="{% url 'remove' i.id %}" class="text-danger"><i class="mdi mdi-close-circle-outline mdi-18px"></i> Remove</a>
-                                                </td>
+              <div class="tab-pane show active fade" id="ojt-view" role="tabpanel" aria-labelledby="employee-view"> 
+                
+                <div class="row flex-grow">
+                    <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                            <div class="card-body">
+                                <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h4 class="card-title card-title-dash">Registered OJT List</h4>
+                                        <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{reg_count}}</span> registraions</p>
+                                    </div>
+                                    <div class="searchBox">
                                             
-                                                <td>{{i.fullName}}
-                                                    <p class="pt-015">{{i.Phone}}</p>
-                                                    <p class="pt-015">{{i.dept_id.department}}</p>
-                                                    <p class="pt-015">{{i.reg_state.state_name}}</p>
-                                                </td>
-                                                <td>{{i.dofj}} </td>
-                                                
-                                                <td>{{pay.payintial_amt}} </td>
-                                                <td>{{pay.paytotal_amt}}</td>
-                                                <td class="text-center">
-                                                    {% if pay.admin_payconfirm == 1 %}
-                                                    <div class="badge badge-opacity-success"> Active</div>
-                                                    {% else %}
-                                                    <div class="badge badge-opacity-warning"> Wating....</div>
-                                                    {% endif %}
-                                                </td>
-                                                <td class="text-center">
-                                                    {% if i.reg_status == 1 %}
-                                                    <div class="badge badge-opacity-success"> Active</div>
-                                                    {% else %}
-                                                    <div class="badge badge-opacity-warning"> Wating....</div>
-                                                    {% endif %}
-                                                
-                                                </td>
-                                                
+                                        <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                        <button class="close-btn" id="closeBtn">
+                                                <i class="mdi mdi-close"></i>
+                                        </button>
+                                            
+                                    </div>
+                                    
+                                </div>
+                
+                                <div class="table-responsive  mt-1">
+                                    <table class="table select-table" id="OJT-Register">
+                                        <thead>
+                                            <tr>
+                                                <th>Edit / Delete</th>
+                                                <th>Full Name and Details</th>
+                                                <th>Date Of Joing</th>
+                                                <th>Tl.Payed Amount</th>
+                                                <th>Tl. Amount</th>
+                                                <th class="text-center">Pay Staus</th>
+                                                <th class="text-center">Reg. Status</th>
                                             
                                             </tr>
-                                        {% endif %}
-                                        {% endfor %}
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                                
+                                        {% for i in reg %}
+                                            {% for pay in payhis %}
+    
+                                            {% if pay.reg_id.id == i.id %}
+                                        
+                                            
+                                                <tr>
+                                                    <td>  
+                                                        {% if i.reg_status == 0 %}
+                                                        <a href="{% url 'register_edit' i.id %}" class="text-primary mr-1"><i class="mdi mdi-pen mdi-18px"></i>Edit </a>
+                                                        {% else %}
+                                                        <a href="{% url 'register_edit_details' i.id %}" class="text-primary mr-1"><i class="mdi mdi-pen mdi-18px"></i>Edit </a>
+                                                        {% endif %}
+                                                        <a href="{% url 'remove' i.id %}" class="text-danger"><i class="mdi mdi-close-circle-outline mdi-18px"></i>Remove</a>
+                                                    </td>
+                                                
+                                                    <td>{{i.fullName}}
+                                                        <p class="pt-015">{{i.Phone}}</p>
+                                                        <p class="pt-015">{{i.dept_id.department}}</p>
+                                                        <p class="pt-015">{{i.reg_state.state_name}}</p>
+                                                    </td>
+                                                    <td>{{i.dofj}} </td>
+                                                    
+                                                    <td>
+                                                        {% if i.reg_status == 0 %}
+                                                            {{pay.payintial_amt}}
+                                                            <p>{{pay.head_name}}</p>
+                                                            <p>Pay date: {{pay.paydofj}}</p>
+                                                        {% else %} 
+                                                            {{i.reg_payedtotal}}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td> {{i.regtotal_amt}}</td>
+                                                    <td class="text-center">
+                                                        {% if pay.admin_payconfirm == 1 %}
+                                                        <div class="badge badge-opacity-success"> Active</div>
+                                                        {% else %}
+                                                        <div class="badge badge-opacity-warning"> Wating....</div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        {% if i.reg_status == 1 %}
+                                                        <div class="badge badge-opacity-success"> Active</div>
+                                                        {% else %}
+                                                        <div class="badge badge-opacity-warning"> Wating....</div>
+                                                        {% endif %}
+                                                    
+                                                    </td>
+                                                    
+                                                
+                                                </tr>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    </div>
+              </div>
             </div>
+          </div>
         </div>
     </div>
+
 </div>
 
 
