@@ -107,10 +107,10 @@
                                 <div class="d-sm-flex justify-content-between align-items-start">
                                 <div>
                                     <h4 class="card-title card-title-dash">Fixed Expence of all state </h4>
-                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{fixedexp_count}}</span> recordes</p>
+                                <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{fixedexp_count}}</span> recordes  and total <span class="count-value">{{fixedexp_amt}}</span></p>
                                 </div>
                                 <div>
-                                    <form class="search-form" action="#" method="post">
+                                    <form class="search-form" action="{% url 'admin_fixed_expence' %}" method="post">
                                         {% csrf_token %}
                                         <div class="searchBox">
                                     
@@ -121,7 +121,7 @@
                                             
                                         </div>
                                         <div class="w-box" >
-                                            <select name="search_select" class="search-select">
+                                            <select name="search_select" class="search-select" required>
                                                
                                                 <option value="0"> All states </option>
                                                 {% for state in states %}
@@ -207,7 +207,8 @@
                                   <div class="form-group ">
                                       <label for="empName">Head Name</label>
                                       <input type="text" class="form-control small-text" id="fixed_head_name" name="fixed_head_name"  placeholder="Head " required>
-                                  </div>
+                                      <input type="hidden" name="fixedid" value="0">
+                                    </div>
                                   <div class="form-group ">
                                       <label for="Date_ofjoin">Date</label>
                                       <input type="date" class="form-control small-text" id="fixed_date" name="fixed_date" placeholder="Date ">
@@ -216,7 +217,7 @@
                                   <div class="form-group">
                                     <label for="state">State</label>
                                     <select  class="form-control small-text" id="state" name="fixed_state" required>
-                                      <option value="0" selected>Company</option>
+                                      <option value="0" selected>select state</option>
                                       {% for state in states %}
                                       <option value="{{state.id}}">{{state.state_name}}</option>
                                       {% endfor %}

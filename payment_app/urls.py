@@ -246,7 +246,7 @@ urlpatterns = [
 
     path('Admin-Holidays',views.admin_company_holoidays,name='admin_company_holoidays'),
     path('Admin-Holiday-Add',views.admin_company_holiday_add,name='admin_company_holiday_add'),
-    path('Admin-Holiday-Edit/<int:pk>',views.admin_company_holidy_edit,name="admin_company_holidy_edit"),
+    # path('Admin-Holiday-Edit/<int:pk>',views.admin_company_holidy_edit,name="admin_company_holidy_edit"),
 
 
     # Admin Analysis section 

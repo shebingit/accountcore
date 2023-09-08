@@ -48,7 +48,8 @@
                                       </div>
                                       <div class="form-group mt-3">
                                           <label for="departmentName">Department</label>
-                                          <input type="text" class="form-control" id="departmentName" name="dept_name" required>
+                                          <input type="text" class="form-control" id="departmentName" value="{{dept_edit.department}}" name="dept_name" required>
+                                          <input type="hidden" name="depId" value="{{dept_edit.id}}">
                                           
                                       </div>
                                         
@@ -78,8 +79,8 @@
                                       <thead>
                                       <tr>
                                         <tr>
-                                            <th>Edit</th>
-                                            <th>Delete</th>
+                                            <th>Edit / Delete</th>
+                                           
                                             <th>Department Name</th>
                                             <th>Staus</th>
                                             
@@ -91,11 +92,13 @@
 
                                         {% for i in dept %}
                                           <tr>
-                                            <td><a href="{% url 'admin_edit_dept' i.id %}" class="text-primary me-3"><i class="mdi mdi-pen ">edit</i></a></td>
-                                            <td><a href="{% url 'admin_remove_dept' i.id %} " class="text-danger"><i class="mdi mdi-close">delete</i></a></td>
-                                            <td><h6>{{i.department}}</h6>
-                                                <input type="text" name="dept_rowid" value="{{i.id}}" hidden>
+                                            <td>
+                                              <a href="{% url 'admin_edit_dept' i.id %}" class="text-primary me-3"><i class="mdi mdi-pen ">edit</i></a>
+                                              <a href="{% url 'admin_remove_dept' i.id %} " class="text-danger"><i class="mdi mdi-close">delete</i></a>
                                             </td>
+                                           
+                                            
+                                            <td><h6>{{i.department}}</h6></td>
                                             
                                             <td>
                                                 {% if i.dpt_Status == 1 %}

@@ -13,7 +13,7 @@
                 <div class="card-body">
                 <div class="d-sm-flex justify-content-between align-items-start">
                     <div>
-                    <h4 class="card-title card-title-dash">Registrations </h4>
+                    <h4 class="card-title card-title-dash">Employee Registrations </h4>
                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{emp_reg_count}}</span>  registrations</p>
                     </div>
                     <div>
@@ -61,8 +61,8 @@
                             <th>Department</th>
                             <th>state</th>
                             <th>Confirm salary</th>
-                            <th>acc.Status</th>
-                            <th>Reg.Status</th>
+                            <th>Sal. ACC</th>
+                            <th>Reg. ACC</th>
                            
 
                         </tr>
@@ -76,22 +76,24 @@
                                 <div><a href="{% url 'admin_emp_salary_pay_details' emp.id  %}"><h6>{{emp.empfullName}}</h6></a></div>
                                 </div>
                             </td>
-                            <td><h6>{{emp.empdesignation}}</h6> </td>
-                            <td><h6>{{emp.empdept_id.department}}</h6> </td>
-                            <td><h6></h6> </td>
-                            <td><h6>{{emp.empconfirmsalary}}</h6></td>
+                            <td>{{emp.empdesignation}}</td>
+                            <td>{{emp.empdept_id.department}} </td>
+                            <td>{{emp.empstate}} </td>
+                            <td>{{emp.empconfirmsalary}}</td>
                             <td>
                                 {% if emp.emp_salary_status == 1 %}
-                                <div class="badge badge-opacity-success">Active</div>
+                                <i class="mdi mdi-check-circle-outline mdi-18px text-success"></i>
+                                
                                 {% else %}
-                                <div class="badge badge-opacity-danger">Deactive</div>
+                                <i class="mdi mdi-close-circle-outline mdi-18px text-danger"></i>
+                               
                                 {% endif %}
                             </td>
                             <td>
                                 {% if emp.emp_status == 1 %}
-                                <div class="badge badge-opacity-success">Active</div>
-                                {% else %}
-                                <div class="badge badge-opacity-warning">wating for approve</div>
+                                <i class="mdi mdi-account-check mdi-18px text-success"></i>
+                                {% elif emp.emp_status == 2 %}
+                                <i class="mdi mdi-account-remove mdi-18px text-danger"></i>
                                 {% endif %}
                             </td>
                         </tr>

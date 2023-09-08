@@ -2903,11 +2903,28 @@ def recipt_data(request):
         else:
             return redirect('/')
         
-        r_data=Receipt_Data.objects.all().first()
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+
+        try:
+            r_data=Receipt_Data.objects.get(company_state=acc_state)
+        except Receipt_Data.DoesNotExist:
+            r_data=None
         
         cur_date=datetime.now().date()
 
-        return render(request,'account/recept_data.html',{'r_data':r_data,'cur_date':cur_date})
+        content={'account_DHB':account_DHB,
+                        'r_data':r_data,
+                        'cur_date':cur_date,
+                        'acc_state':acc_state}
+            
+        common_accdash_data = account_nav_data(request,acc_state.id) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/recept_data.html',content)
         
     else:
         return redirect('/')
@@ -2920,11 +2937,21 @@ def recipt_data_save(request):
         else:
             return redirect('/')
         
+
+        account_DHB=Dashboard_Register.objects.get(id=uid) # Accountent Details Featch
+        acc_state = Register_State.objects.get(allocate_dash=account_DHB) # Accountent state featch
+        #-----------------------------------------------------------------------------
+        cur_date=datetime.now().date()
+        
         if request.method =='POST':
 
-            check=Receipt_Data.objects.all()
+            try:
+                check=Receipt_Data.objects.get(company_state=acc_state)
+            except Receipt_Data.DoesNotExist:
+                check=None
+
             if check:
-                r_data=Receipt_Data.objects.first()
+                r_data=Receipt_Data.objects.get(company_state=acc_state)
                 r_data.auth_fullname=request.POST['aut_name']
 
                 if request.FILES.get('aut_signature'):
@@ -2947,7 +2974,16 @@ def recipt_data_save(request):
                     r_data.company_seal= r_data.company_seal
                 r_data.company_email=request.POST['company_email']
                 r_data.company_site=request.POST['company_site']
+                r_data.company_state=acc_state
                 r_data.save()
+
+                success_msg = 'Success ! data edit successfully.'
+
+                content={'account_DHB':account_DHB,
+                        'r_data':r_data,
+                        'cur_date':cur_date,
+                        'acc_state':acc_state,'success_msg':success_msg}
+
 
             else:
                 r_data=Receipt_Data()
@@ -2961,11 +2997,26 @@ def recipt_data_save(request):
                 r_data.company_seal=request.FILES.get('company_seal')
                 r_data.company_email=request.POST['company_email']
                 r_data.company_site=request.POST['company_site']
+                r_data.company_state=acc_state
                 r_data.save()
-                r_data=Receipt_Data.objects.all().first()
+                success_msg = 'Success ! data add successfully.'
+
+                content={'account_DHB':account_DHB,
+                        'r_data':r_data,
+                        'cur_date':cur_date,
+                        'acc_state':acc_state,'success_msg':success_msg}
+
+            r_data=Receipt_Data.objects.get(company_state=acc_state)
             
             cur_date=datetime.now().date()
-        return render(request,'account/recept_data.html',{'r_data':r_data,'cur_date':cur_date})
+
+        
+        common_accdash_data = account_nav_data(request,acc_state.id) # calling for navbar datas  
+        
+        content = {**content, **common_accdash_data}
+
+        return render(request,'account/recept_data.html',content)
+        
         
     else:
         return redirect('/')
@@ -5569,6 +5620,7 @@ def adminpaysearch(request):
         return redirect('/')
     
 
+# ------------- Department Section --------------------
 def admin_department_form(request):
     if 'admid' in request.session:
         if request.session.has_key('admid'):
@@ -5576,22 +5628,20 @@ def admin_department_form(request):
         else:
             return redirect('/')
         
-        # content load to base page
-        states = Register_State.objects.filter(allocate_status=1)
-        reg1=Register.objects.filter(reg_status=1)
-        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
-        #------------------------------
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+        #----------------------------------------------------
+        
 
         dept=Department.objects.all().order_by('-id')
         dept_count=Department.objects.all().count()
 
         content={'dept':dept,
-                     'states':states,
-                     'approvels':approvels,
-                     'approve_count':approve_count,
                      'dept_count':dept_count,
                      }
+        common_data = nav_data(request)
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
         return render(request,'Admin/admin_department_form.html',content)
         
     else:
@@ -5605,43 +5655,52 @@ def admin_department_add(request):
         else:
             return redirect('/')
         
-        states = Register_State.objects.filter(allocate_status=1)
-        reg1=Register.objects.filter(reg_status=1)
-        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+        #----------------------------------------------------
+    
         
         if request.method =='POST':  
-            dept=Department()
-            dept.department=request.POST['dept_name'].upper()
-            dept.dpt_Status=1
-            dept.save()
-            success_msg= 'Success! New department data has been saved'
+            
+            if request.POST['depId']:
+
+                dept=Department.objects.get(id=int(request.POST['depId']))
+                dept.department=request.POST['dept_name'].upper()
+                dept.dpt_Status=1
+                dept.save()
+                success_msg= 'Success! New department edit successful.'
+
+            else:
+                dept=Department()
+                dept.department=request.POST['dept_name'].upper()
+                dept.dpt_Status=1
+                dept.save()
+                success_msg= 'Success! New department data has been saved'
+
             dept=Department.objects.all().order_by('-id')
             dept_count=Department.objects.all().count()
-            
+                
             content={'dept':dept,
-                     'success_msg':success_msg,
-                     'states':states,
-                     'approvels':approvels,
-                     'approve_count':approve_count,
-                     'dept_count':dept_count,
-                     }
-            return render(request,'Admin/admin_department_form.html',content)
+                        'success_msg':success_msg,
+                        'dept_count':dept_count,
+                        }
+            
         else:
             error_msg= 'Opps! Something went wrong'
             
             content={'dept':dept,
-                     'error_msg':error_msg,
-                     'states':states,
-                     'approvels':approvels,
-                     'approve_count':approve_count,
                      'dept_count':dept_count,
+                     'error_msg':error_msg
                      }
         
-            return render(request,'Admin/admin_department_form.html',content)
+        common_data = nav_data(request)
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/admin_department_form.html',content)
         
     else:
         return redirect('/')
+    
     
 def admin_edit_dept(request,pk):
 
@@ -5650,27 +5709,40 @@ def admin_edit_dept(request,pk):
             admid = request.session['admid']
         else:
             return redirect('/')
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+        #----------------------------------------------------
           
         dept_edit=Department.objects.get(id=pk)
       
         dept=Department.objects.all().order_by('-id')
-        return render(request,'Admin/admin_department_form.html',{'dept':dept,'dept_edit':dept_edit})
+        dept_count=Department.objects.all().count()
+
+        content={'admin_DHB':admin_DHB,
+                 'dept_edit':dept_edit,
+                 'dept':dept,
+                 'dept_count':dept_count,
+                }
+        
+        common_data = nav_data(request)
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+        return render(request,'Admin/admin_department_form.html',content)
     
     else:
         return redirect('/')
           
     
 def admin_remove_dept(request,pk):
+
     if 'admid' in request.session:
         if request.session.has_key('admid'):
             admid = request.session['admid']
         else:
             return redirect('/')
         
-        states = Register_State.objects.filter(allocate_status=1)
-        reg1=Register.objects.filter(reg_status=1)
-        approvels=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1)
-        approve_count=PaymentHistory.objects.filter(admin_payconfirm=0,reg_id__in=reg1).count()
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+        #----------------------------------------------------
         
           
         depart=Department.objects.get(id=pk)
@@ -5682,18 +5754,19 @@ def admin_remove_dept(request,pk):
         
         content={'dept':dept,
                      'error_msg':error_msg,
-                     'states':states,
-                     'approvels':approvels,
-                     'approve_count':approve_count,
                      'dept_count':dept_count,
                      }
         
+        common_data = nav_data(request)
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
         return render(request,'Admin/admin_department_form.html',content)
         
     else:
         return redirect('/')
 
-
+#------------------------------------------------------
 
 # Admin Accounts Section 
 
@@ -6027,16 +6100,26 @@ def admin_salary_expence(request):
 
         # -------------------- End Current month --------------------
 
-        emp_reg_count=EmployeeRegister.objects.filter(emp_status=1).count()
-        emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
+        emp_reg=EmployeeRegister.objects.all()
+        emp_reg_count=EmployeeRegister.objects.all().count()
+        salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
         
-        emp_paid=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
+        # All Salary Payments-----
+        salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg).order_by('-id')
+
+
+        #Current Month Salary Paid -------
+        emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).count()
+        emp_sal_amt=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+        
+        #Current Month Salary Unpaid -------
+        emp_paid=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date) 
         emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_paid.values_list('empreg_id', flat=True)).count()
         emp_unpaid_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_paid.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+        
         emp_sal_acc_deative=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=0,).count()
+     
        
-        emp_salary_tol=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empdofj__lt=fr_date).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
-        salary=EmployeeSalary.objects.filter(emp_paidstatus=1)
 
         if request.method == 'POST':
 
@@ -6052,25 +6135,48 @@ def admin_salary_expence(request):
                 state = Register_State.objects.get(id=int(request.POST['search_select']))
                 emp = EmployeeRegister.objects.filter(empstate=state.state_name)
                 salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=sdate,empslaray_date__lte=edate,empreg_id__in=emp)
+                emp_reg_count=EmployeeRegister.objects.filter(empstate=state.state_name).count()
             
+
             elif request.POST['search_select'] !='0':
 
                 state = Register_State.objects.get(id=int(request.POST['search_select']))
-                emp = EmployeeRegister.objects.filter(empstate=state.state_name)
-                salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp)
+
+                emp_reg=EmployeeRegister.objects.filter(empstate=state.state_name)
+                emp_reg_count=EmployeeRegister.objects.filter(empstate=state.state_name).count()
+                salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                
+                # All Salary Payments of state -----
+                salary=EmployeeSalary.objects.filter(emp_paidstatus=1,empreg_id__in=emp_reg).order_by('-id')
+
+
+                #Current Month Salary Paid -------
+                emp_sal_count=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date,empreg_id__in=emp_reg).count()
+                emp_sal_amt=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date,empreg_id__in=emp_reg).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
+                
+                #Current Month Salary Unpaid -------
+                emp_paid=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date,empreg_id__in=emp_reg) 
+                emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=state.state_name).exclude(id__in=emp_paid.values_list('empreg_id', flat=True)).count()
+                emp_unpaid_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=state.state_name).exclude(id__in=emp_paid.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+                
+                emp_sal_acc_deative=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=0,empstate=state.state_name).count()
+               
+        
+            
             else:
                 salary=EmployeeSalary.objects.filter(emp_paidstatus=1)
+       
 
-        salary_tol=EmployeeSalary.objects.filter(emp_paidstatus=1,empslaray_date__gte=fr_date,empslaray_date__lte=to_date).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-        
+       
         
         content = {'admin_DHB':admin_DHB,
                     'emp_sal_count':emp_sal_count,
+                    'emp_sal_amt':emp_sal_amt,
                     'emp_unpaid':emp_unpaid,
                     'emp_sal_acc_deative':emp_sal_acc_deative,
                     'salary':salary,
                     'emp_reg_count':emp_reg_count,
-                    'emp_salary_tol':emp_salary_tol,
+                    
                     'salary_tol':salary_tol,
                     'emp_unpaid_amt':emp_unpaid_amt
                     }
@@ -6304,34 +6410,40 @@ def admin_fixed_expence(request):
         #---------------------------------------------------
         
     
-        fixedexp=FixedExpence.objects.all()
+        fixedexp=FixedExpence.objects.all().order_by('-id')
         fixedexp_count=FixedExpence.objects.all().count()
+        fixedexp_amt=FixedExpence.objects.all().aggregate(Sum('fixed_amount'))['fixed_amount__sum']
 
         if request.method=='POST':
             sdate=request.POST['start_date']
             edate=request.POST['end_date']
 
             if request.POST['search_select'] == '0' and sdate and edate:
-                fixedexp=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate)
+                fixedexp=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate).order_by('-id')
                 fixedexp_count=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate).count()
+                fixedexp_amt=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate).aggregate(Sum('fixed_amount'))['fixed_amount__sum']
             
             elif request.POST['search_select'] and sdate and edate:
                 state=Register_State.objects.get(id=int(request.POST['search_select']))
-                fixedexp=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate,fixed_state=state)
+                fixedexp=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate,fixed_state=state).order_by('-id')
                 fixedexp_count=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate,fixed_state=state).count()
+                fixedexp_amt=FixedExpence.objects.filter(fixed_date__gte=sdate,fixed_date__lte=edate,fixed_state=state).aggregate(Sum('fixed_amount'))['fixed_amount__sum']
 
             elif request.POST['search_select'] !='0':
                 state=Register_State.objects.get(id=int(request.POST['search_select']))
-                fixedexp=FixedExpence.objects.filter(fixed_state=state)
-                fixedexp_count=FixedExpence.objects.filter(fixed_state=state).count()
+                fixedexp=FixedExpence.objects.filter(fixed_state=state).order_by('-id')
+                fixedexp_count=FixedExpence.objects.filter(fixed_state=state).count() 
+                fixedexp_amt=FixedExpence.objects.filter(fixed_state=state).aggregate(Sum('fixed_amount'))['fixed_amount__sum']
 
             else:
-                fixedexp=FixedExpence.objects.all()
+                fixedexp=FixedExpence.objects.all().order_by('-id')
                 fixedexp_count=FixedExpence.objects.all().count()
+                fixedexp_amt=FixedExpence.objects.all().aggregate(Sum('fixed_amount'))['fixed_amount__sum']
 
 
         content = {'admin_DHB':admin_DHB,
                     'fixedexp':fixedexp,
+                    'fixedexp_amt':fixedexp_amt,
                     'fixedexp_count':fixedexp_count
                     }
             
@@ -6359,7 +6471,7 @@ def admin_fixed_expence_add(request):
         if request.method =='POST':
 
 
-            if request.POST['fixedid']:
+            if request.POST['fixedid']!= '0':
 
                 fixedexp_reg=FixedExpence.objects.get(id=int(request.POST['fixedid']))
 
@@ -6375,16 +6487,13 @@ def admin_fixed_expence_add(request):
                     state= Register_State.objects.get(id=int(request.POST['fixed_state']))
                     fixedexp_reg.fixed_state=state
 
-                fixedexp_reg.fixed_state=state
+                
                 fixedexp_reg.fixed_status=1
                 
                 fixedexp_reg.save()
 
                 success_msg='Success! Fixed expence Edit.'
                  
-                
-                    
-            
             else:
 
                 if request.POST['fixed_state'] == '0':
@@ -6404,12 +6513,14 @@ def admin_fixed_expence_add(request):
                 fixedexp_reg.save()
 
                 success_msg='Success! Fixed expence added.'
-            fixedexp=FixedExpence.objects.all()
+            fixedexp=FixedExpence.objects.all().order_by('-id')
             fixedexp_count=FixedExpence.objects.all().count()
+            fixedexp_amt=FixedExpence.objects.all().aggregate(Sum('fixed_amount'))['fixed_amount__sum']
         
             content = {'admin_DHB':admin_DHB,
                             'fixedexp':fixedexp,
                             'fixedexp_count':fixedexp_count,
+                            'fixedexp_amt':fixedexp_amt,
                             'success_msg':success_msg
                             }
 
@@ -6511,7 +6622,7 @@ def admin_company_holoidays(request):
        
         #---------------------------------------------------
         
-        comp_holidays=Company_Holidays.objects.all()
+        comp_holidays=Company_Holidays.objects.all().order_by('-ch_sdate')
         comp_holidays_count=Company_Holidays.objects.all().count()
 
         if request.method=='POST':
@@ -6519,21 +6630,21 @@ def admin_company_holoidays(request):
             edate=request.POST['end_date']
 
             if request.POST['search_select'] == '0' and sdate and edate :
-                comp_holidays=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate)
+                comp_holidays=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate).order_by('-ch_sdate')
                 comp_holidays_count=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate).count()
 
             elif request.POST['search_select']  and sdate and edate :
                 state=Register_State.objects.get(id=int(request.POST['search_select'] ))
-                comp_holidays=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate,ch_state=state)
+                comp_holidays=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate,ch_state=state).order_by('-ch_sdate')
                 comp_holidays_count=Company_Holidays.objects.filter(ch_sdate__gte=sdate,ch_edate__lte=edate,ch_state=state).count()
             
             elif request.POST['search_select'] != '0':
                 state=Register_State.objects.get(id=int(request.POST['search_select'] ))
-                comp_holidays=Company_Holidays.objects.filter(ch_state=state)
+                comp_holidays=Company_Holidays.objects.filter(ch_state=state).order_by('-ch_sdate')
                 comp_holidays_count=Company_Holidays.objects.filter(ch_state=state).count()
             
             else:
-                comp_holidays=Company_Holidays.objects.all()
+                comp_holidays=Company_Holidays.objects.all().order_by('-ch_sdate')
                 comp_holidays_count=Company_Holidays.objects.all().count()
 
 
@@ -6611,7 +6722,7 @@ def admin_company_holiday_add(request):
                 comp_holiday.save()
                 success_msg='Success! Holiday Data added.'
 
-            comp_holidays=Company_Holidays.objects.all()
+            comp_holidays=Company_Holidays.objects.all().order_by('-ch_sdate')
             comp_holidays_count=Company_Holidays.objects.all().count()
 
         common_data = nav_data(request)
@@ -6629,18 +6740,18 @@ def admin_company_holiday_add(request):
         return redirect('/')
 
 
-def admin_company_holidy_edit(request,pk):
+# def admin_company_holidy_edit(request,pk):
    
-    comp_holidays_edit=Company_Holidays.objects.get(id=pk)
-    content = {
-       'state_name': comp_holidays_edit.ch_state.state_name,
-       'days': comp_holidays_edit.ch_no,
-       'sdate': comp_holidays_edit.ch_sdate,
-       'edate': comp_holidays_edit.ch_edate,
-       'edit_id':pk,
+#     comp_holidays_edit=Company_Holidays.objects.get(id=pk)
+#     content = {
+#        'state_name': comp_holidays_edit.ch_state.state_name,
+#        'days': comp_holidays_edit.ch_no,
+#        'sdate': comp_holidays_edit.ch_sdate,
+#        'edate': comp_holidays_edit.ch_edate,
+#        'edit_id':pk,
 
-    }
-    return JsonResponse(content)
+#     }
+#     return JsonResponse(content)
     
 
 # Analysi Section 
@@ -6960,7 +7071,7 @@ def admin_analysis_OJT_details(request):
         # ==============================OJT section Start =============================
 
 
-        reg=Register.objects.filter(reg_status=1).count()
+        reg=Register.objects.all().count()
 
         #upcoming payments count
         upcoming_payment_count=Register.objects.filter(next_pay_date__gte=fr_date,next_pay_date__lte=to_date,reg_status=1).count()
@@ -7005,19 +7116,19 @@ def admin_ojt_registration_all_states(request):
 
                 start_date = request.POST['start_date'] 
                 end_date = request.POST['end_date'] 
-                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_status=1)
-                all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_status=1).count()
+                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,)
+                all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,).count()
 
             elif  request.POST['search_select'] == '0'  :
-                all_ojt_reg=Register.objects.filter(reg_status=1)
-                all_ojt_reg_count=Register.objects.filter(reg_status=1).count()
+                all_ojt_reg=Register.objects.all()
+                all_ojt_reg_count=Register.objects.all().count()
 
             elif  request.POST['search_select']:
 
                 sid=request.POST['search_select']
                 state_id = Register_State.objects.get(id=sid)
-                all_ojt_reg=Register.objects.filter(reg_state=state_id,reg_status=1)
-                all_ojt_reg_count=Register.objects.filter(reg_state=state_id,reg_status=1).count()
+                all_ojt_reg=Register.objects.filter(reg_state=state_id,)
+                all_ojt_reg_count=Register.objects.filter(reg_state=state_id,).count()
 
             elif request.POST['start_date'] and request.POST['end_date'] and  request.POST['search_select']:
 
@@ -7025,13 +7136,13 @@ def admin_ojt_registration_all_states(request):
                 start_date = request.POST['start_date'] 
                 end_date = request.POST['end_date'] 
                 state_id = Register_State.objects.get(id=sid)
-                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,reg_status=1)
-                all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,reg_status=1).count()
+                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,)
+                all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,).count()
            
 
         else:
-            all_ojt_reg=Register.objects.filter(reg_status=1)
-            all_ojt_reg_count=Register.objects.filter(reg_status=1).count()
+            all_ojt_reg=Register.objects.all()
+            all_ojt_reg_count=Register.objects.all().count()
 
 
         common_data = nav_data(request)
@@ -7154,8 +7265,31 @@ def admin_employee_analyis_registration_all_states(request):
         admin_DHB = Dashboard_Register.objects.get(id=admid)
         #---------------------------------------------------
 
-        emp_reg = EmployeeRegister.objects.all()
+        emp_reg = EmployeeRegister.objects.all().order_by('-id')
         emp_reg_count = EmployeeRegister.objects.all().count()
+
+        if request.method == 'POST':
+            
+            if request.POST['search_select'] and request.POST['start_date'] and request.POST['end_date']:
+
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                emp_reg = EmployeeRegister.objects.filter(empstate=state.state_name,empdofj__gte=request.POST['start_date'],empdofj__lte=request.POST['end_date']).order_by('-id')
+                emp_reg_count = EmployeeRegister.objects.filter(empstate=state.state_name,empdofj__gte=request.POST['start_date'],empdofj__lte=request.POST['end_date']).count()
+
+            elif request.POST['search_select'] == '0' and request.POST['start_date'] and request.POST['end_date']:
+                
+                emp_reg = EmployeeRegister.objects.filter(empdofj__gte=request.POST['start_date'],empdofj__lte=request.POST['end_date']).order_by('-id')
+                emp_reg_count = EmployeeRegister.objects.filter(empdofj__gte=request.POST['start_date'],empdofj__lte=request.POST['end_date']).count()
+
+            elif request.POST['search_select'] != '0':
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                emp_reg = EmployeeRegister.objects.filter(empstate=state.state_name).order_by('-id')
+                emp_reg_count = EmployeeRegister.objects.filter(empstate=state.state_name).count()
+
+            else:
+                emp_reg = EmployeeRegister.objects.all().order_by('-id')
+                emp_reg_count = EmployeeRegister.objects.all().count()
+
 
         common_data = nav_data(request)
 
@@ -7340,7 +7474,7 @@ def admin_emp_deactive_salary_account_list(request):
             else:
                 stateName = Register_State.objects.get(id= int(request.POST['search_select']))
                 emp_deactive = EmployeeRegister.objects.filter(emp_salary_status=0,empstate=stateName.state_name)
-                emp_deactive_count = EmployeeRegister.objects.filter(emp_salary_status=0).count()
+                emp_deactive_count = EmployeeRegister.objects.filter(empstate=stateName.state_name,emp_salary_status=0).count()
         
         else:
 
@@ -7377,8 +7511,12 @@ def admin_emp_salary_pay_details(request,emp_id):
         employee = EmployeeRegister.objects.get(id=emp_id)
         emp_salary = EmployeeSalary.objects.filter(empreg_id=employee)
 
-        stateName = Register_State.objects.get(state_name=employee.empstate)
+        try:
+            stateName = Register_State.objects.get(state_name=employee.empstate)
 
+        except Register_State.DoesNotExist:
+
+            stateName=None
 
         common_data = nav_data(request)
 

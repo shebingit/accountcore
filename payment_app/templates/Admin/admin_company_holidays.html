@@ -143,10 +143,11 @@
                                 <table class="table select-table" id="holidays">
                                     <thead>
                                         <tr>
-                                            <th>Edit</th>
-                                            <th>State</th>
+                                           <th>No</th>
+                                           
                                             <th>Start Date </th>
                                             <th>End Date</th>
+                                            <th>State</th>
                                             <th>Month</th>
                                             <th>State Work Days</th>
                                             <th>No of Holidays</th>
@@ -155,10 +156,12 @@
                                     <tbody>
                                         {% for i in comp_holidays %}
                                         <tr>
-                                            <td><span onclick="openEditDiv('{{ i.id }}')"><i class="mdi mdi-pen mdi-18px"></i></span></td>
-                                            <td>{{i.ch_state.state_name}}</td>
+                                          <td>{{forloop.counter}}</td>
+                                            <!-- <td><span onclick="openEditDiv('{{ i.id }}')"><i class="mdi mdi-pen mdi-18px"></i></span></td> -->
+                                          
                                             <td>{{i.ch_sdate}}</td>
                                             <td>{{i.ch_edate}}</td>
+                                            <td>{{i.ch_state.state_name}}</td>
                                             <td>{{i.ch_sdate|date:"F" }}</td>
                                             <td>{{i.ch_workno}}</td>
                                             <td>{{i.ch_no}}</td>

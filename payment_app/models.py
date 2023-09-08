@@ -114,6 +114,7 @@ class Receipt_Data(models.Model):
     company_seal = models.FileField(upload_to='Receipt',default='')
     company_email = models.CharField(max_length=200,default='')
     company_site = models.CharField(max_length=200,default='')
+    company_state = models.ForeignKey(Register_State, on_delete=models.CASCADE, null=True,default='')
 
 
 

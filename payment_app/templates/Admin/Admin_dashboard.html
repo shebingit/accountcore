@@ -45,7 +45,7 @@
                             <div class="media">
                             <i class="mdi mdi-account-check icon-md text-info d-flex align-self-start me-3"></i>
                             <div class="media-body">
-                                <p class="card-text">To analyze the On-the-Job Training, Employees, Income, and Expense data of all states.</p>
+                                <p class="card-text">Total number of OJT trainees in all states.</p>
                             </div>
                             </div>
                         </div>
@@ -60,7 +60,7 @@
                             <div class="media">
                             <i class="mdi mdi-account-multiple icon-md text-info d-flex align-self-center me-3"></i>
                             <div class="media-body">
-                                <p class="card-text">Cras sit amet nibh libero,  in gravida nulla. Nulla vel metus scelerisque.</p>
+                                <p class="card-text">Total number of employees in all states.</p>
                             </div>
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                             <div class="media">
                             <i class="mdi mdi-account-convert icon-md text-info d-flex align-self-end me-3"></i>
                             <div class="media-body">
-                                <p class="card-text">Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque.</p>
+                                <p class="card-text">Total number of account dashboard created.</p>
                             </div>
                             </div>
                         </div>
@@ -107,31 +107,21 @@
                               <table class="table select-table">
                                 <thead>
                                   <tr>
-                                  
+                                    <th>Confirm</th>
                                     <th>Full Name</th>
+                                    <th>Refrenc</th>
+                                    <th>State</th>
                                     <th>Date</th>
                                     <th>Payed Amount</th>
                                     <th>Total Payed</th>
                                     <th>Balance</th>
                                     <th>Status</th>
-                                    <th>Confirm</th>
+                                   
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {% for app in payhis_list %}
                                   <tr>
-                                    
-                                    <td>
-                                      <div class="d-flex ">
-                                        <div><h6>{{app.reg_id.fullName}}</h6></div>
-                                      </div>
-                                    </td>
-                                    <td><h6>{{app.paydofj}}</h6> </td>
-                                    <td><h6>{{app.payintial_amt}}</h6></td>
-                                    <td><h6>{{app.paytotal_amt}}</h6></td>
-                                    <td><h6>{{app.paybalance_amt}}</h6></td>
-                                    
-                                    <td><div class="badge badge-opacity-warning">wating for approve</div></td>
                                     <td>
                                       
                                       <div class="btn-wrapper">
@@ -139,6 +129,21 @@
                                       </div>
                                     
                                   </td>
+                                    
+                                    <td>
+                                      <div class="d-flex ">
+                                        {{app.reg_id.fullName}}
+                                      </div>
+                                    </td>
+                                    <td>{{app.reg_id.refrence}}</td>
+                                    <td>{{app.reg_id.reg_state.reg_state}}</td>
+                                    <td>{{app.paydofj}} </td>
+                                    <td>{{app.payintial_amt}}</td>
+                                    <td>{{app.paytotal_amt}}</td>
+                                    <td>{{app.paybalance_amt}}</td>
+                                    
+                                    <td><div class="badge badge-opacity-warning">wating for approve</div></td>
+                                    
                                   </tr>
                                   {% endfor %}
                                   

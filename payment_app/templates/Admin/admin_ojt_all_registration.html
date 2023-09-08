@@ -60,6 +60,8 @@
                             <th>Department</th>
                             <th>state</th>
                             <th>Referenced By</th>
+                            <th>progress</th>
+                            <th class="text-center">Pay Status</th>
                             <th>Reg. Status</th>
                            
 
@@ -74,12 +76,60 @@
                                 <div><a href="{% url 'admin_registartion_ojt_payment_details' newreg.id  %}"><h6>{{newreg.fullName}}</h6></a></div>
                                 </div>
                             </td>
-                            <td><h6>{{newreg.dept_id.department}}</h6> </td>
-                            <td><div><h6>{{newreg.reg_state.state_name}}</h6></div></td>
-                            <td><div><h6>{{newreg.refrence}}</h6></div></td>
+                            <td>{{newreg.dept_id.department}}</td>
+                            <td>{{newreg.reg_state.state_name}}</td>
+                            <td>{{newreg.refrence}}</td>
+
+                            <td>
+                                {% if newreg.payprogress >= 10 and newreg.payment_status == 0 %}
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                        <p class="text-warning">{{newreg.payprogress}}%</p>
+                                        </div>
+                                    
+                                        <div class="progress progress-md">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{newreg.payprogress}}%" aria-valuenow="{{newreg.payprogress}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+
+                                {% elif  newreg.payprogress == 100 or newreg.payment_status == 1  %}
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                        <p class="text-success">{{newreg.payprogress}}%</p>
+                                        </div>
+                                    
+                                        <div class="progress progress-md">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width:{{newreg.payprogress}}%" aria-valuenow="{{newreg.payprogress}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                {% elif  newreg.payment_status == 2 or newreg.reg_status == 2  %}
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                        <p class="text-danger">{{newreg.payprogress}}%</p>
+                                        </div>
+                                    
+                                        <div class="progress progress-md">
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width:{{newreg.payprogress}}%" aria-valuenow="{{newreg.payprogress}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+
+
+                            <td class="text-center">
+                                {% if newreg.payment_status == 1 %}
+                                <i class="mdi mdi-check-circle-outline mdi-18px text-success"></i>
+                                {% elif newreg.payment_status == 2  %}
+                                <i class="mdi mdi-close-circle-outline mdi-18px text-danger"></i>
+                                {% else %}
+                                <div class="badge badge-opacity-warning">Progressing</div>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if newreg.reg_status == 1 %}
                                 <div class="badge badge-opacity-success">Approved</div>
+                                {% elif newreg.reg_status == 2  %}
+                                <div class="badge badge-opacity-danger">Deactive</div>
                                 {% else %}
                                 <div class="badge badge-opacity-warning">wating for approve</div>
                                 {% endif %}
@@ -122,17 +172,22 @@
             const state = rows[i].getElementsByTagName('td')[3];
             const reffer = rows[i].getElementsByTagName('td')[4];
             const statusCell = rows[i].getElementsByTagName('td')[5];
+            const Cell6 = rows[i].getElementsByTagName('td')[6];
+            const Cell7 = rows[i].getElementsByTagName('td')[7];
 
-            if (empnameCell || departmentCell || state || reffer || statusCell ) {
+            if (empnameCell || departmentCell || state || reffer || statusCell || Cell6 || Cell7 ) {
 
                 const empname = empnameCell.textContent || empnameCell.innerText;
                 const dept = departmentCell.textContent || departmentCell.innerText;
                 const states = state.textContent || state.innerText;
                 const refferns = reffer.textContent || reffer.innerText;
                 const status_emp = statusCell.textContent || statusCell.innerText;
+                const datacell6 = Cell6.textContent || Cell6.innerText;
+                const datacell7 = Cell7.textContent || Cell7.innerText;
                
 
-                if (states.toLowerCase().includes(filterValue) || empname.toLowerCase().includes(filterValue) || dept.toLowerCase().includes(filterValue) || refferns.toLowerCase().includes(filterValue)|| status_emp.toLowerCase().includes(filterValue)) 
+                if (states.toLowerCase().includes(filterValue) || empname.toLowerCase().includes(filterValue) || dept.toLowerCase().includes(filterValue) 
+                || refferns.toLowerCase().includes(filterValue)|| status_emp.toLowerCase().includes(filterValue) || datacell6.toLowerCase().includes(filterValue)|| datacell7.toLowerCase().includes(filterValue)) 
                 {
                     rows[i].style.display = '';
                 } else {

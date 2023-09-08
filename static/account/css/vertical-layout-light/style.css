@@ -16629,7 +16629,10 @@ fieldset:disabled .swal2-modal .swal2-buttonswrapper .swal2-styled,
 .fw-normal {
   font-weight: 400 !important;
 }
-
+.fw-midle {
+  font-weight: 600 !important;
+  letter-spacing: 0.05rem;
+}
 .fw-bold {
   font-weight: 700 !important;
 }
@@ -16794,6 +16797,10 @@ fieldset:disabled .swal2-modal .swal2-buttonswrapper .swal2-styled,
 
 .text-opacity-100 {
   --bs-text-opacity: 1;
+}
+.text-md
+{
+  font-size: 0.90rem;
 }
 
 .bg-primary, .settings-panel .color-tiles .tiles.primary {

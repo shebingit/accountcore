@@ -10,8 +10,8 @@
                 <div class="card-body">
                     <div class="d-sm-flex justify-content-between align-items-start">
                         <div>
-                            <h4 class="card-title card-title-dash">Salary Payments on  &nbsp;{% now "F" %}    </h4>
-                            <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{emp_reg_count}}</span> Employees , Total amount neead - <span class="count-value">{{emp_salary_tol}}</span> . 
+                            <h4 class="card-title card-title-dash">Total Salary Payments    </h4>
+                            <p class="card-subtitle card-subtitle-dash">Total<span class="count-value">{{emp_reg_count}}</span> Employees , Total amount neead - <span class="count-value">{{salary_tol}}</span> . 
                                 
                             </p>
                         </div>
@@ -61,7 +61,7 @@
                                     <div class="media">
                                     <i class="mdi mdi-checkbox-marked-circle-outline icon-md text-info d-flex align-self-center me-3"></i>
                                     <div class="media-body">
-                                        <p class="card-text">Total amount of salary payments in {% now "F" %} - {{ salary_tol | default:"0" }}</p>
+                                        <p class="card-text">Total amount of salary payments in {% now "F" %} - {{ emp_sal_amt | default:"0" }}</p>
                                     </div>
                                     </div>
                                 </div>
@@ -107,7 +107,6 @@
                                     <th></th>
                                     <th>Date of Joing</th>
                                     <th>Full Name</th>
-                                    <th>Designation</th>
                                     <th>Department</th>
                                    
                                     <th>State</th>
@@ -126,8 +125,11 @@
                                             <td>{{ forloop.counter }}</td>
                                             <td>{{i.empreg_id.empdofj}}</td>
                                             
-                                            <td><a href="{% url 'admin_employee_salary_details' i.empreg_id.id %}" style="font-size: 0.91em;">{{i.empreg_id.empfullName}}</a></td>
-                                            <td>{{i.empreg_id.empdesignation}}</td>
+                                            <td>
+                                                <a href="{% url 'admin_employee_salary_details' i.empreg_id.id %}" style="font-size: 0.91em;">{{i.empreg_id.empfullName}}</a>
+                                                <p>{{i.empreg_id.empdesignation}}</p>
+                                            </td>
+                                            
                                             <td>{{i.empreg_id.empdept_id.department}}</td>
                                             
                                             <td>{{i.empreg_id.empstate}}</td>
