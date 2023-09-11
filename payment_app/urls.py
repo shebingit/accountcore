@@ -280,6 +280,9 @@ urlpatterns = [
     path('Admin-State-Re-allocation',views.admin_state_reallocation,name='admin_state_reallocation'),
 
     
+
+ 
+
     path('LogOut',views.logout_page,name='logout_page'),
     
     

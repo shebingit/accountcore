@@ -1,184 +1,191 @@
+
+
 {% load static %}
-</head>
-<body>
-
-<div class="container">
-    
-       
-    </div>
-</div>
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>PayMent Receipt</title>
-    <!-- Bootstrap 5 CSS -->
-   
+<html lang="en">
 
-    <style>
-        .container
-        {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            margin-top: 10em;
-        }
-        .container h3
-        {
-            font-size: 18px;
-            font-family: 'Times New Roman', Times, serif;
-            font-weight: 600;
-            margin-bottom: -5px;
-        }
-        .container span{
-            font-size: 14px;
-            font-family: 'Times New Roman', Times, serif;
-            font-weight: 400;
-            line-height: 10px; 
-        }
-        .container p{
-            font-size: 12px;
-            font-weight: 400;
-        }
-       .last_line
-       {
-        color:  rgb(255, 8, 58);
-        
-       }
-        
-    </style>
-  </head>
-  <body>
-   <br>
-    <div class="container ">
-       
-        <table class="table table-striped">
-			<thead>
-                
-				<tr>
-					<th>{%if r_data.company_logo %}
-                        <img src="{{path}}{{r_data.company_logo.url}}" height="95" width="270" alt="Comapany Logo"> 
-                        {% endif %}
-                    </th>
-					<th></th>
-					<th><h3>{{r_data.company_name}}</h3>
-                        <span> {{r_data.company_address1}} &nbsp;{{r_data.company_address2}}
-                         <br><br>{{r_data.company_address2}}</span>
-                         <p>Date : {{date}}</p>
-                    </th>
-				</tr>
-			</thead>
-			
-		</table>
-        <br><br>
-        <div class="h3">
-            <h3 class="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                PAYMENT RECEIPT</h3>
-        </div>
-        <div class="contents">
-            <br><br><br>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th> <span>Received with thanks from </th>
-                       
-                        <th class="line"><span style="font-size: 16px;">{{reg.fullName|upper}}</span></th>
-                    </tr>
-                    <tr></tr>
-                    <tr></tr>
-                    <tr>
-                        <th>  <span>Amount Received in words:</span></th>
-                        <th class="line"><span> {{number_in_words|upper}} &nbsp; RUPEES ONLY</span></th>
-                    </tr>
-                    <tr></tr>
-                    <tr></tr>
-                    <tr>
-                        <th><span>For the purpose of Software Training</span></th>
-                        <th class="line" ><span style="font-size: 14px;">{{reg.dept_id.department}}</span></th>
-                    </tr>
-                    <tr></tr>
-                    <tr></tr>
-                    <tr>
-                        <th> <span>Payment Date:</span></th>
-                        <th class="line" ><span style="font-size: 14px;">{{payhis.paydofj}}</span></th>
-                    </tr>
-                    <tr></tr>
-                    <tr></tr>
-                    <tr>
-                        <th> <span>Amount:</span></th>
-                        <th class="line" ><span style="font-size: 14px;">Rs&nbsp; {{reg.reg_payedtotal}}.00</span></th>
-                    </tr>
-                </thead>
-                
-            </table>
-            <br><br> 
-            <hr>
-           
-           <br><br><br>  <br>
-          
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>
-                           
-                           <span>Received By</span> 
-                           <p>{{r_data.auth_fullname}}</p>
-                        </th>
-                       <th></th>
-                        <th>
-                            {%if r_data.auth_signature %}
-                            <img src="{{path}}{{r_data.auth_signature.url}}" height="125" width="150" alt="Signature"> 
-                            {% endif %}
-                            <br>
-                            <span>Authorized Signature</span>
-                        </th>
-                    </tr>
-                    <!-- <tr>
-                        <th></th>
-                        <th>
-                            {%if r_data.company_seal %}
-                            <img src="{{path}}{{r_data.company_seal.url}}" height="130" width="150" alt="Signature"> 
-                            {% endif %}
-                        </th>
-                        <th></th>
-                    </tr> -->
-                </thead>
-                
-            </table>
-            <br><br><br>
-            <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-               
-                <span>There is no refund for the payment you have done.</span><br>
-                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-               
-                <span>Thank you!!!</span>
-            </h5>
-            <br>
-            <hr class="last_line" >
-            <br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-               
-               
-          
-            <span>Email: info@altostechnologies.com | Website: www.altostechnologies.com</span>
-        </div>
-    </div>
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Pyment Core </title>
+
+
+  <link rel="shortcut icon" href="{% static 'images/favicon.png' %}" />
+
+
+  <style>
+    .logoBox {
+        margin-top: -10px;
+        text-align: start;
     
+    }
+    .company-Details h4{
+        font-size: 20px;
+        font-family:'Times New Roman', Times, serif;
+        text-align: right;
+        margin-bottom: -10px;
+    }
+    .text-end
+    {
+        font-size: 15px;
+        font-weight: 400;
+        text-align: right;
+        font-family:'Times New Roman', Times, serif;
+        margin-top: 5px;
+    }
+    .fw-midle
+    {
+        text-align: center;
+        font-size: 20px;
+        letter-spacing: 0.06rem;
+        font-family:'Times New Roman', Times, serif;
+    }
+    .text-center
+    {
+        text-align: center;
+       
+        font-size: 13px;
+    }
+    .line
+    {
+        height: 2px;
+        width: 50%;
+
+    }
+    .content-text
+    {
+        font-size: 17px;
+        font-weight: 400;
+        text-align: start;
+        font-family:'Times New Roman', Times, serif;
+        letter-spacing: 1px;
+        margin-top: -2px;
+        
+       
+       
+    }
+    .content-result
+    {
+        font-size: 18px;
+        font-weight: 400;
+        text-align: start;
+        font-family:'Times New Roman', Times, serif;
+       
+       
+    }
+    .bt-left, .bt-right
+    {
+        font-size: 14px;
+        font-weight: 300;
+    }
+    th{
+        text-align: center;
+
+    }
+    .amount
+    {
+        border: 10px ;
+        font-size: 22px;
+        font-family:'Times New Roman', Times, serif;
+    }
+    .underline
+    {
+        text-decoration: underline;
+        
+    }
+  </style>
+
+</head>
+
+  <body>
+  
+    <div class="container">
+
+        <div class="card p-3">
+            <div class="card-body">
+
+                <table>
+                    <tr class="top-container ">
+                        <th class="logoBox">
+                            {% if r_data.company_logo %}
+                            <img src="{{path}}{{r_data.company_logo.url}}" height="70" width="230"  alt="Comapany Logo">
+                            {% endif %}
+                        </th>
+                        <th></th>
+                        <th class="company-Details">
+                            <h4 class="fw-bold">{{r_data.company_name}}</h4>
+                            <p class="text-end">{{r_data.company_address1}}</p>
+                            <p class="text-end">{{r_data.company_address2}}</p>
+                            <p class="text-end">{{r_data.company_address3}}</p>
+                            <p class="text-end">Date : {{date}}</p>
+    
+                        </th>
+                    </tr>
+
+                </table>
+               
+                
+                <br><br> <br>
+                <div class="contentBox">
+                    <div class="content-Head text-center mt-3">
+                        <h4 class="fw-midle">PAYMENT RECEIPT</h4>
+                    </div>
+                  
+                    <p class="content-text">Received with thanks from <span class="content-result">{{name}}</span></p>
+                    <p class="content-text">Amount Received in words: <span class="content-result">Rupess {{number_in_words}} Only</span></p>
+                    <p class="content-text">For the purpose of  <span class="content-result">{{dept}} Training</span> </p>
+                    <p class="content-text">Payment Date:  <span class="content-result">{{payhis.paydofj}}</span></p>
+                   
+                       
+                    <br><br> 
+                    <div class="amtBox  p-3 mb-3 ">
+                        <span class="fw-midle">Amount :&nbsp;&nbsp;&nbsp;</span>  <span class="amount text-start" style="border: 1px;">Rs {{reg.reg_payedtotal}} /-</span>
+                    </div>
+
+                    <br><br> <br><br>
+                    <table>
+                        <tr>
+                            <th class="#">
+                                <br>
+                                <p class="bt-left">{{r_data.auth_fullname}}</p>
+                                <hr class="line">
+                                <p class="bt-left">Received By </p>
+                            </th>
+                            <th></th>
+                            <th class="">
+                                <div class="signBox" style="margin-top: -10px;">
+                                    {% if r_data.auth_signature %}
+                                    <img src="{{path}}{{ r_data.auth_signature.url}}" height="50" width="120"alt="Signature" >
+                                    
+                                    {% endif %}
+                                </div>
+                             <hr>
+                                <p class="bt-right">Authorized Signature </p>
+                            </th>
+
+                        </tr>
+                       
+                    </table>
+
+
+                   
+                </div>
+
+            </div>
+            <br><br> <br><br> <br><br> <br><br> <br><br>  <br><br> <br>
+            <div class="card-footer text-center">
+
+                <p>There is no refund for the payment you have done.</p>
+              
+                <p>Thank you!!!</p>
+            </div>
+            <br><br>
+            <br>
+            <hr style="color: rgb(20, 201, 201);">
+            <p class="mt-2 text-center">Email: {{r_data.company_email}}| Website: {{r_data.company_site}}</p>
+        </div>
+
+
   </body>
 </html>

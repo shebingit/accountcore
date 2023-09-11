@@ -18,6 +18,8 @@ from django.core.mail import send_mail
 from django.db.models import Q
 from django.http import JsonResponse
 
+
+
 #===============comman views===============
 
 
@@ -80,7 +82,7 @@ def login_dashboard(request):
 
                         data_check = income_expence_check(request)
 
-                        print(data_check)
+                       
 
                         otj_reg = Register.objects.all().count()
                         emp_reg = EmployeeRegister.objects.all().count()
@@ -4396,7 +4398,7 @@ def admin_dashboard(request):
             return redirect('/')
 
         admin_DHB=Dashboard_Register.objects.get(id=admid)
-        
+        states = Register_State.objects.filter(allocate_status=1)
         new_reg=Register.objects.filter(reg_status=0).count()
         
 
@@ -4406,116 +4408,8 @@ def admin_dashboard(request):
         last_day_of_month = calendar.monthrange(cur_date.year, cur_date.month)[1]
         to_date = datetime(cur_date.year, cur_date.month, last_day_of_month).date() 
 
-        #Income adding to IncomeExpence Table
-        if PaymentHistory.objects.exists():
-            try:
-                inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
-                payhist=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-              
-                
-                if payhist:
-                                
-                    if inexpe:
-                        inexpe.exin_head_name='OJT'
-                        inexpe.exin_amount=payhist
-                        inexpe.exin_typ=1
-                        inexpe.exin_date=to_date
-                        inexpe.exin_status=1
-                        inexpe.save()
-
-                    else:
-
-                        incexpence=IncomeExpence()
-                        incexpence.exin_head_name='OJT'
-                        incexpence.exin_amount=payhist
-                        incexpence.exin_typ=1
-                        incexpence.exin_date=cur_date
-                        incexpence.exin_status=1
-                        incexpence.save()
-                else:
-                    print('No Data')
-
-            except PaymentHistory.DoesNotExist:
-                    print('No Data')
-        else:
-            print('No Data')
-     
-
-
-        # Salay Expence adding to IncomeExpence Table
-        if EmployeeSalary.objects.exists():
-            try:
-                inexp=IncomeExpence.objects.filter(exin_head_name='SALARY',exin_date__gte=fr_date,exin_date__lte=to_date).first()
-                sal_exp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).aggregate(Sum('emppaid_amt'))['emppaid_amt__sum']
-                #sal_exp_last=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1).last()
-                
-                if sal_exp: 
-
-                    if inexp:
-
-                        inexp.exin_head_name='SALARY'
-                        inexp.exin_amount=sal_exp
-                        inexp.exin_typ=2
-                        inexp.exin_date=to_date
-                        inexp.exin_status=1
-                        inexp.save()
-                                    
-                    else:
-
-                        incexp=IncomeExpence()
-                        incexp.exin_head_name='SALARY'
-                        incexp.exin_amount=sal_exp
-                        incexp.exin_typ=2
-                        incexp.exin_date=cur_date
-                        incexp.exin_status=1
-                        incexp.save()
-                else:
-                    print('No Data')
-
-            except EmployeeSalary.DoesNotExist:
-                    print('No Data')
-                            
-        else:
-            print('No Data')
-
-        # Fixed Expence adding to the IncomeEpence Table
-
-        active_sate=Register_State.objects.filter(allocate_status=1)
-
-        for state in active_sate:
-
-            fixexp=FixedExpence.objects.filter(fixed_date__lte=cur_date,fixed_date__gte=fr_date,fixed_status=1,fixed_state=state)
-                            
-            inex = IncomeExpence.objects.filter(exin_date__in=fixexp.values_list('fixed_date', flat=True),exin_state=state).filter(exin_head_name__in=fixexp.values_list('fixed_head_name', flat=True),exin_state=state)
-            
-            if inex:
-                print('Data Found')
-
-            else:
-
-                not_in_inex = fixexp.exclude(fixed_date__in=inex.values_list('exin_date', flat=True)).exclude(fixed_head_name__in=inex.values_list('exin_head_name', flat=True)).values_list('id', flat=True)
-                fixexp=FixedExpence.objects.filter(id__in=not_in_inex)
-                for i in fixexp:
-                    incomeexp = IncomeExpence()
-                    incomeexp.exin_head_name=i.fixed_head_name
-                    incomeexp.exin_date=i.fixed_date
-                    incomeexp.exin_amount=i.fixed_amount
-                    incomeexp.exin_typ=2
-                    incomeexp.exin_state=state
-                    incomeexp.exin_dese=i.fixed_dese
-                    incomeexp.exin_status=1
-                    incomeexp.save()
-                    exp_date=i.fixed_date
-                    today = date.today()
-
-                    # Calculate the number of days in the current month
-                    days_in_month = (today.replace(month=today.month+1, day=1) - timedelta(days=1)).day
-                                
-                    fr_date=exp_date + timedelta(days=days_in_month)
-                    i.fixed_date=fr_date
-                    i.save()
-
-       
+        # calling income expence data
+        data_check = income_expence_check(request)
 
         common_data = nav_data(request)
 
@@ -5300,12 +5194,15 @@ def admin_confirm(request,pk):
         last_daymonth = fr_date.replace(day=28) + timedelta(days=4)
         to_date = last_daymonth - timedelta(days=last_daymonth.day)
 
+        states = Register_State.objects.get(allocate_status=1,id=pay_aprove.pay_state.id)
+
         #Income adding to IncomeExpence Table
         if PaymentHistory.objects.exists():
             try:
-                inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date).first()
-                payhist=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
-                #payhi_last=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1).last()
+                inexpe=IncomeExpence.objects.filter(exin_head_name='OJT',exin_date__gte=fr_date,exin_date__lte=to_date,exin_state=states).first()
+                payhist=PaymentHistory.objects.filter(paydofj__gte=fr_date,paydofj__lte=to_date,admin_payconfirm=1,pay_state=states).aggregate(Sum('payintial_amt'))['payintial_amt__sum']
+                
+                print(inexpe.exin_state.state_name)
                 
                 if payhist:
                                 
@@ -5315,6 +5212,7 @@ def admin_confirm(request,pk):
                         inexpe.exin_typ=1
                         inexpe.exin_date=to_date
                         inexpe.exin_status=1
+                        inexpe.exin_state=states
                         inexpe.save()
 
                     else:
@@ -5324,8 +5222,10 @@ def admin_confirm(request,pk):
                         incexpence.exin_amount=payhist
                         incexpence.exin_typ=1
                         incexpence.exin_date=to_date
+                        incexpence.exin_state=states
                         incexpence.exin_status=1
                         incexpence.save()
+                        
                 else:
                     print('No Data')
 
@@ -6976,11 +6876,11 @@ def admin_analysis_income_expence_details(request):
             elif  request.POST['search_select'] != '0':
 
                 state = Register_State.objects.get(id=int(request.POST['search_select']))
-                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=state).order_by('-id')
-                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=state).count()
+                exp_income=IncomeExpence.objects.filter(exin_status=1,exin_state=state,exin_date__gte=fr_date,exin_date__lte=to_date).order_by('-id')
+                exp_income_count=IncomeExpence.objects.filter(exin_status=1,exin_state=state,exin_date__gte=fr_date,exin_date__lte=to_date).count()
 
-                inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_state=state).aggregate(intol=Sum('exin_amount'))['intol']
-                expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_state=state).aggregate(exptol=Sum('exin_amount'))['exptol']
+                inco=IncomeExpence.objects.filter(exin_status=1,exin_typ=1,exin_state=state,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(intol=Sum('exin_amount'))['intol']
+                expe=IncomeExpence.objects.filter(exin_status=1,exin_typ=2,exin_state=state,exin_date__gte=fr_date,exin_date__lte=to_date).aggregate(exptol=Sum('exin_amount'))['exptol']
                
             
             else:
@@ -7879,17 +7779,27 @@ def logout_page(request):
 def singeldata_receipt(request,pk):
 
     date = datetime.now().date()   
-    payhis = PaymentHistory.objects.get(id=pk)
-    r_data=Receipt_Data.objects.first()
+    payhis = PaymentHistory.objects.get(id=pk,pay_status=1)
     number_in_words = num2words(payhis.payintial_amt)
+
+    name = payhis.reg_id.fullName.title()
+
+    dept=payhis.reg_id.dept_id.department.title()
+    number_in_words=number_in_words.title()
+   
+    r_data=Receipt_Data.objects.first()
+    
     template_path = 'account/singledata_Receipt.html'
     context = {'payhis': payhis,
+               'name':name,
+               'dept':dept,
                'r_data':r_data,
                'number_in_words':number_in_words,
     'path':settings.NEWPATH,
     'date':date,
     }
-   
+  
+    
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'filename="Receipt.pdf"'
     template = get_template(template_path)
@@ -7906,18 +7816,25 @@ def singeldata_receipt(request,pk):
 
 
 
+
 # Receipt Download single user full payment data
 def singelUserfull_receipt(request,pk):
 
     date = datetime.now().date() 
     reg=Register.objects.get(id=pk)  
-    payhis = PaymentHistory.objects.filter(reg_id=reg).last()
+    payhis = PaymentHistory.objects.filter(reg_id=reg,pay_status=1).last()
     r_data=Receipt_Data.objects.first()
     number_in_words = num2words(reg.reg_payedtotal)
+    name = payhis.reg_id.fullName.title()
+    dept=reg.dept_id.department.title()
+    number_in_words=number_in_words.title()
+
     template_path = 'account/singleUser_full_Receipt.html'
     context = {'reg': reg,
                'payhis':payhis,
                'r_data':r_data,
+               'name':name,
+               'dept':dept,
                'number_in_words':number_in_words,
      'path':settings.NEWPATH,
     'date':date,

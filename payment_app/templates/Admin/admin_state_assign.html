@@ -275,7 +275,13 @@
                                             </td>
                                             <td>                                          
                                             <div class="d-flex ">
-                                                <img src="images/faces/face1.jpg" alt="">
+                                                {% if state.allocate_dash.dsh_image %}
+                                                    <img src="{{state.allocate_dash.dsh_image.url}}" alt="Profile Image">
+                                                        
+                                                {% else %}
+                                                    <img src="{% static 'aimages/faces/face1.jpg' %}" alt="Profile">
+
+                                                {% endif%}
                                                 <div>
                                                 <h6>{{state.allocateid.empfullName}}</h6>
                                                 <p>{{state.allocateid.empdesignation}}</p>
