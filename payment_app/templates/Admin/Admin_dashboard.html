@@ -38,10 +38,10 @@
               <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
                 <div class="row">
                   <div class="col-md-4 grid-margin stretch-card">
-                    <a href="#">
+                    <a href="{% url 'admin_ojt_registration_all_states' %}">
                         <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Onthe Job Training - ({{otj_reg}})</h4>
+                            <h4 class="card-title">OJT- Registrations - ({{otj_reg}})</h4>
                             <div class="media">
                             <i class="mdi mdi-account-check icon-md text-info d-flex align-self-start me-3"></i>
                             <div class="media-body">
@@ -53,10 +53,10 @@
                     </a>
                   </div>
                   <div class="col-md-4 grid-margin stretch-card">
-                    <a href="#">
+                    <a href="{% url 'admin_employee_analyis_registration_all_states' %}">
                         <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Employees - ({{emp_reg}})</h4>
+                            <h4 class="card-title">Employees Registrations - ({{emp_reg}})</h4>
                             <div class="media">
                             <i class="mdi mdi-account-multiple icon-md text-info d-flex align-self-center me-3"></i>
                             <div class="media-body">
@@ -68,7 +68,7 @@
                     </a>
                   </div>
                   <div class="col-md-4 grid-margin stretch-card">
-                    <a href="#">
+                    <a href="{% url 'admin_state_form' %}">
                         <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">State Accounts - ({{state_reg}})</h4>
@@ -107,42 +107,44 @@
                               <table class="table select-table">
                                 <thead>
                                   <tr>
-                                    <th>Confirm</th>
+                                    <th>No</th>
                                     <th>Full Name</th>
-                                    <th>Refrenc</th>
+                                    <!-- <th>Refrenc</th> -->
                                     <th>State</th>
                                     <th>Date</th>
                                     <th>Payed Amount</th>
-                                    <th>Total Payed</th>
+                                    <!-- <th>Total Payed</th> -->
                                     <th>Balance</th>
                                     <th>Status</th>
+                                    <th>Confirm</th>
                                    
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {% for app in payhis_list %}
                                   <tr>
-                                    <td>
-                                      
-                                      <div class="btn-wrapper">
-                                        <a href="{% url 'admin_confirm' app.id %}" class="btn btn-primary text-white me-0"><i class="icon-check"></i>Aprove</a>
-                                      </div>
-                                    
-                                  </td>
+                                   <td>{{forloop.cunter}}</td>
                                     
                                     <td>
                                       <div class="d-flex ">
                                         {{app.reg_id.fullName}}
                                       </div>
                                     </td>
-                                    <td>{{app.reg_id.refrence}}</td>
+                                    <!-- <td>{{app.reg_id.refrence}}</td> -->
                                     <td>{{app.pay_state.state_name}}</td>
                                     <td>{{app.paydofj}} </td>
                                     <td>{{app.payintial_amt}}</td>
-                                    <td>{{app.paytotal_amt}}</td>
+                                    <!-- <td>{{app.paytotal_amt}}</td> -->
                                     <td>{{app.paybalance_amt}}</td>
                                     
                                     <td><div class="badge badge-opacity-warning">wating for approve</div></td>
+                                     <td>
+                                      
+                                      <div class="btn-wrapper">
+                                        <a href="{% url 'admin_confirm' app.id %}" class="btn btn-primary text-white me-0"><i class="icon-check"></i>Aprove</a>
+                                      </div>
+                                    
+                                  </td>
                                     
                                   </tr>
                                   {% endfor %}
