@@ -1,0 +1,172 @@
+{% extends 'Admin/adminbase.html' %}
+{% load static %}
+{% block body %}
+
+
+
+<div class="content-wrapper">
+ 
+
+    <div class="row mt-3">
+        <div class="col-lg-12 d-flex flex-column">
+        
+          <div class="row flex-grow">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card card-rounded">
+                <div class="card-body">
+                  <div class="d-sm-flex justify-content-between align-items-start">
+                        <div>
+                        <h4 class="card-title card-title-dash"><i class="mdi mdi-format-list-bulleted icon-sm text-info  me-3"></i> Payments List</h4>
+                        <p class="card-subtitle card-subtitle-dash">You have <span class="count-value"> {{payhis_count}} </span> payments</p>
+                        </div>
+                    <div>
+                        <form class="search-form" action="#" method="post">
+                            {% csrf_token %}
+                           
+                            <div class="searchBox">
+                                
+                                <input type="text" class="form-control small-text" id="search-data" placeholder="search here">
+                                <button type="button" class="close-btn" id="closeBtn">
+                                     <i class="mdi mdi-close"></i>
+                                </button>
+                                
+                            </div>
+                           
+                            <div class="w-box" >
+                                <select name="search_select" class="search-select">
+                                   
+                                    <option value="0"> All states </option>
+                                    {% for state in states %}
+                                    <option value="{{state.id}}">{{state.state_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="start_date">
+                            </div>
+                            <div class="w-box">
+                                <input type="date" class="search-date" name="end_date">
+                            </div>
+                            <div>
+                                <button type="submit" class="search-button">  <i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                  </div>
+                  <div class="table-responsive  mt-1">
+                    <table class="table select-table" id="OJT-register">
+                        <thead>
+                            <tr>
+                                <th>No </th>
+                                <th>Full Name</th>
+                               
+                                <th>Reffernce</th>
+                                <th>State</th>
+                                <th>Date Of Payment </th>
+                                <th>Pay Amount </th>
+                                <th>BAL Amount</th>
+                                <th>Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in payhis %}
+                                
+                                    <tr>
+                                      <td>{{forloop.counter}}</td>
+                                        <td >
+                                            <div class="d-flex ">
+                                                <div>
+                                                    <a href="{% url 'admin_registartion_ojt_payment_details' i.reg_id.id  %}">
+                                                        <h6>{{i.reg_id.fullName}}</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <td>{{i.reg_id.refrence}}</td>
+                                        <td >{{i.reg_id.reg_state.state_name}}</td>
+                                        <td>{{i.paydofj}}</td>
+                                        <td>{{i.payintial_amt}} </td>
+                                        <td>{{i.paybalance_amt}} </td> 
+                                        <td> <a href="{% url 'singeldata_receipt' i.id %}" class="down-load-pdf"><i class="mdi mdi-file-pdf "></i></a></td>
+                                        
+                                    </tr>
+                                
+                            {% endfor %}
+                        
+                        </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const ojtTable = document.getElementById('OJT-register');
+
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = ojtTable.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const Cell0 = rows[i].getElementsByTagName('td')[0];
+            const Cell1 = rows[i].getElementsByTagName('td')[1];
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+            const Cell5 = rows[i].getElementsByTagName('td')[5];
+            
+
+            if (Cell1 || Cell2 || Cell3 || Cell4 || Cell5 || Cell0 ) {
+                const Celldata0 = Cell1.textContent || Cell1.innerText;
+                const Celldata1 = Cell1.textContent || Cell1.innerText;
+                const Celldata2 = Cell2.textContent || Cell2.innerText;
+                const Celldata3 = Cell3.textContent || Cell3.innerText;
+                const Celldata4 = Cell4.textContent || Cell4.innerText;
+                const Celldata5 = Cell5.textContent || Cell5.innerText;
+             
+               
+
+                if (Celldata0.toLowerCase().includes(filterValue) ||Celldata1.toLowerCase().includes(filterValue) || Celldata2.toLowerCase().includes(filterValue)||Celldata3.toLowerCase().includes(filterValue) || Celldata4.toLowerCase().includes(filterValue)||Celldata5.toLowerCase().includes(filterValue)) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+    // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+</script>
+
+{% endblock %}

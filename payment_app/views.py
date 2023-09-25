@@ -3459,7 +3459,7 @@ def salary_calculate(request):
 
         try:
 
-                comp_holiday=Company_Holidays.objects.get(ch_sdate__gte=startdate,ch_edate__lte=enddate)
+                comp_holiday=Company_Holidays.objects.get(ch_sdate__gte=startdate,ch_edate__lte=enddate,ch_state=acc_state)
               
               
                 work_days=int(month_days) - int(comp_holiday.ch_no) 
@@ -3493,6 +3493,7 @@ def salary_calculate(request):
                
                 # Create a dictionary with the data you want to return
                 response_data = {'net_salary': net_salary}
+
 
                 # Return the response as a JSON object
                 return JsonResponse(response_data, safe=False)
@@ -4873,7 +4874,68 @@ def adminupcomingPayments(request):
             
     else:
         return redirect('/')
+
+
+def admin_history_view(request):
     
+    if 'admid' in request.session:
+        if request.session.has_key('admid'):
+            admid = request.session['admid']
+        else:
+            return redirect('/')
+        
+        admin_DHB = Dashboard_Register.objects.get(id=admid)
+       
+        #---------------------------------------------------
+
+        
+        payhis=PaymentHistory.objects.filter(admin_payconfirm=1).order_by('-paydofj')
+        payhis_count=PaymentHistory.objects.filter(admin_payconfirm=1).count()
+
+        if request.method=='POST':
+
+            sdate= request.POST['start_date']
+            edate= request.POST['end_date']
+            
+            if request.POST['search_select'] == '0' and sdate and edate:
+              
+                payhis=PaymentHistory.objects.filter(paydofj__gte=sdate,paydofj__lte=edate,admin_payconfirm=1).order_by('-paydofj')
+                payhis_count=PaymentHistory.objects.filter(paydofj__gte=sdate,paydofj__lte=edate,admin_payconfirm=1).count()
+
+            elif request.POST['search_select'] and sdate and edate:
+               
+               state = Register_State.objects.get(id=int(request.POST['search_select']))
+               payhis=PaymentHistory.objects.filter(paydofj__gte=sdate,paydofj__lte=edate,admin_payconfirm=1,pay_state=state).order_by('-paydofj')
+               payhis_count=PaymentHistory.objects.filter(paydofj__gte=sdate,paydofj__lte=edate,admin_payconfirm=1,pay_state=state).count()
+              
+            
+            elif request.POST['search_select'] != '0' :
+                state = Register_State.objects.get(id=int(request.POST['search_select']))
+                payhis=PaymentHistory.objects.filter(admin_payconfirm=1,pay_state=state).order_by('-paydofj')
+                payhis_count=PaymentHistory.objects.filter(admin_payconfirm=1,pay_state=state).count()
+
+            else:
+                payhis=PaymentHistory.objects.filter(admin_payconfirm=1).order_by('-paydofj')
+                payhis_count=PaymentHistory.objects.filter(admin_payconfirm=1).count()
+
+                
+
+
+        common_data = nav_data(request)
+
+        content = {'admin_DHB':admin_DHB,
+                  'payhis':payhis,
+                   'payhis_count':payhis_count,
+                  
+                   }
+
+        # Merge the two dictionaries
+        content = {**content, **common_data}
+
+        return render(request,'Admin/adminpayments_allhistory.html',content)
+            
+    else:
+        return redirect('/')
 
 
 def admin_paymentsview(request):
@@ -7010,34 +7072,77 @@ def admin_ojt_registration_all_states(request):
 
        
         #-----------------------------------------------
+
+        unique_references = Register.objects.values_list('refrence', flat=True).distinct()
+
         if request.method=='POST':
             
-            if request.POST['start_date'] and request.POST['end_date'] and  request.POST['search_select'] == '0':
+            if request.POST['start_date'] and request.POST['end_date'] and  request.POST['search_select'] == '0' and request.POST['search_reference'] == '0':
 
                 start_date = request.POST['start_date'] 
                 end_date = request.POST['end_date'] 
-                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,)
+                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,).order_by('-id')
                 all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,).count()
 
-            elif  request.POST['search_select'] == '0'  :
-                all_ojt_reg=Register.objects.all()
+
+            elif  request.POST['search_select'] == '0' and request.POST['search_reference'] == '0'  :
+                all_ojt_reg=Register.objects.all().order_by('-id')
                 all_ojt_reg_count=Register.objects.all().count()
 
-            elif  request.POST['search_select']:
 
-                sid=request.POST['search_select']
-                state_id = Register_State.objects.get(id=sid)
-                all_ojt_reg=Register.objects.filter(reg_state=state_id,)
-                all_ojt_reg_count=Register.objects.filter(reg_state=state_id,).count()
-
-            elif request.POST['start_date'] and request.POST['end_date'] and  request.POST['search_select']:
+            elif request.POST['start_date'] and request.POST['end_date'] and  request.POST['search_select'] !='0' and request.POST['search_reference'] == '0' :
 
                 sid=request.POST['search_select']
                 start_date = request.POST['start_date'] 
                 end_date = request.POST['end_date'] 
                 state_id = Register_State.objects.get(id=sid)
-                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,)
+                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,).order_by('-id')
                 all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,).count()
+
+            
+            elif  request.POST['search_select'] !='0' and  request.POST['search_reference'] == '0' :
+                sid=request.POST['search_select']
+                state_id = Register_State.objects.get(id=sid)
+                all_ojt_reg=Register.objects.filter(reg_state=state_id,).order_by('-id')
+                all_ojt_reg_count=Register.objects.filter(reg_state=state_id,).count()
+            
+
+            elif request.POST['start_date'] and request.POST['end_date'] and request.POST['search_reference'] and request.POST['search_select'] =='0':
+               
+                refrence=request.POST['search_reference']
+                start_date = request.POST['start_date'] 
+                end_date = request.POST['end_date'] 
+                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,refrence=refrence,).order_by('-id')
+                all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,refrence=refrence,).count()
+
+
+            elif request.POST['start_date'] and request.POST['end_date'] and request.POST['search_reference'] and  request.POST['search_select'] :
+                
+                refrence=request.POST['search_reference']
+                start_date = request.POST['start_date'] 
+                end_date = request.POST['end_date'] 
+                sid=request.POST['search_select']
+                state_id = Register_State.objects.get(id=sid)
+                all_ojt_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,refrence=refrence,reg_state=state_id).order_by('-id')
+                all_ojt_reg_count=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,refrence=refrence,reg_state=state_id).count()
+
+
+            elif  request.POST['search_reference'] != '0' and  request.POST['search_select'] != '0' :
+                refrence=request.POST['search_reference']
+                start_date = request.POST['start_date'] 
+                end_date = request.POST['end_date'] 
+                sid=request.POST['search_select']
+                state_id = Register_State.objects.get(id=sid)
+                all_ojt_reg=Register.objects.filter(refrence=refrence,reg_state=state_id).order_by('-id')
+                all_ojt_reg_count=Register.objects.filter(refrence=refrence,reg_state=state_id).count()   
+
+
+            elif request.POST['search_reference'] :
+               
+                refrence=request.POST['search_reference']
+                all_ojt_reg=Register.objects.filter(refrence=refrence,).order_by('-id')
+                all_ojt_reg_count=Register.objects.filter(refrence=refrence,).count()
+
            
 
         else:
@@ -7051,7 +7156,8 @@ def admin_ojt_registration_all_states(request):
         content={
                  'admin_DHB':admin_DHB,
                  'all_ojt_reg':all_ojt_reg,
-                 'all_ojt_reg_count':all_ojt_reg_count
+                 'all_ojt_reg_count':all_ojt_reg_count,
+                 'unique_references':unique_references
                 }
 
          # Merge the two dictionaries

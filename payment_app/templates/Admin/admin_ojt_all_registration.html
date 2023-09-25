@@ -38,6 +38,16 @@
                                     {% endfor %}
                                 </select>
                             </div>
+                            <div class="w-box" >
+                                <select name="search_reference" class="search-select">
+     
+                                    <option value="0"> Filter By</option>
+                                    {% for reference in unique_references %}
+                                    <option value="{{reference}}">{{reference}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                           
                             <div class="w-box">
                                 <input type="date" class="search-date" name="start_date">
                             </div>

@@ -129,18 +129,18 @@
                                         <form class="forms-sample" action="{% url 'admin_password_changeing' %}" method="post">
                                             {% csrf_token %}
                                             <div class="form-group">
-                                                <label for="oldpsw">Old Password</label>
+                                                <label for="oldpsw"><input type="checkbox" id="oldpsw_check" class="me-2">Old Password</label>
                                                 <input type="password" class="form-control" id="oldpsw" name="oldpsw" placeholder="Old Password" required>
                                               </div>
                                             
                                             <div class="form-group">
-                                              <label for="newpsw">New Password</label>
+                                              <label for="newpsw"><input type="checkbox" id="newpsw_check" class="me-2">New Password</label>
                                               <input type="password" class="form-control" id="newpsw" name="newpsw"  placeholder="New Password"
                                               pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[a-zA-Z!@#$%^&*])(?=.*[0-9]).{8,}$"
                                               title="Conditions are not satisfied." required>
                                             </div>
                                             <div class="form-group">
-                                              <label for="confpsw">Confirm Password</label>
+                                              <label for="confpsw"><input type="checkbox" id="confpsw_check" class="me-2"> Confirm Password</label>
                                               <input type="password" class="form-control" id="confpsw" name="confpsw" placeholder="Confirm Password" required>
                                             </div>
                                             
@@ -224,6 +224,22 @@
   
 </script>
 
+
+<script>
+  document.getElementById('oldpsw_check').addEventListener('click', function () {
+    var passwordInput = document.getElementById('oldpsw');
+    passwordInput.type = this.checked ? 'text' : 'password';
+  });
+  document.getElementById('newpsw_check').addEventListener('click', function () {
+    var passwordInput = document.getElementById('newpsw');
+    passwordInput.type = this.checked ? 'text' : 'password';
+  });
+  document.getElementById('confpsw_check').addEventListener('click', function () {
+    var passwordInput = document.getElementById('confpsw');
+    passwordInput.type = this.checked ? 'text' : 'password';
+  });
+  
+  </script>
 
 
 {% endblock %}
