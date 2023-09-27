@@ -76,7 +76,14 @@
                 <div class="card-body">
                 <div class="d-sm-flex justify-content-between align-items-start">
                     <div>
-                    <h4 class="card-title card-title-dash">Registration on {% now "F" %}</h4>
+                    <h4 class="card-title card-title-dash">Registration on {% now "F" %}
+                        {% if reff %}
+                            - By {{reff}}
+                        {% endif %}
+                        {% if state_id %}
+                            ({{state_id.state_name}})
+                        {% endif %}
+                    </h4>
                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{reg_c}}</span> new registrations</p>
                     </div>
                     <div>
@@ -101,12 +108,21 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="w-box">
+                            <div class="w-box" >
+                                <select name="search_reference" class="search-select">
+     
+                                    <option value="0" selected> Reference By</option>
+                                    {% for reference in unique_references %}
+                                    <option value="{{reference}}">{{reference}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!-- <div class="w-box">
                                 <input type="date" class="search-date" name="start_date">
                             </div>
                             <div class="w-box">
                                 <input type="date" class="search-date" name="end_date">
-                            </div>
+                            </div> -->
                             <div>
                                 <button type="submit" class="search-button">  <i class="icon-search"></i></button>
                             </div>

@@ -13,7 +13,14 @@
                 <div class="card-body">
                 <div class="d-sm-flex justify-content-between align-items-start">
                     <div>
-                    <h4 class="card-title card-title-dash">Registrations </h4>
+                    <h4 class="card-title card-title-dash">Registrations 
+                        {% if refrence %}
+                            - By {{refrence }}
+                        {% endif %}
+                        {% if state_id %}
+                            ({{state_id.state_name}})
+                        {% endif %}
+                    </h4>
                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{all_ojt_reg_count}}</span>  registrations</p>
                     </div>
                     <div>
@@ -41,7 +48,7 @@
                             <div class="w-box" >
                                 <select name="search_reference" class="search-select">
      
-                                    <option value="0"> Filter By</option>
+                                    <option value="0"> Reference By</option>
                                     {% for reference in unique_references %}
                                     <option value="{{reference}}">{{reference}}</option>
                                     {% endfor %}

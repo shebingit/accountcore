@@ -6988,6 +6988,11 @@ def admin_analysis_OJT_details(request):
         
         admin_DHB = Dashboard_Register.objects.get(id=admid)
 
+
+        #-------------------------------------------------------
+
+        unique_references = Register.objects.values_list('refrence', flat=True).distinct()
+
         # --------------------Current month --------------------
 
         cur_date=datetime.now().date()
@@ -7002,30 +7007,52 @@ def admin_analysis_OJT_details(request):
         next_month_start = next_month.replace(day=1)  # get the first day of the next month
         next_month_end = next_month_start.replace(day=28) - timedelta(days=1)  # get the last day of the next month by subtracting 1 day from the 28th day
     
+        start_date = fr_date
+        end_date = to_date
+        reff=None
+        state_id=None
 
         if request.method=='POST':
-            
-            if request.POST['start_date']:
 
-                start_date = request.POST['start_date'] 
-            else:
-                start_date = fr_date
+           
+
             
-            if request.POST['end_date']:
+            # # if request.POST['start_date']:
+
+            #     start_date = request.POST['start_date'] 
+            # else:
+            #     start_date = fr_date
+            
+            # if request.POST['end_date']:
                 
-                end_date = request.POST['end_date'] 
-            else:
-                end_date = to_date
+            #     end_date = request.POST['end_date'] 
+            # else:
+            #     end_date = to_date
 
-            if  request.POST['search_select'] == '0':
+            if  request.POST['search_select'] == '0' and request.POST['search_reference'] == '0' :
                 new_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date)
                 reg_c=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date).count()
-            else:
+
+
+            elif  request.POST['search_select'] != '0' and request.POST['search_reference'] != '0' :
                 sid=request.POST['search_select']
+                reff=request.POST['search_reference']
+                state_id = Register_State.objects.get(id=sid)
+                new_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,refrence=reff)
+                reg_c=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id,refrence=reff).count()
+
+
+            elif  request.POST['search_select'] == '0' and request.POST['search_reference'] != '0' :
+                reff=request.POST['search_reference']
+                new_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,refrence=reff)
+                reg_c=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,refrence=reff).count()
+
+            elif request.POST['search_select'] != '0' and request.POST['search_reference'] == '0' :
+                sid=request.POST['search_select'] 
                 state_id = Register_State.objects.get(id=sid)
                 reg_c=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id).count()
                 new_reg=Register.objects.filter(dofj__gte=start_date,dofj__lte=end_date,reg_state=state_id)
-
+               
         else:
             new_reg=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date)
             reg_c=Register.objects.filter(dofj__gte=fr_date,dofj__lte=to_date).count()
@@ -7046,7 +7073,10 @@ def admin_analysis_OJT_details(request):
         content = {'admin_DHB':admin_DHB,
                    'new_reg':new_reg,
                    'reg':reg,'reg_c':reg_c,
-                   'upcoming_payment_count':upcoming_payment_count
+                   'upcoming_payment_count':upcoming_payment_count,
+                   'unique_references':unique_references,
+                   'reff':reff,
+                   'state_id':state_id
                  }
         
        
@@ -7074,6 +7104,9 @@ def admin_ojt_registration_all_states(request):
         #-----------------------------------------------
 
         unique_references = Register.objects.values_list('refrence', flat=True).distinct()
+
+        refrence=None
+        state_id=None
 
         if request.method=='POST':
             
@@ -7157,7 +7190,9 @@ def admin_ojt_registration_all_states(request):
                  'admin_DHB':admin_DHB,
                  'all_ojt_reg':all_ojt_reg,
                  'all_ojt_reg_count':all_ojt_reg_count,
-                 'unique_references':unique_references
+                 'unique_references':unique_references,
+                 'refrence':refrence,
+                 'state_id':state_id
                 }
 
          # Merge the two dictionaries
@@ -7248,7 +7283,6 @@ def admin_analysis_employee_details(request):
             'emp_reg_current':emp_reg_current,
             'emp_reg_current_count':emp_reg_current_count,
             'emp_unpaid':emp_unpaid,
-           
             'emp_sal_acc_deative':emp_sal_acc_deative
         }
 
