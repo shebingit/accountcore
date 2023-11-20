@@ -4740,7 +4740,37 @@ def admin_trackPayments(request):
 
         if request.method=='POST':
 
-            if request.POST['search_select'] == '0':
+            if request.POST['start_date']  and request.POST['end_date']  and request.POST['search_select'] != '0':
+                sdate = request.POST['start_date']
+                edate = request.POST['end_date']
+
+                state_id=Register_State.objects.get(id=int(request.POST['search_select']))
+
+                pay_current=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1,reg_state=state_id).order_by('next_pay_date')
+                pay_current_count=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1,reg_state=state_id).count()
+                pay_current_amt=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1,reg_state=state_id).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+
+                up_payments = {'pay_current':pay_current,
+                               'pay_current_count':pay_current_count,
+                               'pay_current_amt':pay_current_amt,
+                               'edate':edate,'sdate':sdate,
+                               'stateName':state_id}
+                
+            elif request.POST['start_date']  and request.POST['end_date']  and request.POST['search_select'] == '0':
+                sdate = request.POST['start_date']
+                edate = request.POST['end_date']
+
+                pay_current=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1).order_by('next_pay_date')
+                pay_current_count=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1).count()
+                pay_current_amt=Register.objects.filter(next_pay_date__gte=sdate,next_pay_date__lte=edate,reg_status=1).aggregate(Sum('next_pat_amt'))['next_pat_amt__sum']
+
+                up_payments = {'pay_current':pay_current,
+                               'pay_current_count':pay_current_count,
+                               'pay_current_amt':pay_current_amt,
+                               'edate':edate,'sdate':sdate,
+                               }
+                
+            elif request.POST['search_select'] == '0':
                 
                 up_payments = upcoming_payments(request)
             
@@ -5209,9 +5239,11 @@ def admin_confirm(request,pk):
         pay_aprove.save()
 
         reg=Register.objects.get(id=pay_aprove.reg_id_id)
+        
         reg.regbalance_amt= int(reg.regbalance_amt - pay_aprove.payintial_amt)
         paytol=int( reg.reg_payedtotal)+int(pay_aprove.payintial_amt)
         reg.reg_payedtotal=paytol
+
         progres=int((paytol  * 100) / reg.regtotal_amt)
         
         reg.payprogress=progres
@@ -5398,32 +5430,48 @@ def admin_pending_payments(request):
         #----------------------------------------------------
 
         if request.method=='POST':
-            if request.POST['search_select'] == '0':
 
-                pay_reg=Register.objects.filter(payment_status=0)
+            if request.POST['start_date'] and request.POST['end_date'] and request.POST['search_select'] != '0':
+
+                state_id=Register_State.objects.get(id=int(request.POST['search_select']))
+                sdate=request.POST['start_date']
+                edate=request.POST['end_date']
+
+                pay_reg=Register.objects.filter(payment_status=0,reg_state=state_id,next_pay_date__gte=sdate,next_pay_date__lte=edate).order_by('next_pay_date')
+                pay_reg_count=Register.objects.filter(payment_status=0,reg_state=state_id,next_pay_date__gte=sdate,next_pay_date__lte=edate).count()
+                pay_amt=Register.objects.filter(payment_status=0,reg_state=state_id,next_pay_date__gte=sdate,next_pay_date__lte=edate).aggregate(Sum('next_pat_amt'))
+
+            elif request.POST['start_date'] and request.POST['end_date'] and request.POST['search_select'] == '0':
+
+                sdate=request.POST['start_date']
+                edate=request.POST['end_date']
+
+                pay_reg=Register.objects.filter(payment_status=0,next_pay_date__gte=sdate,next_pay_date__lte=edate).order_by('next_pay_date')
+                pay_reg_count=Register.objects.filter(payment_status=0,next_pay_date__gte=sdate,next_pay_date__lte=edate).count()
+                pay_amt=Register.objects.filter(payment_status=0,next_pay_date__gte=sdate,next_pay_date__lte=edate).aggregate(Sum('next_pat_amt'))
+
+            elif request.POST['search_select'] == '0':
+
+                pay_reg=Register.objects.filter(payment_status=0).order_by('next_pay_date')
                 pay_reg_count=Register.objects.filter(payment_status=0).count()
-                pay_amt=Register.objects.filter(payment_status=0).aggregate(Sum('regbalance_amt'))
-
-               
+                pay_amt=Register.objects.filter(payment_status=0).aggregate(Sum('next_pat_amt'))
 
             else:
 
                 state_id=Register_State.objects.get(id=int(request.POST['search_select']))
 
-              
-
                 #pending payment
-                pay_reg=Register.objects.filter(payment_status=0,reg_state=state_id)
-                pay_reg_count=Register.objects.filter(payment_status=0).count()
-                pay_amt=Register.objects.filter(payment_status=0,reg_state=state_id).aggregate(Sum('regbalance_amt'))
+                pay_reg=Register.objects.filter(payment_status=0,reg_state=state_id).order_by('next_pay_date')
+                pay_reg_count=Register.objects.filter(payment_status=0,reg_state=state_id).count()
+                pay_amt=Register.objects.filter(payment_status=0,reg_state=state_id).aggregate(Sum('next_pat_amt'))
 
                
         else:
         
            
-            pay_reg=Register.objects.filter(payment_status=0)
+            pay_reg=Register.objects.filter(payment_status=0).order_by('next_pay_date')
             pay_reg_count=Register.objects.filter(payment_status=0).count()
-            pay_amt=Register.objects.filter(payment_status=0).aggregate(Sum('regbalance_amt'))
+            pay_amt=Register.objects.filter(payment_status=0).aggregate(Sum('next_pat_amt'))
 
            
 
@@ -5519,22 +5567,71 @@ def admin_incompleted_payments(request):
         #----------------------------------------------------
 
         if request.method=='POST':
-            if request.POST['search_select'] == '0':
 
+            sdate = request.POST['start_date']
+            edate = request.POST['end_date']
+
+            if sdate and edate and request.POST['search_select'] == '0':
 
                 pay_reg=Register.objects.filter(payment_status=2)
-                pay_reg_count=Register.objects.filter(payment_status=2).count()
-                pay_amt=Register.objects.filter(payment_status=2).aggregate(Sum('regtotal_amt'))
+                
+
+                last_payments = []
+                for reg_id in pay_reg:
+                    pay_hist = PaymentHistory.objects.filter(reg_id=reg_id,paydofj__gte=sdate,paydofj__lte=edate).last()
+                    if pay_hist:
+                        last_payments.append(pay_hist)
+                
+
+                payment_history_ids = [payment.reg_id.id for payment in last_payments]
+
+                pay_reg=Register.objects.filter(payment_status=2,id__in=payment_history_ids)
+
+                pay_reg_count=Register.objects.filter(payment_status=2,id__in=payment_history_ids).count()
+
+                pay_amt=Register.objects.filter(payment_status=2,id__in=payment_history_ids).aggregate(Sum('reg_payedtotal'))
 
 
-            else:
+            elif sdate and edate and request.POST['search_select']:
+
+                state_id=Register_State.objects.get(id=int(request.POST['search_select']))
+
+                pay_reg=Register.objects.filter(payment_status=2,reg_state=state_id)
+                
+
+                last_payments = []
+                for reg_id in pay_reg:
+                    pay_hist = PaymentHistory.objects.filter(reg_id=reg_id,paydofj__gte=sdate,paydofj__lte=edate).last()
+                    if pay_hist:
+                        last_payments.append(pay_hist)
+                
+
+                payment_history_ids = [payment.reg_id.id for payment in last_payments]
+
+                pay_reg=Register.objects.filter(payment_status=2,id__in=payment_history_ids,reg_state=state_id)
+
+                pay_reg_count=Register.objects.filter(payment_status=2,id__in=payment_history_ids,reg_state=state_id).count()
+
+                pay_amt=Register.objects.filter(payment_status=2,id__in=payment_history_ids,reg_state=state_id).aggregate(Sum('reg_payedtotal'))
+
+            
+            elif request.POST['search_select'] != '0':
 
                 state_id=Register_State.objects.get(id=int(request.POST['search_select']))
 
                
                 pay_reg=Register.objects.filter(payment_status=2,reg_state=state_id)
                 pay_reg_count=Register.objects.filter(payment_status=2,reg_state=state_id).count()
-                pay_amt=Register.objects.filter(payment_status=2,reg_state=state_id).aggregate(Sum('regtotal_amt'))
+                pay_amt=Register.objects.filter(payment_status=2,reg_state=state_id).aggregate(Sum('reg_payedtotal'))
+
+
+            else:
+
+                pay_reg=Register.objects.filter(payment_status=2)
+                pay_reg_count=Register.objects.filter(payment_status=2).count()
+                pay_amt=Register.objects.filter(payment_status=2).aggregate(Sum('reg_payedtotal'))
+
+               
         else:
         
            
@@ -7440,10 +7537,18 @@ def admin_emp_salary_unpaid_list(request):
         emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
         emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
 
+        months = [(str(i),date(2000, i, 1).strftime('%B')) for i in range(1, 13)]
+        years = [(str(i), str(i)) for i in range(2021, 2031)]
+        current_year = datetime.now().year
+
+        month_display = None
+
         if request.method=='POST':
 
             sdate=request.POST['start_date']
             edate=request.POST['end_date']
+
+            month_display = sdate + " - to - " + edate
 
             if request.POST['search_select'] == '0' and sdate and edate :
 
@@ -7452,24 +7557,59 @@ def admin_emp_salary_unpaid_list(request):
                 emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
                 emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
             
+
             elif request.POST['search_select'] and sdate and edate:
 
                 stateName=Register_State.objects.get(id=int(request.POST['search_select'])) 
-                emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=to_date,emp_paidstatus=1)
 
+                emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=sdate,empslaray_date__lte=to_date,emp_paidstatus=1)
                 emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
                 emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
                 emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=sdate,emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
             
-            
-            elif request.POST['search_select'] != '0':
+                month_display = month_display + " - " + stateName.state_name
+
+            elif request.POST['search_select'] == '0' and request.POST['salary_paid_month'] != '0' and request.POST['salary_paid_year'] :
+
+                m = date(2000, int(request.POST['salary_paid_month']), 1).strftime('%B')
+                    
+                month_display= m + ' ' + request.POST['salary_paid_year']
+
+                emp_unp=EmployeeSalary.objects.filter(empsalary_month=month_display)
+                emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
+                emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+                emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+
+            elif request.POST['search_select'] != '0' and request.POST['salary_paid_month'] != '0' and request.POST['salary_paid_year'] :
+
+                m = date(2000, int(request.POST['salary_paid_month']), 1).strftime('%B')
+                    
+                month_display= m + ' ' + request.POST['salary_paid_year']
+
 
                 stateName=Register_State.objects.get(id=int(request.POST['search_select'])) 
+
+                month_display = month_display + " - " + stateName.state_name
+
+                emp_unp=EmployeeSalary.objects.filter(empsalary_month=month_display)
+                emp_unpaid=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
+                emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
+                emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+
+
+            elif request.POST['search_select'] != '0':
+                
+                sId = int(request.POST['search_select'])
+                stateName=Register_State.objects.get(id=sId) 
                 emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date,emp_paidstatus=1)
 
                 emp_unpaid=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True))
                 emp_unpaid_count=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
                 emp_unp_amt=EmployeeRegister.objects.filter(emp_status=1,emp_salary_status=1,empstate=stateName.state_name).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
+
+                month_display = stateName.state_name
 
             else:
                 emp_unp=EmployeeSalary.objects.filter(empslaray_date__gte=fr_date,empslaray_date__lte=to_date)
@@ -7477,6 +7617,7 @@ def admin_emp_salary_unpaid_list(request):
                 emp_unpaid_count=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).count()
                 emp_unp_amt=EmployeeRegister.objects.filter(empdofj__lt=fr_date,emp_status=1,emp_salary_status=1,).exclude(id__in=emp_unp.values_list('empreg_id', flat=True)).aggregate(Sum('empconfirmsalary'))['empconfirmsalary__sum']
 
+                month_display =  datetime.now().strftime('%B')
 
            
 
@@ -7485,7 +7626,11 @@ def admin_emp_salary_unpaid_list(request):
         content = {'admin_DHB':admin_DHB,
                    'emp_unpaid':emp_unpaid,
                    'emp_unpaid_count':emp_unpaid_count,
-                   'emp_unp_amt':emp_unp_amt
+                   'emp_unp_amt':emp_unp_amt,
+                   'months':months,
+                   'years':years,
+                   'current_year':current_year,
+                   'month_display':month_display
                    }
 
         # Merge the two dictionaries
@@ -7495,6 +7640,7 @@ def admin_emp_salary_unpaid_list(request):
         return render(request,'Admin/admin_analysis_employee_unpaid_salary.html',content)
     else:
         return redirect('/')
+
 
 def admin_emp_deactive_salary_account_list(request):
     if 'admid' in request.session:

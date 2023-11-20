@@ -159,7 +159,7 @@ def income_expence_check(request):
 
 def OJT_payments_details(request,pk):
       
-    reg=Register.objects.get(id=pk,reg_status=1)
+    reg=Register.objects.get(id=pk)
     payhis_list=PaymentHistory.objects.filter(admin_payconfirm=1,reg_id=reg)
     payhis_count=PaymentHistory.objects.filter(admin_payconfirm=1,reg_id=reg).count()
 

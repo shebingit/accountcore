@@ -78,7 +78,6 @@ WSGI_APPLICATION = 'pymentcore.wsgi.application'
 DATABASES = {
     'default': {
          'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'account_dbcore',
          'NAME': 'payment_test',
         
         'USER': 'root',

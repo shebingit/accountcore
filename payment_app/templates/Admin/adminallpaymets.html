@@ -2,6 +2,18 @@
 {% load static %}
 {% block body %}
 
+<style>
+    .blink {
+        color: #ff4141;
+        
+        animation: blinker 1s cubic-bezier(.5, 0, 1, 1) infinite alternate;  
+      }
+      @keyframes blinker {  
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+</style>
+
 <!--- All PAYMENTS   -->
 <div class="content-wrapper">
 
@@ -12,12 +24,12 @@
                     <div class="d-sm-flex justify-content-between align-items-start">
                         <div>
                             <h4 class="card-title card-title-dash">{{head_name}}  payments </h4>
-                            <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay_reg_count}}</span> payment status. 
+                            <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay_reg_count}}</span> payments , Paid amount- ({{payamt.reg_payedtotal__sum|default:"0" }}) 
                                 
                             </p>
                         </div>
                         <div>
-                            <form class="search-form" action="#" method="post">
+                            <form class="search-form" action="{% url 'admin_incompleted_payments' %}" method="post">
                                 {% csrf_token %}
                             
                                 <div class="searchBox">
@@ -37,6 +49,12 @@
                                         <option value="{{state.id}}">{{state.state_name}}</option>
                                         {% endfor %}
                                     </select>
+                                </div>
+                                <div class="w-box">
+                                    <input type="date" class="search-date" name="start_date">
+                                </div>
+                                <div class="w-box">
+                                    <input type="date" class="search-date" name="end_date">
                                 </div>
                                 <div>
                                     <button type="submit" class="search-button">  <i class="icon-search"></i></button>
@@ -69,6 +87,9 @@
                             
                                 <td>
                                     <div class="d-flex ">
+                                         {% if pay.next_pay_date < cur_date %}
+                                        <span class="blink mdi mdi-checkbox-blank-circle " style="margin-right: 3px;"></span>
+                                        {% endif %}
                                         <div>
                                             <a href="{% url 'admin_registartion_ojt_payment_details' pay.id  %}">
                                                 <h6>{{pay.fullName}}</h6>

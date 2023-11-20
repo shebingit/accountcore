@@ -61,11 +61,19 @@
                                 <div class="card-body">
                                 <div class="d-sm-flex justify-content-between align-items-start">
                                     <div>
-                                    <h4 class="card-title card-title-dash">Upcoming payments on {% now "F" %}
+                                    <h4 class="card-title card-title-dash">Upcoming payments on 
+                                        {% if not edate and not sdate %}
+                                        {% now "F" %}</h4>
+                                        {% endif %}
+                                    <p class="card-subtitle card-subtitle-dash">
+                                        {% if edate and sdate %} 
+                                            <span class="small">({{ sdate }} - {{ edate}})</span>
+                                        
+                                        {% endif %}
                                         {% if stateName %}
                                         - &nbsp; {{stateName.state_name}}
                                     {% endif %}
-                                    </h4>
+                                    </p>
                                     <p class="card-subtitle card-subtitle-dash">You have <span class="count-value">{{pay_current_count}}</span> payments - 
                                         <span class="count-value">Total-  {{pay_current_amt}}</span> </p>
                                     </div>
@@ -91,6 +99,14 @@
                                                     {% endfor %}
                                                 </select>
                                             </div>
+
+                                            <div class="w-box">
+                                                <input type="date" class="search-date" name="start_date" id="startDate">
+                                            </div>
+                                            <div class="w-box">
+                                                <input type="date" class="search-date" name="end_date">
+                                            </div>
+                                            
                                             <div>
                                                 <button type="submit" class="search-button">  <i class="icon-search"></i></button>
                                             </div>
@@ -188,6 +204,7 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
+                                        
                                         <div>
                                             <button type="submit" class="search-button">  <i class="icon-search"></i></button>
                                         </div>
@@ -588,6 +605,24 @@
     filterTable(); // Display the full table data
     });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var startDateInput = document.getElementById('startDate');
+        
+        // Get the current date in the format YYYY-MM-DD
+        var currentDate = new Date().toISOString().split('T')[0];
+        
+        // Set the min attribute to the current date to disable previous dates
+        startDateInput.setAttribute('min', currentDate);
+        
+        // Set the value of the startDateInput to the current date
+        startDateInput.value = currentDate;
+    });
+</script>
+
+
+
 
 {% endblock %}
 
